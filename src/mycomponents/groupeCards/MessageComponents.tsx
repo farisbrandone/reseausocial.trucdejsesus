@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import clsx from "clsx";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { ButtonUploadFile2 } from "./ButtonUploadImage";
 import { ButtonUploadAudio } from "./ButtonUploadAudio";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -20,8 +20,17 @@ import { RocketIcon } from "@radix-ui/react-icons";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SelectUserToSendMessage } from "./SelectUserToSendMessage";
+import {
+  getAllMessageData,
+  MessageData,
+  postMessageByUser,
+} from "../../../seedAndGetData/seedData";
+import { faker } from "@faker-js/faker";
+import { useParams } from "react-router-dom";
 
 export interface MessageComponentsType {
+  messagesData: MessageData[];
+  setMessagesData: React.Dispatch<React.SetStateAction<MessageData[]>>;
   appearText: boolean;
   setAppearText: React.Dispatch<React.SetStateAction<boolean>>;
   appearVideo: boolean;
@@ -39,6 +48,7 @@ export interface MessageComponentsType {
 }
 
 export function MessageComponents({
+  setMessagesData,
   appearText,
   /* setAppearText, */
   appearVideo,
@@ -60,7 +70,16 @@ export function MessageComponents({
   const [stateDownload, setStateDownload] = useState(false);
   const [videoUrlEvent, setVideoUrlEvent] = useState("");
 
+  const { groupeName } = useParams<string>();
+
   const [desableButton, setDisableButton] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const user = {
+    userAvatar: faker.image.avatar(),
+    userName: faker.person.firstName(),
+    userId: faker.string.uuid(),
+  };
 
   const handleTextePartage = (e: ChangeEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
@@ -76,18 +95,37 @@ export function MessageComponents({
     setPutHidden((prev) => !prev);
   };
   const handleEmoji = (value: EmojiClickData) => {
-    setTextePartage((prev) => prev + value.emoji);
+    if (inputRef.current) {
+      const inputEvent = new Event("input", { bubbles: true });
+      inputRef.current.value = value.emoji;
+      inputRef.current.dispatchEvent(inputEvent);
+    }
+    /* setTextCommentaire((prev) => prev + value.emoji); */
   };
 
-  const sendingMessage = () => {
+  const sendingMessage = async () => {
     try {
       setDisableButton(true);
-      console.log({
-        imageUrlEvent,
-        audioUrlEvent,
-        videoUrlEvent,
-        textePartage,
-      });
+      const data = {
+        userId: user.userId,
+        userName: user.userName,
+        userAvatar: user.userAvatar,
+        text: textePartage,
+        photo: imageUrlEvent,
+        audio: audioUrlEvent,
+        video: videoUrlEvent,
+        id: "",
+        userLikes: [],
+        date: "",
+        groupeName: !!groupeName ? groupeName : "",
+      };
+      const result = await postMessageByUser(data);
+      if (result.success) {
+        if (groupeName) {
+          const messageData = await getAllMessageData(groupeName);
+          setMessagesData(messageData);
+        }
+      }
     } catch (error) {
     } finally {
       setDisableButton(false);
@@ -170,6 +208,7 @@ export function MessageComponents({
               rows={3}
               value={textePartage}
               onChange={handleTextePartage}
+              ref={inputRef}
             />
             <div className="w-full relative mr-4">
               <div className="w-full flex items-center justify-end py-2 z-50 ">

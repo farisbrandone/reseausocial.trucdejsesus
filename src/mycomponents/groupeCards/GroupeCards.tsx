@@ -2,11 +2,17 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { clsx } from "clsx";
 import AvatarComponent from "../acceuilPage/AvatarComponent";
 import { MessageComponents } from "./MessageComponents";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PassionneTable } from "./passionne/PassionneTable";
 import { columns } from "./passionne/Columns";
-import { payments } from "./passionne/data";
+import {
+  MembreData,
+  MessageData,
+  requestTogetAllMembreData,
+} from "seedAndGetData/seedData";
+import { format } from "date-fns";
+import { videoTransformer } from "@/lib/videoTransformer";
 
 interface Tab {
   title: string;
@@ -43,6 +49,8 @@ function GroupeCards() {
   const [appearImage, setAppearImage] = useState(false);
   const [appearAudio, setAppearAudio] = useState(false);
   const [textePartage, setTextePartage] = useState("");
+  const [messagesData, setMessagesData] = useState<MessageData[]>([]);
+  const [membreOfData, setMembreOfData] = useState<MembreData[]>([]);
 
   const handleappearText = () => {
     setAppearText(true);
@@ -69,6 +77,14 @@ function GroupeCards() {
     setAppearVideo(false);
     setAppearAudio(true);
   };
+
+  useEffect(() => {
+    const getMembreData = async () => {
+      const result = await requestTogetAllMembreData();
+      setMembreOfData([...result]);
+    };
+    getMembreData();
+  }, []);
 
   return (
     <div className=" flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white ">
@@ -178,6 +194,8 @@ function GroupeCards() {
               >
                 <div>
                   <MessageComponents
+                    messagesData={messagesData}
+                    setMessagesData={setMessagesData}
                     appearText={appearText}
                     setAppearText={setAppearText}
                     appearVideo={appearVideo}
@@ -194,37 +212,68 @@ function GroupeCards() {
                     setTextePartage={setTextePartage}
                   />
                 </div>
-                <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
-                  <div className="flex items-center gap-2">
-                    <Avatar>
-                      <AvatarImage
-                        src="https://github.com/shadcn.png"
-                        alt="@shadcn"
-                      />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col  text-[#000]">
-                      <p>Isabelle</p>
-                      <p>
-                        <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
-                          Administrateur
-                        </span>
-                        il ya 4 mois
-                      </p>
+                {messagesData &&
+                  messagesData.map((value) => (
+                    <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
+                      <div className="flex items-center gap-2">
+                        <Avatar>
+                          <AvatarImage src={value.userAvatar} alt="" />
+                          <AvatarFallback>AV</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col  text-[#000]">
+                          <p>{value.userName}</p>
+                          <p>
+                            {value.userName === "Administrateur" && (
+                              <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
+                                Administrateur
+                              </span>
+                            )}
+                            {format(
+                              new Date(value.date),
+                              "'publié le' dd/MM/yyyy"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mt-2">
+                        {value.text && (
+                          <p className="text whitespace-pre-wrap">
+                            {value.text}
+                          </p>
+                        )}
+                        {value.photo && (
+                          <div className="image mt-2">
+                            <img src={value.photo} alt="" />
+                          </div>
+                        )}
+                        {value.video && (
+                          <div className="video">
+                            <video controls width="250">
+                              <source src={value.video} type="video/webm" />
+                              <source
+                                src={videoTransformer(value.video)}
+                                type="video/mp4"
+                              />
+                              Download the
+                              <a href={value.video}>WEBM</a>
+                              or
+                              <a href={value.video}>MP4</a>
+                              video.
+                            </video>
+                          </div>
+                        )}
+                        {value.audio && (
+                          <div className="audio">
+                            <figure>
+                              <figcaption>Listen to the T-Rex:</figcaption>
+                              <audio controls src={value.audio}></audio>
+                              <a href={value.audio}> Download audio </a>
+                            </figure>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex flex-col mt-2">
-                    <p className="text whitespace-pre-wrap">{textePartage}</p>
-                    <div className="image mt-2">
-                      <img
-                        src="https://trucdejesus.smartcommunity.biz/upload/fe_upload/post/39967_1719036603.png"
-                        alt=""
-                      />
-                    </div>
-                    <div className="video"></div>
-                    <div className="audio"></div>
-                  </div>
-                </div>
+                  ))}
               </TabsPrimitive.Content>
               <TabsPrimitive.Content
                 key={`tab-content-tab2`}
@@ -234,7 +283,7 @@ function GroupeCards() {
                 )}
               >
                 <div>
-                  <PassionneTable columns={columns} data={payments} />
+                  <PassionneTable columns={columns} data={membreOfData} />
                 </div>
               </TabsPrimitive.Content>
 

@@ -15,27 +15,42 @@ import { DataTableColumnHeader } from "./DataTableColumnHeader";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
+  name: string;
   email: string;
+  motsDepasse: string;
+  sexe: string;
+  birthDay: string;
+  phone: string;
+  dateCreation: string;
+  dateMiseAJour: string;
+  status: string;
+  image: string;
+  id: string;
+  nombrePartage: number;
+  nombreLikes: number;
+  nombreCommentaire: number;
+  /* status: "pending" | "processing" | "success" | "failed";
+  email: string; */
 };
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "name",
+    header: () => <div className="text-right">Nom</div>,
+    cell: ({ row }) => {},
   },
   {
-    accessorKey: "email",
+    accessorKey: "nombrePartage",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader column={column} title="Partages" />
     ),
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
+    accessorKey: "nombreCommentaire",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Commentaires" />
+    ),
+    /*  cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -43,7 +58,13 @@ export const columns: ColumnDef<Payment>[] = [
       }).format(amount);
 
       return <div className="text-right font-medium">{formatted}</div>;
-    },
+    }, */
+  },
+  {
+    accessorKey: "nombreLikeslikes",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Likes" />
+    ),
   },
   {
     id: "actions",
@@ -61,13 +82,12 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(payment.name)}
             >
-              Copy payment ID
+              Copy nom utilisateur
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Détails utilisateur </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

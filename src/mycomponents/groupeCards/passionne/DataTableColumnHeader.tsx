@@ -28,7 +28,13 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return (
+      <div className={cn(className)}>
+        {" "}
+        <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>
+        {title}
+      </div>
+    );
   }
 
   return (
@@ -40,6 +46,7 @@ export function DataTableColumnHeader<TData, TValue>({
             size="sm"
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
+            <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
               <ArrowDownIcon className="ml-2 h-4 w-4" />
