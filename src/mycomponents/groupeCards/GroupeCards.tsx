@@ -10,9 +10,10 @@ import {
   MembreData,
   MessageData,
   requestTogetAllMembreData,
-} from "seedAndGetData/seedData";
+} from "../../../seedAndGetData/seedData";
 import { format } from "date-fns";
 import { videoTransformer } from "@/lib/videoTransformer";
+import EvenementCard from "./EvenementCard";
 
 interface Tab {
   title: string;
@@ -24,9 +25,7 @@ const tabs1: Tab[] = [
   {
     title: "Partages",
     value: "tab1",
-    icon: (
-      <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>
-    ),
+    icon: <span className="icon-[prime--book] mr-1 text-xl"></span>,
   },
   {
     title: "Passionnés",
@@ -37,9 +36,20 @@ const tabs1: Tab[] = [
   },
 
   {
-    title: "Evènnements",
+    title: "Chaines",
     value: "tab3",
+    icon: <span className="icon-[whh--hdtv] mr-1 text-xl"></span>,
+  },
+
+  {
+    title: "Evènnements",
+    value: "tab4",
     icon: <span className="icon-[bxs--calendar] mr-1 text-xl"></span>,
+  },
+  {
+    title: "Classement",
+    value: "tab5",
+    icon: <span className="icon-[fa6-solid--trophy] mr-1 text-xl"></span>,
   },
 ];
 
@@ -286,22 +296,41 @@ function GroupeCards() {
                   <PassionneTable columns={columns} data={membreOfData} />
                 </div>
               </TabsPrimitive.Content>
-
               <TabsPrimitive.Content
                 key={`tab-content-tab3`}
                 value="tab3"
                 className={clsx(
+                  "flex-shrink-1 rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
+                )}
+              >
+                <div></div>
+              </TabsPrimitive.Content>
+
+              <TabsPrimitive.Content
+                key={`tab-content-tab4`}
+                value="tab4"
+                className={clsx(
                   "rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
                 )}
               >
-                <span className="text-sm text-gray-700 dark:text-gray-100"></span>
+                <EvenementCard groupeName="Mon Groupe" />
+              </TabsPrimitive.Content>
+
+              <TabsPrimitive.Content
+                key={`tab-content-tab5`}
+                value="tab5"
+                className={clsx(
+                  "flex-shrink-1 rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
+                )}
+              >
+                <div></div>
               </TabsPrimitive.Content>
             </TabsPrimitive.Root>
           </div>
 
           {/* part of tab */}
 
-          <div className="relative flex min-[980px]:ml-4 min-[980px]:mr-2 max-[980px]:w-[95%]  flex-col items-start  gap-5 mt-8">
+          <div className="relative flex min-[980px]:ml-4 min-[980px]:mr-2 max-[980px]:w-[95%]  flex-col items-start  gap-5 mt-8 lg:max-w-[500px] flex-shrink-1 ">
             <p className=" infoGroupeCards font-[400] text-[16px] ">
               Information sur le groupe
             </p>

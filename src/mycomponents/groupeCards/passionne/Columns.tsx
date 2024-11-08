@@ -12,6 +12,7 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
+import { format } from "date-fns";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
@@ -34,37 +35,89 @@ export type Payment = {
 };
 
 export const columns: ColumnDef<Payment>[] = [
+  /*  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Name</div>,
+    enableHiding: true,
+    id: "name",
+  }, */
   {
     accessorKey: "name",
-    header: () => <div className="text-right">Nom</div>,
-    cell: ({ row }) => {},
+    header: () => <div className="text-left">Nom</div>,
+    cell: ({ row }) => {
+      return (
+        <div className=" min-w-[150px] flex items-center gap-1 ">
+          <img
+            src={row.original.image}
+            alt="AV"
+            className="flex-shrink-0 self-start rounded-full w-[30px] h-[30px] object-cover "
+          />
+
+          <div className="flex flex-col flex-wrap  ">
+            <p>{row.original.name.split(" ")[0]} </p>
+            <p className="text-[10px] bg-[#fff700] rounded-md p-[2px] leading-[10px] ">
+              nous a rejoint le{" "}
+              <span>
+                {format(new Date(row.original.dateCreation), "dd MMM yyyy")}
+              </span>
+            </p>
+          </div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "nombrePartage",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Partages" />
+      <DataTableColumnHeader
+        column={column}
+        title="Partages"
+        icon={<span className="icon-[prime--book] mr-1 text-xl"></span>}
+      />
     ),
+    cell: ({ row }) => {
+      return (
+        <div className=" w-full flex items-center justify-center ">
+          {!!row.original.nombrePartage ? row.original.nombrePartage : "-"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "nombreCommentaire",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Commentaires" />
+      <DataTableColumnHeader
+        column={column}
+        title="Commentaires"
+        icon={<span className="icon-[vaadin--comment] text-xl mr-1"></span>}
+      />
     ),
-    /*  cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    }, */
+    cell: ({ row }) => {
+      return (
+        <div className=" w-full flex items-center justify-center ">
+          {!!row.original.nombreCommentaire
+            ? row.original.nombreCommentaire
+            : "-"}
+        </div>
+      );
+    },
   },
   {
-    accessorKey: "nombreLikeslikes",
+    accessorKey: "nombreLikes",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Likes" />
+      <DataTableColumnHeader
+        column={column}
+        title="Likes"
+        icon={<span className="icon-[si-glyph--like] mr-1 text-xl"></span>}
+      />
     ),
+    cell: ({ row }) => {
+      return (
+        <div className=" w-full flex items-center justify-center ">
+          {!!row.original.nombreLikes ? row.original.nombreLikes : "-"}
+        </div>
+      );
+    },
   },
   {
     id: "actions",

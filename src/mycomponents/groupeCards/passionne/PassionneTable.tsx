@@ -24,6 +24,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./DataTablePagination";
 import { DataTableViewOptions } from "./DataTableViewOptions";
+import { he } from "@faker-js/faker";
+import clsx from "clsx";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -56,20 +58,28 @@ export function PassionneTable<TData, TValue>({
     },
   });
 
+  const hiddenColumns = table
+    .getAllColumns()
+    .filter((column) => column.id === "name")
+    .forEach((column) => (column.columnDef.enableHiding = true));
+
+  console.log(hiddenColumns);
+
   return (
     <div>
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {table.getFilteredSelectedRowModel().rows.length} de{" "}
+        {table.getFilteredRowModel().rows.length} ligne(s) selectionnée(s).
       </div>
 
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrer par nom..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          /* value={(table.getColumn("nom")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
+            table.getColumn("nom")?.setFilterValue(event.target.value)
+          } */
+          onChange={(e) => table.setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
         <DataTableViewOptions table={table} />
@@ -81,6 +91,7 @@ export function PassionneTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  console.log({ id: header.id });
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder

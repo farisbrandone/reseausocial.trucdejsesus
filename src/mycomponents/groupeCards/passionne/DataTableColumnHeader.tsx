@@ -20,18 +20,20 @@ interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
+  icon: JSX.Element;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
+  icon,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return (
       <div className={cn(className)}>
-        {" "}
-        <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>
+        {icon}
+        <span className="icon-[si-glyph--like] mr-1 text-xl"></span>
         {title}
       </div>
     );
@@ -46,7 +48,8 @@ export function DataTableColumnHeader<TData, TValue>({
             size="sm"
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
-            <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>
+            {icon}
+            {/*  <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span> */}
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
               <ArrowDownIcon className="ml-2 h-4 w-4" />

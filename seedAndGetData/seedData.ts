@@ -89,6 +89,41 @@ export interface ReponseData {
   userId: string;
   userName: string;
 }
+export interface stateGroupeEvent {
+  groupeId: string;
+  titleGroupe: string;
+  checked: boolean;
+}
+
+export interface EventDataType {
+  titleEvent: string;
+  descriptionEvent: string;
+  imageUrlEvent: string;
+  typeAccess: string;
+  status: string;
+  dateOfEvent: string;
+  typeEvent: string;
+  urlOfEvent: string;
+  textCTAEvent: string;
+  locationOfEvent: string;
+  groupeForEventSelect: stateGroupeEvent[];
+  date: string;
+  id: string;
+}
+
+export interface ChannelPageDataType {
+  nomChannel: string;
+  descriptionChannel: string;
+  typeChannel: string;
+  typeAccessChannel: string;
+  imageChannel: string;
+  amountChannel: string;
+  groupeIdChannel: string;
+  dateUpdatedChannel: string;
+  dateCreatedChannel: string;
+  statusChannel: string;
+  id: string;
+}
 
 export const postMessageByUser = async ({
   userId,
@@ -102,7 +137,7 @@ export const postMessageByUser = async ({
   try {
     const messageRef = collection(db, "MessageData");
     const membreDataRef = doc(db, "MembreData", userId);
-    const date = Date.now().toString();
+    const date = new Date().toUTCString();
     const promise1 = setDoc(doc(messageRef), {
       userId,
       userName,
@@ -133,7 +168,7 @@ export const postCommentaireByUser = async ({
 }: CommentaireData) => {
   const commentaireRef = collection(db, "CommentaireData");
   const membreDataRef = doc(db, "MembreData", userId);
-  const date = Date.now().toString();
+  const date = new Date().toUTCString();
   try {
     const promise1 = setDoc(doc(commentaireRef), {
       text,
@@ -169,7 +204,7 @@ export const postResponseByUser = async ({
   userName,
 }: ReponseData) => {
   const reponseRef = collection(db, "ReponseData");
-  const date = Date.now().toString();
+  const date = new Date().toUTCString();
 
   try {
     await setDoc(doc(reponseRef), {
@@ -483,6 +518,117 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
       });
 
       return membreData;
+    }
+
+    return [];
+  } catch (error) {
+    console.log({ error: error });
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des données"
+    );
+  }
+}
+
+export async function requestTogetAllEventDataofGroupe(
+  titleGroupe: string
+): Promise<EventDataType[]> {
+  let groupeData: EventDataType[] = [];
+  try {
+    const querySnapshot = await getDocs(collection(db, "EventData"));
+    console.log({ length: querySnapshot.docs.length });
+    if (querySnapshot.docs.length !== 0) {
+      querySnapshot.forEach((doc) => {
+        const id = doc.id;
+        const {
+          titleEvent,
+          descriptionEvent,
+          imageUrlEvent,
+          typeAccess,
+          status,
+          dateOfEvent,
+          typeEvent,
+          urlOfEvent,
+          textCTAEvent,
+          locationOfEvent,
+          groupeForEventSelect,
+          date,
+        } = doc.data();
+        groupeData.push({
+          id,
+          titleEvent,
+          descriptionEvent,
+          imageUrlEvent,
+          typeAccess,
+          status,
+          dateOfEvent,
+          typeEvent,
+          urlOfEvent,
+          textCTAEvent,
+          locationOfEvent,
+          groupeForEventSelect,
+          date,
+        });
+      });
+      console.log({ drdr_drdr: groupeData[0].id });
+      const result = groupeData.filter((value) => {
+        for (let elt of value.groupeForEventSelect) {
+          if (elt.titleGroupe === titleGroupe) {
+            return true;
+          }
+        }
+        return false;
+      });
+      return result;
+    }
+
+    return [];
+  } catch (error) {
+    console.log({ error: error });
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des données"
+    );
+  }
+}
+
+export async function requestTogetAllChannelDataOfGroupe(
+  groupeId: string
+): Promise<ChannelPageDataType[]> {
+  let channelData: ChannelPageDataType[] = [];
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "ChannelData"));
+    console.log({ length: querySnapshot.docs.length });
+    if (querySnapshot.docs.length !== 0) {
+      querySnapshot.forEach((doc) => {
+        const id = doc.id;
+        const {
+          nomChannel,
+          descriptionChannel,
+          typeChannel,
+          imageChannel,
+          groupeIdChannel,
+          dateUpdatedChannel,
+          dateCreatedChannel,
+          statusChannel,
+          typeAccessChannel,
+          amountChannel,
+        } = doc.data();
+        channelData.push({
+          id,
+          nomChannel,
+          descriptionChannel,
+          typeChannel,
+          imageChannel,
+          groupeIdChannel,
+          dateUpdatedChannel,
+          dateCreatedChannel,
+          statusChannel,
+          typeAccessChannel,
+          amountChannel,
+        });
+      });
+
+      return channelData.filter((value) => value.groupeIdChannel === groupeId);
     }
 
     return [];
