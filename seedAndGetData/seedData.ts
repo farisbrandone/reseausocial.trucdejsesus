@@ -49,6 +49,7 @@ export interface MembreData {
   nombrePartage: number;
   nombreLikes: number;
   nombreCommentaire: number;
+  nombreDeMerciBenis: number;
 }
 
 export interface MessageData {
@@ -122,6 +123,18 @@ export interface ChannelPageDataType {
   dateUpdatedChannel: string;
   dateCreatedChannel: string;
   statusChannel: string;
+  channelRessources: RessourcesDataType[];
+  id: string;
+}
+
+export interface RessourcesDataType {
+  titleRessource: string;
+  descriptionRessource: string;
+  imageRessource: string;
+  textButtonRessource: string;
+  typeRessources: string;
+  urlRessources: string;
+  date: string;
   id: string;
 }
 
@@ -150,6 +163,7 @@ export const postMessageByUser = async ({
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
+      nombreDeMerciBenis: increment(3),
     });
     const [value1, value2] = await Promise.all([promise1, promise2]);
     console.log(value1, value2);
@@ -181,6 +195,7 @@ export const postCommentaireByUser = async ({
 
     const promise2 = updateDoc(membreDataRef, {
       nombreCommentaire: increment(1),
+      nombreDeMerciBenis: increment(2),
     });
     const [value1, value2] = await Promise.all([promise1, promise2]);
     console.log(value1, value2);
@@ -247,6 +262,7 @@ export const updateMessagewithLike = async (
       const membreDataRef = doc(db, "MembreData", userId);
       const promise2 = updateDoc(membreDataRef, {
         nombreLikes: increment(1),
+        nombreDeMerciBenis: increment(1),
       });
       const [value1, value2] = await Promise.all([promise1, promise2]);
       console.log(value1, value2);
@@ -290,6 +306,7 @@ export const updateCommentairewithLike = async (
       const membreDataRef = doc(db, "MembreData", userId);
       const promise2 = updateDoc(membreDataRef, {
         nombreLikes: increment(1),
+        nombreDeMerciBenis: increment(1),
       });
       const [value1, value2] = await Promise.all([promise1, promise2]);
       console.log(value1, value2);
@@ -498,6 +515,7 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombrePartage,
           nombreLikes,
           nombreCommentaire,
+          nombreDeMerciBenis,
         } = doc.data();
         membreData.push({
           id,
@@ -514,6 +532,7 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombrePartage,
           nombreLikes,
           nombreCommentaire,
+          nombreDeMerciBenis,
         });
       });
 
@@ -612,6 +631,7 @@ export async function requestTogetAllChannelDataOfGroupe(
           statusChannel,
           typeAccessChannel,
           amountChannel,
+          channelRessources,
         } = doc.data();
         channelData.push({
           id,
@@ -625,6 +645,7 @@ export async function requestTogetAllChannelDataOfGroupe(
           statusChannel,
           typeAccessChannel,
           amountChannel,
+          channelRessources,
         });
       });
 
