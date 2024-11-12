@@ -22,14 +22,16 @@ import { Input } from "@/components/ui/input";
 import { SelectUserToSendMessage } from "./SelectUserToSendMessage";
 import {
   getAllMessageData,
+  MembreData,
   MessageData,
   postMessageByUser,
 } from "../../../seedAndGetData/seedData";
-import { faker } from "@faker-js/faker";
-import { useParams } from "react-router-dom";
 
 export interface MessageComponentsType {
+  groupeId: string;
+  groupeName: string;
   messagesData: MessageData[];
+  membreOfData: MembreData[];
   setMessagesData: React.Dispatch<React.SetStateAction<MessageData[]>>;
   appearText: boolean;
   setAppearText: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,6 +50,8 @@ export interface MessageComponentsType {
 }
 
 export function MessageComponents({
+  groupeName,
+  groupeId,
   setMessagesData,
   appearText,
   /* setAppearText, */
@@ -63,6 +67,7 @@ export function MessageComponents({
   handleappearAudio,
   textePartage,
   setTextePartage,
+  membreOfData,
 }: MessageComponentsType) {
   const [putHidden, setPutHidden] = useState(false);
   const [imageUrlEvent, setImageUrlEvent] = useState("");
@@ -70,20 +75,10 @@ export function MessageComponents({
   const [stateDownload, setStateDownload] = useState(false);
   const [videoUrlEvent, setVideoUrlEvent] = useState("");
 
-  const { groupeName } = useParams<string>();
-
   const [desableButton, setDisableButton] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const user = {
-    userAvatar: faker.image.avatar(),
-    userName: faker.person.firstName(),
-    userId: faker.string.uuid(),
-  };
-
   const handleTextePartage = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    e.preventDefault();
-    console.log({ textePartage: !textePartage });
     setTextePartage(() => e.target.value);
   };
 
@@ -96,20 +91,30 @@ export function MessageComponents({
   };
   const handleEmoji = (value: EmojiClickData) => {
     if (inputRef.current) {
-      const inputEvent = new Event("input", { bubbles: true });
-      inputRef.current.value = value.emoji;
-      inputRef.current.dispatchEvent(inputEvent);
+      const start = inputRef.current.selectionStart;
+      const end = inputRef.current.selectionEnd;
+      const textBeforeCursor = textePartage.slice(0, start);
+      const textAfterCursor = textePartage.slice(end);
+      const newText = textBeforeCursor + value.emoji + textAfterCursor;
+      setTextePartage(newText); // Move cursor position to after the newly added emoji
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.selectionStart = start + value.emoji.length;
+          inputRef.current.selectionEnd = start + value.emoji.length;
+          inputRef.current.focus();
+        }
+      }, 0);
     }
-    /* setTextCommentaire((prev) => prev + value.emoji); */
   };
 
   const sendingMessage = async () => {
     try {
       setDisableButton(true);
-      const data = {
-        userId: user.userId,
-        userName: user.userName,
-        userAvatar: user.userAvatar,
+      console.log({ avatar: membreOfData[0].image });
+      const data: MessageData = {
+        userId: membreOfData[0].id,
+        userName: membreOfData[0].name,
+        userAvatar: membreOfData[0].image,
         text: textePartage,
         photo: imageUrlEvent,
         audio: audioUrlEvent,
@@ -119,11 +124,12 @@ export function MessageComponents({
         date: "",
         groupeName: !!groupeName ? groupeName : "",
       };
-      const result = await postMessageByUser(data);
+      console.log("django");
+      const result = await postMessageByUser(data, groupeId);
       if (result.success) {
         if (groupeName) {
-          const messageData = await getAllMessageData(groupeName);
-          setMessagesData(messageData);
+          const messages = await getAllMessageData(groupeName);
+          setMessagesData([...messages]);
         }
       }
     } catch (error) {
@@ -242,7 +248,13 @@ export function MessageComponents({
                 setStateDownloadProps={setStateDownload}
                 stateDownloadProps={stateDownload}
               />
-              {imageUrlEvent && <img src={imageUrlEvent} alt="" />}
+              {imageUrlEvent && (
+                <img
+                  src={imageUrlEvent}
+                  alt=""
+                  className="w-[80px] h-[80px] rounded-md "
+                />
+              )}
             </div>
           )}
 

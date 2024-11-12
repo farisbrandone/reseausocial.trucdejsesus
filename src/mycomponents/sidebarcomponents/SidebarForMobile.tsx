@@ -1,25 +1,30 @@
 import * as React from "react";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+/* import { MinusIcon, PlusIcon } from "@radix-ui/react-icons"; */
 
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
+  /* DrawerClose, */
   DrawerContent,
-  DrawerDescription,
+  /*  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
+  DrawerTitle, */
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ButtonSideBar } from "./ButtonSidebar";
+import { GroupeDataType } from "seedAndGetData/seedData";
 
-export function SidebarForMobile() {
-  const [goal, setGoal] = React.useState(350);
+interface SidebarForMobileType {
+  groupeState: GroupeDataType[] | undefined;
+}
+
+export function SidebarForMobile({ groupeState }: SidebarForMobileType) {
+  /*  const [goal, setGoal] = React.useState(350);
 
   function onClick(adjustment: number) {
     setGoal(Math.max(200, Math.min(400, goal + adjustment)));
-  }
+  } */
 
   return (
     <Drawer>
@@ -53,8 +58,14 @@ export function SidebarForMobile() {
           <div className="corpsSidebar flex flex-col items-center min-[980px]:pl-3 border-t-2 border-t-[#242424] border-solid">
             <p className="title my-3">Groupes</p>
             <div className="partNavigation flex flex-col gap-2 items-start">
-              <ButtonSideBar text="CARTE INTERACTIVE" />
-              <ButtonSideBar text="Alliance et Célibat" />
+              {groupeState?.map((value) => (
+                <React.Fragment key={value.id}>
+                  <ButtonSideBar value={value} />
+                </React.Fragment>
+              ))}
+
+              {/*  <ButtonSideBar text="CARTE INTERACTIVE" />
+              <ButtonSideBar text="Alliance et Célibat" /> */}
             </div>
           </div>
         </div>

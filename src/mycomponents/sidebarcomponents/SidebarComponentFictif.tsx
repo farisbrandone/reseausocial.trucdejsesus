@@ -1,6 +1,12 @@
+import { GroupeDataType } from "seedAndGetData/seedData";
 import { ButtonSideBar } from "./ButtonSidebar";
+import { Fragment } from "react/jsx-runtime";
 
-function SidebarComponentFictif() {
+interface SidebarComponentType {
+  groupeState: GroupeDataType[] | undefined;
+}
+
+function SidebarComponentFictif({ groupeState }: SidebarComponentType) {
   return (
     <div className="fixed hidden min-[980px]:flex flex-col gap-2 items-center ml-4 sm:ml-8 top-0  ">
       <a
@@ -23,8 +29,13 @@ function SidebarComponentFictif() {
       <div className="corpsSidebar flex flex-col items-center pl-3 border-t-2 border-t-[#242424] border-solid">
         <p className="title my-3">Groupes</p>
         <div className="partNavigation flex flex-col gap-2 items-start">
-          <ButtonSideBar text="CARTE INTERACTIVE" />
-          <ButtonSideBar text="Alliance et Célibat" />
+          {groupeState?.map((value) => (
+            <Fragment key={value.id}>
+              <ButtonSideBar value={value} />
+            </Fragment>
+          ))}
+          {/*  <ButtonSideBar text="CARTE INTERACTIVE" />
+          <ButtonSideBar text="Alliance et Célibat" /> */}
         </div>
       </div>
     </div>

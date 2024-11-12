@@ -2,18 +2,24 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { clsx } from "clsx";
 import AvatarComponent from "../acceuilPage/AvatarComponent";
 import { MessageComponents } from "./MessageComponents";
-import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { /* Fragment, */ useEffect, useState } from "react";
+/* import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; */
 import { PassionneTable } from "./passionne/PassionneTable";
 import { columns } from "./passionne/Columns";
 import {
+  getAllMessageData,
   MembreData,
   MessageData,
   requestTogetAllMembreData,
 } from "../../../seedAndGetData/seedData";
-import { format } from "date-fns";
-import { videoTransformer } from "@/lib/videoTransformer";
+/* import { format } from "date-fns";
+import { videoTransformer } from "@/lib/videoTransformer"; */
 import EvenementCard from "./EvenementCard";
+import ChainesOfGroupe from "./ChainesOfGroupe";
+import { columnsClassement } from "./passionne/ColumnClassement";
+import { CopyIcon } from "lucide-react";
+import ButtonForCopy from "./ButtonForCopy";
+import MessageCards from "./MessageCards";
 
 interface Tab {
   title: string;
@@ -53,7 +59,13 @@ const tabs1: Tab[] = [
   },
 ];
 
-function GroupeCards() {
+function GroupeCards({
+  groupeId,
+  groupeName,
+}: {
+  groupeId: string;
+  groupeName: string;
+}) {
   const [appearText, setAppearText] = useState(true);
   const [appearVideo, setAppearVideo] = useState(false);
   const [appearImage, setAppearImage] = useState(false);
@@ -61,6 +73,15 @@ function GroupeCards() {
   const [textePartage, setTextePartage] = useState("");
   const [messagesData, setMessagesData] = useState<MessageData[]>([]);
   const [membreOfData, setMembreOfData] = useState<MembreData[]>([]);
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(
+      "https://untrucdejesus.gererlesclients.com/client"
+    );
+    setCopied(true);
+  };
 
   const handleappearText = () => {
     setAppearText(true);
@@ -91,6 +112,10 @@ function GroupeCards() {
   useEffect(() => {
     const getMembreData = async () => {
       const result = await requestTogetAllMembreData();
+      console.log({ groupeName });
+      const messages = await getAllMessageData(groupeName as string);
+      console.log(messages);
+      setMessagesData([...messages]);
       setMembreOfData([...result]);
     };
     getMembreData();
@@ -220,68 +245,81 @@ function GroupeCards() {
                     handleappearAudio={handleappearAudio}
                     textePartage={textePartage}
                     setTextePartage={setTextePartage}
+                    groupeId={groupeId}
+                    groupeName={groupeName}
+                    membreOfData={membreOfData}
                   />
                 </div>
                 {messagesData &&
                   messagesData.map((value) => (
-                    <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
-                      <div className="flex items-center gap-2">
-                        <Avatar>
-                          <AvatarImage src={value.userAvatar} alt="" />
-                          <AvatarFallback>AV</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col  text-[#000]">
-                          <p>{value.userName}</p>
-                          <p>
-                            {value.userName === "Administrateur" && (
-                              <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
-                                Administrateur
-                              </span>
-                            )}
-                            {format(
-                              new Date(value.date),
-                              "'publié le' dd/MM/yyyy"
-                            )}
-                          </p>
+                    <div
+                      key={value.id}
+                      className="flex flex-col gap-5 shadow-xl"
+                    >
+                      <MessageCards value={value} membreOfData={membreOfData} />
+                      {/* <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
+                        <div className="flex items-center gap-2">
+                          <Avatar>
+                            <AvatarImage src={value.userAvatar} alt="" />
+                            <AvatarFallback>AV</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col  text-[#000]">
+                            <p>{value.userName}</p>
+                            <p>
+                              {value.userName === "Administrateur" && (
+                                <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
+                                  Administrateur
+                                </span>
+                              )}
+                              {format(
+                                new Date(value.date),
+                                "'publié le' dd/MM/yyyy"
+                              )}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex flex-col mt-2">
-                        {value.text && (
-                          <p className="text whitespace-pre-wrap">
-                            {value.text}
-                          </p>
-                        )}
-                        {value.photo && (
-                          <div className="image mt-2">
-                            <img src={value.photo} alt="" />
-                          </div>
-                        )}
-                        {value.video && (
-                          <div className="video">
-                            <video controls width="250">
-                              <source src={value.video} type="video/webm" />
-                              <source
-                                src={videoTransformer(value.video)}
-                                type="video/mp4"
+                        <div className="flex flex-col mt-2">
+                          {value.text && (
+                            <p className="text whitespace-pre-wrap">
+                              {value.text}
+                            </p>
+                          )}
+                          {value.photo && (
+                            <div className="image mt-2">
+                              <img
+                                src={value.photo}
+                                alt=""
+                                className="w-full max-h-[300px] rounded-md "
                               />
-                              Download the
-                              <a href={value.video}>WEBM</a>
-                              or
-                              <a href={value.video}>MP4</a>
-                              video.
-                            </video>
-                          </div>
-                        )}
-                        {value.audio && (
-                          <div className="audio">
-                            <figure>
-                              <figcaption>Listen to the T-Rex:</figcaption>
-                              <audio controls src={value.audio}></audio>
-                              <a href={value.audio}> Download audio </a>
-                            </figure>
-                          </div>
-                        )}
-                      </div>
+                            </div>
+                          )}
+                          {value.video && (
+                            <div className="video">
+                              <video controls width="250">
+                                <source src={value.video} type="video/webm" />
+                                <source
+                                  src={videoTransformer(value.video)}
+                                  type="video/mp4"
+                                />
+                                Download the
+                                <a href={value.video}>WEBM</a>
+                                or
+                                <a href={value.video}>MP4</a>
+                                video.
+                              </video>
+                            </div>
+                          )}
+                          {value.audio && (
+                            <div className="audio">
+                              <figure>
+                                <figcaption>Listen to the T-Rex:</figcaption>
+                                <audio controls src={value.audio}></audio>
+                                <a href={value.audio}> Download audio </a>
+                              </figure>
+                            </div>
+                          )}
+                        </div>
+                      </div> */}
                     </div>
                   ))}
               </TabsPrimitive.Content>
@@ -303,7 +341,7 @@ function GroupeCards() {
                   "flex-shrink-1 rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
                 )}
               >
-                <div></div>
+                <ChainesOfGroupe groupeId={groupeId} />
               </TabsPrimitive.Content>
 
               <TabsPrimitive.Content
@@ -323,32 +361,105 @@ function GroupeCards() {
                   "flex-shrink-1 rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
                 )}
               >
-                <div></div>
+                <div>
+                  <PassionneTable
+                    columns={columnsClassement}
+                    data={membreOfData}
+                  />
+                </div>
               </TabsPrimitive.Content>
             </TabsPrimitive.Root>
           </div>
 
           {/* part of tab */}
-
-          <div className="relative flex min-[980px]:ml-4 min-[980px]:mr-2 max-[980px]:w-[95%]  flex-col items-start  gap-5 mt-8 lg:max-w-[500px] flex-shrink-1 ">
-            <p className=" infoGroupeCards font-[400] text-[16px] ">
-              Information sur le groupe
-            </p>
-            <p className=" mt-3 whitespace-pre-wrap">
-              Indique où tu te trouves sur la carte du monde, ainsi que tes
-              événements si tu souhaites que d'autres frères et soeurs puissent
-              te rejoindre en live.
-            </p>
-            <div className="flex items-center gap-8">
-              <p>
-                <span className="icon-[ion--locked] "></span> Privé
+          <div className="flex flex-col min-[980px]:ml-4 min-[980px]:mr-2 max-[980px]:w-[95%]   items-start  gap-5 mt-8 lg:max-w-[500px] flex-shrink-1">
+            <div className="relative flex  flex-col gap-2 shadow-xl">
+              <p className=" infoGroupeCards font-[400] text-[16px] ">
+                Information sur le groupe
               </p>
-              <p className="flex items-center">
-                {" "}
-                <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>{" "}
-                11 Passionnés
+              <p className=" mt-3 whitespace-pre-wrap">
+                Indique où tu te trouves sur la carte du monde, ainsi que tes
+                événements si tu souhaites que d'autres frères et soeurs
+                puissent te rejoindre en live.
+              </p>
+              <div className="flex items-center gap-8 mt-6 mb-4">
+                <p>
+                  <span className="icon-[ion--locked] "></span> Privé
+                </p>
+                <p className="flex items-center">
+                  {" "}
+                  <span className="icon-[lsicon--user-crowd-filled] mr-1 text-xl"></span>{" "}
+                  {membreOfData.length} Passionnés
+                </p>
+              </div>
+            </div>
+            {/* ---------------------------------------- */}
+            <div className="relative flex  flex-col shadow-xl p-2">
+              <p className=" infoGroupeCards font-[400] text-[16px] mb-8 ">
+                Mes Badges
+              </p>
+
+              <div className=" ">
+                <img
+                  src="https://communitor.smartcommunity.biz/upload/774/lib/71275_1708514002_lib.png"
+                  alt=""
+                  className="w-20"
+                />
+              </div>
+            </div>
+            {/* ............................................. */}
+
+            <div className="relative flex  flex-col gap-2 shadow-xl">
+              <div className=" infoGroupeCards font-[400] text-[16px] flex justify-between mb-7">
+                <p>Mes Mercis bénis</p>
+                <p> 1 </p>
+              </div>
+              <div className="  text-[16px] flex justify-between ">
+                <p>1 Post =</p>
+                <p> 3 Mercis bénis </p>
+              </div>
+              <div className="  text-[16px] flex justify-between ">
+                <p>1 Commentaire =</p>
+                <p> 2 Mercis bénis </p>
+              </div>
+              <div className="  text-[16px] flex justify-between ">
+                <p>1 Like =</p>
+                <p> 1 Mercis bénis </p>
+              </div>
+              <div className="  text-[16px] flex justify-between ">
+                <p>1 Filleul(e) =</p>
+                <p> 4 Mercis bénis </p>
+              </div>
+              <div className="flex gap-0 items-center p-0 mt-2">
+                <input
+                  title="Copier l'url"
+                  className="outline-none bg-transparent rounded-l-md bg-white p-2 text-center text-[#191919]"
+                  value={" https://untrucdejesus.gererlesclients.com/client"}
+                  onClick={handleCopy}
+                  onFocus={(e) => {
+                    e.target.select();
+                  }}
+                />
+
+                <ButtonForCopy
+                  setCopied={setCopied}
+                  name="email"
+                  title={copied ? "Url copié" : "Copier l'url"}
+                  icon={<CopyIcon />}
+                  position="left"
+                  otherClasses="bg-transparent"
+                  handleClick={handleCopy}
+                />
+              </div>
+              <p className="breakText">
+                <span className="bg-[#fff700] bg-repeat-y break-words  p-1 border-[1px] border-solid border-[#00000026] text-[#000] text-[12px] mb-2 textinfo">
+                  Obtiens 4 Mercis bénis à chaque nouvel inscrit par ton lien
+                  affilié à notre réseau social Un Truc de JÉSUS !
+                </span>
               </p>
             </div>
+
+            {/* ........................................................ */}
           </div>
         </div>
       </div>

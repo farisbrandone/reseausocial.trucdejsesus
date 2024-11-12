@@ -7,23 +7,30 @@ import {
   CommentaireData,
   getAllCommentaireData,
   getMessageWithId,
+  MembreData,
   MessageData,
   postCommentaireByUser,
   updateMessagewithLike,
-} from "seedAndGetData/seedData";
+} from "../../../seedAndGetData/seedData";
 import CommentaireComponent from "./CommentaireComponent";
 import { faker } from "@faker-js/faker";
 import { Input } from "@/components/ui/input";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import clsx from "clsx";
-import { ButtonUploadFile2 } from "./ButtonUploadImage";
+import { ButtonUploadFileForComment } from "./ButtonUploadfileForComment";
 
-function MessageCards({ value }: { value: MessageData }) {
-  const user = {
+function MessageCards({
+  value,
+  membreOfData,
+}: {
+  value: MessageData;
+  membreOfData: MembreData[];
+}) {
+  /*  const user = {
     userAvatar: faker.image.avatar(),
     userName: faker.person.firstName(),
     userId: faker.string.uuid(),
-  };
+  }; */
 
   const [commentairesData, setCommentairesData] = useState<CommentaireData[]>(
     []
@@ -40,15 +47,24 @@ function MessageCards({ value }: { value: MessageData }) {
   };
   const handleEmoji = (value: EmojiClickData) => {
     if (inputRef.current) {
-      const inputEvent = new Event("input", { bubbles: true });
-      inputRef.current.value = value.emoji;
-      inputRef.current.dispatchEvent(inputEvent);
+      const start = inputRef.current.selectionStart as number;
+      const end = inputRef.current.selectionEnd as number;
+      const textBeforeCursor = textCommentaire.slice(0, start);
+      const textAfterCursor = textCommentaire.slice(end);
+      const newText = textBeforeCursor + value.emoji + textAfterCursor;
+      setTextCommentaire(newText); // Move cursor position to after the newly added emoji
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.selectionStart = start + value.emoji.length;
+          inputRef.current.selectionEnd = start + value.emoji.length;
+          inputRef.current.focus();
+        }
+      }, 0);
     }
-    /* setTextCommentaire((prev) => prev + value.emoji); */
   };
 
   const handleOpenCommentaire = () => {
-    setOpenCommentaire(true);
+    setOpenCommentaire((prev) => !prev);
   };
 
   const handleTextCommentaire = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,9 +77,9 @@ function MessageCards({ value }: { value: MessageData }) {
       text: textCommentaire,
       image: imageCommentaire,
       messageId: value.id,
-      userId: user.userId,
-      userAvatar: user.userAvatar,
-      userName: user.userName,
+      userId: membreOfData[0].id,
+      userAvatar: membreOfData[0].image,
+      userName: membreOfData[0].name,
       id: "",
       userLikes: [],
       date: "",
@@ -84,13 +100,12 @@ function MessageCards({ value }: { value: MessageData }) {
   };
   const handleLike = async () => {
     try {
-      const result = await updateMessagewithLike(user.userId, value.id);
+      const result = await updateMessagewithLike(membreOfData[0].id, value.id);
       const result2 = await getMessageWithId(value.id);
       if (result2) {
         setStateMessage({ ...result2 });
       }
       if (result.success) {
-        console.log(result);
       }
     } catch (error) {}
   };
@@ -109,8 +124,8 @@ function MessageCards({ value }: { value: MessageData }) {
   return (
     <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
       <div className="flex items-center gap-2">
-        <Avatar>
-          <AvatarImage src={user.userAvatar} alt="@shadcn" />
+        <Avatar className="w-[30px] h-[30px] ">
+          <AvatarImage src={membreOfData[0].image} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="flex flex-col  text-[#000]">
@@ -155,28 +170,29 @@ function MessageCards({ value }: { value: MessageData }) {
           </div>
         )}
       </div>
-      <div className="flex items-center justify-start flex-wrap gap-3 w-full text-[#000] ">
+      <div className="flex items-center justify-start flex-wrap gap-3 w-full text-[#000] border-solid border-t-[1px] border-b-[1px] border-[#000]/30 mt-2 py-2">
         <Button
-          className="bg-transparent hover:bg-transparent text-center p-1"
+          className=" text-center p-1 bg-[#fff] text-[#000] hover:bg-[#fff]/60 "
           onClick={handleLike}
         >
-          <span className="icon-[si-glyph--like] mr-1 "></span> Liker (
-          {stateMessage.userLikes.length})
+          <span className="icon-[si-glyph--like] text-xl  "></span> Liker (
+          {stateMessage?.userLikes?.length ? stateMessage?.userLikes.length : 0}
+          )
         </Button>
         <Button
           onClick={handleOpenCommentaire}
-          className="bg-transparent hover:bg-transparent text-center p-1"
+          className="bg-[#fff] text-[#000] hover:bg-[#fff]/60  text-center p-1"
         >
-          <span className="icon-[iconamoon--comment-dots-fill mr-1 "></span>{" "}
+          <span className="icon-[iconamoon--comment-dots-fill]  "></span>{" "}
           Commentaires ({commentairesData.length})
         </Button>
-        <Button className="bg-transparent hover:bg-transparent text-center p-1">
-          <span className="icon-[material-symbols--share] mr-1"></span> Partager
+        <Button className="bg-[#fff] text-[#000] hover:bg-[#fff]/60  text-center p-1">
+          <span className="icon-[material-symbols--share] "></span> Partager
         </Button>
       </div>
-      <div className="flex flex-col gap-2 ">
+      <div className="flex flex-col gap-2 mt-5 py-3 ">
         <div className="flex items-center gap-2">
-          <Avatar>
+          <Avatar className="w-[30px] h-[30px] ">
             <AvatarImage src={faker.image.avatar()} alt="@shadcn" />
             <AvatarFallback>AV</AvatarFallback>
           </Avatar>
@@ -212,7 +228,7 @@ function MessageCards({ value }: { value: MessageData }) {
               </div>
 
               <div>
-                <ButtonUploadFile2
+                <ButtonUploadFileForComment
                   key="button211"
                   setImageUrl={setImageCommentaire}
                   setStateDownloadProps={setStateDownload}
@@ -225,7 +241,7 @@ function MessageCards({ value }: { value: MessageData }) {
                 className="border-none bg-transparent hover:bg-transparent"
                 onClick={sendCommentaire}
               >
-                <span className="icon-[mingcute--send-plane-fill] text-[#000] "></span>
+                <span className="icon-[mingcute--send-plane-fill] text-[#000] text-xl "></span>
               </Button>
             </div>
           </div>
@@ -235,6 +251,7 @@ function MessageCards({ value }: { value: MessageData }) {
             <CommentaireComponent
               commentaireData={commentaireData}
               setCommentairesData={setCommentairesData}
+              membreOfData={membreOfData}
             />
           ))}
       </div>

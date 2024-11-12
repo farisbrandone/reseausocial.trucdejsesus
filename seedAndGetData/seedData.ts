@@ -4,9 +4,9 @@ import {
   doc,
   getDoc,
   setDoc,
-  deleteDoc,
+  /* deleteDoc, */
   updateDoc,
-  getCountFromServer,
+  /* getCountFromServer,
   orderBy,
   query,
   limit,
@@ -14,7 +14,7 @@ import {
   DocumentData,
   startAfter,
   endBefore,
-  startAt,
+  startAt, */
   increment,
   /* where, */
 } from "firebase/firestore";
@@ -50,6 +50,8 @@ export interface MembreData {
   nombreLikes: number;
   nombreCommentaire: number;
   nombreDeMerciBenis: number;
+  nombreDactivite: number;
+  nombreDeBadge: number;
 }
 
 export interface MessageData {
@@ -138,18 +140,78 @@ export interface RessourcesDataType {
   id: string;
 }
 
-export const postMessageByUser = async ({
-  userId,
-  userName,
-  text,
-  photo,
-  audio,
-  video,
-  groupeName,
-}: MessageData) => {
+export interface GroupeDataType {
+  titleGroupe: string;
+  descriptionGroupe: string;
+  typeAccess: string;
+  date: string;
+  id: string;
+  banniereUrlGroupe: string;
+  logoUrlGroupe: string;
+  status: string;
+  nombreDePartages: number;
+  nombreDevenements: number;
+  nombreDeChaines: number;
+  nombreDePassionnner: number;
+}
+
+export async function requestTogetAllGroupeData(): Promise<GroupeDataType[]> {
+  let groupeData: GroupeDataType[] = [];
   try {
+    const querySnapshot = await getDocs(collection(db, "GroupeData"));
+    console.log({ length: querySnapshot.docs.length });
+    if (querySnapshot.docs.length !== 0) {
+      querySnapshot.forEach((doc) => {
+        const id = doc.id;
+        const {
+          titleGroupe,
+          descriptionGroupe,
+          logoUrlGroupe,
+          banniereUrlGroupe,
+          typeAccess,
+          status,
+          date,
+          nombreDePartages,
+          nombreDevenements,
+          nombreDeChaines,
+          nombreDePassionnner,
+        } = doc.data();
+        groupeData.push({
+          id,
+          titleGroupe,
+          descriptionGroupe,
+          logoUrlGroupe,
+          banniereUrlGroupe,
+          typeAccess,
+          date,
+          status,
+          nombreDePartages,
+          nombreDevenements,
+          nombreDeChaines,
+          nombreDePassionnner,
+        });
+      });
+      return groupeData;
+    }
+
+    return [];
+  } catch (error) {
+    console.log({ error: error });
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des données"
+    );
+  }
+}
+
+export const postMessageByUser = async (
+  { userId, userName, text, photo, audio, video, groupeName }: MessageData,
+  groupeId: string
+) => {
+  try {
+    console.log({ userId, groupeId });
     const messageRef = collection(db, "MessageData");
     const membreDataRef = doc(db, "MembreData", userId);
+    const groupeDataRef = doc(db, "GroupeData", groupeId);
     const date = new Date().toUTCString();
     const promise1 = setDoc(doc(messageRef), {
       userId,
@@ -164,11 +226,20 @@ export const postMessageByUser = async ({
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
       nombreDeMerciBenis: increment(3),
+      nombreDactivite: increment(1),
     });
-    const [value1, value2] = await Promise.all([promise1, promise2]);
-    console.log(value1, value2);
+    const promise3 = updateDoc(groupeDataRef, {
+      nombreDePartages: increment(1),
+    });
+    const [value1, value2, value3] = await Promise.all([
+      promise1,
+      promise2,
+      promise3,
+    ]);
+    console.log(value1, value2, value3);
     return { message: "Le message a été créer avec success", success: true };
   } catch (error) {
+    console.log({ error });
     throw new Error("Une erreur est survenue pendant la création du message");
   }
 };
@@ -196,6 +267,7 @@ export const postCommentaireByUser = async ({
     const promise2 = updateDoc(membreDataRef, {
       nombreCommentaire: increment(1),
       nombreDeMerciBenis: increment(2),
+      nombreDactivite: increment(1),
     });
     const [value1, value2] = await Promise.all([promise1, promise2]);
     console.log(value1, value2);
@@ -263,6 +335,7 @@ export const updateMessagewithLike = async (
       const promise2 = updateDoc(membreDataRef, {
         nombreLikes: increment(1),
         nombreDeMerciBenis: increment(1),
+        nombreDactivite: increment(1),
       });
       const [value1, value2] = await Promise.all([promise1, promise2]);
       console.log(value1, value2);
@@ -307,6 +380,7 @@ export const updateCommentairewithLike = async (
       const promise2 = updateDoc(membreDataRef, {
         nombreLikes: increment(1),
         nombreDeMerciBenis: increment(1),
+        nombreDactivite: increment(1),
       });
       const [value1, value2] = await Promise.all([promise1, promise2]);
       console.log(value1, value2);
@@ -362,7 +436,12 @@ export const getAllMessageData = async (groupeName: string) => {
         });
       });
     }
-    return messagesData.filter((value) => value.groupeName === groupeName);
+    return messagesData
+      .filter((value) => value.groupeName === groupeName)
+      .sort(
+        (value, value1) =>
+          new Date(value.date).getSeconds() - new Date(value1.date).getSeconds()
+      );
   } catch (error) {
     console.log({ error: error });
     throw new Error(
@@ -516,6 +595,8 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombreLikes,
           nombreCommentaire,
           nombreDeMerciBenis,
+          nombreDactivite,
+          nombreDeBadge,
         } = doc.data();
         membreData.push({
           id,
@@ -533,6 +614,8 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombreLikes,
           nombreCommentaire,
           nombreDeMerciBenis,
+          nombreDactivite,
+          nombreDeBadge,
         });
       });
 
@@ -616,7 +699,7 @@ export async function requestTogetAllChannelDataOfGroupe(
 
   try {
     const querySnapshot = await getDocs(collection(db, "ChannelData"));
-    console.log({ length: querySnapshot.docs.length });
+
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
         const id = doc.id;

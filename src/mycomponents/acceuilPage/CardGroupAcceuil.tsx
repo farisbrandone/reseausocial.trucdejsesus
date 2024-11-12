@@ -1,3 +1,5 @@
+import { GroupeDataType } from "seedAndGetData/seedData";
+
 export interface ObjectCardType {
   source: string;
   title: string;
@@ -7,18 +9,18 @@ export interface ObjectCardType {
   chaine: number;
 }
 
-function CardGroupAcceuil({ objectCard }: { objectCard: ObjectCardType }) {
+function CardGroupAcceuil({ objectCard }: { objectCard: GroupeDataType }) {
   return (
     <div className="flex flex-col sm:flex-row">
       <img
-        src={objectCard.source}
+        src={objectCard.banniereUrlGroupe}
         alt=""
         className="object-cover overflow-hidden  sm:w-[200px] h-[200px] mr-3"
       />
 
       <div className="flex flex-col flex-1 gap-10 ">
         <div className="relative flex items-center justify-between pt-4 pb-8 ">
-          <p>{objectCard.title}</p>
+          <p>{objectCard.titleGroupe}</p>
           <button title="click" type="button">
             <span className="icon-[tabler--dots-vertical]"></span>
           </button>
@@ -26,13 +28,13 @@ function CardGroupAcceuil({ objectCard }: { objectCard: ObjectCardType }) {
         </div>
         <div className="flex flex-wrap gap-3 justify-between items-center">
           <p className="sm:mr-2 lg:mr-8  xl:mr-12">
-            <span>{objectCard.passionnes} </span> Passionnés{" "}
+            <span>{objectCard.nombreDePassionnner} </span> Passionnés{" "}
           </p>
           <p className="sm:mr-2 lg:mr-4  xl:mr-12">
-            <span>{objectCard.partages}</span> Partages
+            <span>{objectCard.nombreDePartages}</span> Partages
           </p>
           <p>
-            <span> {objectCard.evenement} </span>
+            <span> {objectCard.nombreDevenements} </span>
             Evènements
           </p>
         </div>

@@ -24,8 +24,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./DataTablePagination";
 import { DataTableViewOptions } from "./DataTableViewOptions";
-import { he } from "@faker-js/faker";
-import clsx from "clsx";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -67,10 +66,10 @@ export function PassionneTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex-1 text-sm text-muted-foreground">
+      {/*  <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} de{" "}
         {table.getFilteredRowModel().rows.length} ligne(s) selectionnée(s).
-      </div>
+      </div> */}
 
       <div className="flex items-center py-4">
         <Input

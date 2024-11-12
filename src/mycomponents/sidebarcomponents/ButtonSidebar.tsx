@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
+import { GroupeDataType } from "seedAndGetData/seedData";
 
-function ButtonSideBar({ text }: { text: string }) {
+function ButtonSideBar({ value }: { value: GroupeDataType }) {
   const myClass = "flex items-center gap-3 p-2 rounded-lg";
   return (
     <NavLink
-      to={text}
+      to={value.titleGroupe}
       className={({ isActive, isPending }) =>
         isActive
           ? "active  bg-[#FFF700] " + myClass
@@ -14,9 +15,10 @@ function ButtonSideBar({ text }: { text: string }) {
       }
     >
       <div className="flex items-center justify-center w-[25px] h-[25px] p-2 rounded-full text-white bg-[#000] ">
-        {text.charAt(0).toUpperCase()}
+        {value.titleGroupe.charAt(0).toUpperCase()}
       </div>
-      <div>{text === "/" ? "ACCEUIL" : text}</div>
+      <div> {value.titleGroupe} </div>
+      {/* <div>{text === "/" ? "ACCEUIL" : text}</div> */}
     </NavLink>
   );
 }

@@ -1,7 +1,8 @@
+import { GroupeDataType } from "seedAndGetData/seedData";
 import AvatarComponent from "./AvatarComponent";
 import CardGroupAcceuil from "./CardGroupAcceuil";
 
-const objectCards = [
+/* const objectCards = [
   {
     source:
       "https://communitor.smartcommunity.biz/upload/774/lib/90086_1715504538_lib.png",
@@ -65,9 +66,9 @@ const objectCards = [
     evenement: 3,
     chaine: 12,
   },
-];
+]; */
 
-function AcceuilPage() {
+function AcceuilPage({ groupeData }: { groupeData: GroupeDataType[] }) {
   return (
     <div className="flex flex-col items-center px-1 sm:pr-2 w-full p-0 ">
       <div className="h-8 sm:h-7 w-full bg-white"></div>
@@ -105,12 +106,12 @@ function AcceuilPage() {
           <p className="">Faisons connaissance ! 💛</p>
           <p className=" flex items-center">
             <span className="icon-[lsicon--user-crowd-filled] mr-2 text-2xl"></span>
-            12 Passionnés
+            {groupeData[0].nombreDePassionnner} Passionnés
           </p>
           <div></div>
         </div>
         <div className="body2 flex flex-col gap-4">
-          {objectCards.map((objectCard) => (
+          {groupeData.map((objectCard) => (
             <CardGroupAcceuil objectCard={objectCard} />
           ))}
         </div>

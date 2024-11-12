@@ -9,7 +9,7 @@ import { format } from "date-fns";
 
 function ChainesOfGroupe({ groupeId }: { groupeId: string }) {
   const [channelData, setChannelData] = useState<ChannelPageDataType[]>();
-  const [openDetailsChannel, setOpenDetailsChannel] = useState(false);
+  const [openDetailsChannel, setOpenDetailsChannel] = useState(true);
 
   const openRessourcesChannel = () => {
     setOpenDetailsChannel((prev) => !prev);
@@ -42,24 +42,24 @@ function ChainesOfGroupe({ groupeId }: { groupeId: string }) {
       {channelData.map((value) => (
         <Fragment key={value.id}>
           {openDetailsChannel ? (
-            <div className="flex items-center gap-2 hover:shadow-2xl">
+            <div className="flex  gap-2 hover:shadow-2xl">
               <img
                 src={value.imageChannel}
                 alt={value.nomChannel}
                 className="lg:max-w-[200px] lg:max-h-[200px] object-cover rounded-md cursor-pointer "
                 onClick={() => openRessourcesChannel()}
               />
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 mt-2">
                 <div className="flex items-center justify-between border-b-[1px] border-b-[#5a5a5aef] pb-1">
                   <p
-                    className="text-[16px] font-bold "
+                    className="text-[16px] font-bold cursor-pointer "
                     onClick={() => openRessourcesChannel()}
                   >
                     {" "}
                     {value.nomChannel}{" "}
                   </p>
-                  <p className="text-[12px] text-[#5a5a5aef] ">
-                    <span className="icon-[material-symbols--library-books-rounded]  text-xl"></span>{" "}
+                  <p className="text-[12px] text-[#5a5a5aef] flex items-center justify-center ">
+                    <span className="icon-[material-symbols--library-books-rounded]  text-xl mr-1"></span>{" "}
                     Resources
                   </p>
                 </div>
@@ -90,15 +90,15 @@ export function RessourcesChannelsDetailCards({
   return (
     <div>
       <div
-        className="w-full flex items-center gap-2 text-start pl-2 cursor-pointer"
+        className="w-full flex items-center gap-2 text-start hover:underline pl-2 cursor-pointer mb-2"
         onClick={openRessourcesChannel}
       >
         <span className="icon-[arcticons--back-market] font-bold text-[#000] text-xl "></span>{" "}
-        <p>Retour</p>
+        <p className="">Retour</p>
       </div>
       {ressources.map((ressource) => (
         <Fragment key={ressource.id}>
-          <div className="flex items-center gap-2 hover:shadow-xl">
+          <div className="flex flex-wrap items-center gap-2 hover:shadow-xl">
             <div>
               <img
                 src={ressource.imageRessource}

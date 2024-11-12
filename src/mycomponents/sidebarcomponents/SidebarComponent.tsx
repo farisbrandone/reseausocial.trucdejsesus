@@ -1,4 +1,4 @@
-import { ButtonSideBar } from "./ButtonSidebar";
+/* import { ButtonSideBar } from "./ButtonSidebar"; */
 
 function SidebarComponent() {
   return (
@@ -23,8 +23,8 @@ function SidebarComponent() {
       <div className="corpsSidebar flex flex-col items-center pl-3 border-t-2 border-t-[#242424] border-solid">
         <p className="title my-3">Groupes</p>
         <div className="partNavigation flex flex-col gap-2 items-start">
-          <ButtonSideBar text="CARTE INTERACTIVE" />
-          <ButtonSideBar text="Alliance et Célibat" />
+          {/*  <ButtonSideBar text="CARTE INTERACTIVE" />
+          <ButtonSideBar text="Alliance et Célibat" /> */}
         </div>
       </div>
     </div>

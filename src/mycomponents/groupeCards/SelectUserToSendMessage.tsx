@@ -46,7 +46,7 @@ interface UserSelectType {
 
 export function SelectUserToSendMessage() {
   const [userSelect, setUserSelect] = useState<UserSelectType[]>([]);
-  console.log({ userSelect });
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
