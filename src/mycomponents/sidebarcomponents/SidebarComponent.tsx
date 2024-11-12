@@ -2,7 +2,7 @@
 
 function SidebarComponent() {
   return (
-    <div className="opacity-0 hidden min-[980px]:flex flex-col gap-2 items-center ml-4 sm:ml-8">
+    <div className="opacity-0 hidden min-[1030px]:flex flex-col gap-2 items-center ml-4 sm:ml-8">
       <a
         href="/"
         className="header flex flex-col gap-8 items-center mt-4 px-2 pb-1"

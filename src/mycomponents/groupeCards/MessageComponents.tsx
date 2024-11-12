@@ -243,6 +243,7 @@ export function MessageComponents({
           {appearImage && (
             <div>
               <ButtonUploadFile2
+                label="upload For Message"
                 key="button211"
                 setImageUrl={setImageUrlEvent}
                 setStateDownloadProps={setStateDownload}
@@ -261,6 +262,7 @@ export function MessageComponents({
           {appearAudio && (
             <div>
               <ButtonUploadAudio
+                label="upload audio"
                 key="button211"
                 setAudioUrl={setAudioUrlEvent}
                 setStateDownloadProps={setStateDownload}

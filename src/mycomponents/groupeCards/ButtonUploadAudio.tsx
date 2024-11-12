@@ -8,6 +8,7 @@ type typesetStateBollean = React.Dispatch<React.SetStateAction<boolean>>;
 type typesetStatestring = React.Dispatch<React.SetStateAction<string>>;
 
 interface statePropsButtonse {
+  label: string;
   key: string;
   setAudioUrl: typesetStatestring;
   setStateDownloadProps: typesetStateBollean;
@@ -15,6 +16,7 @@ interface statePropsButtonse {
 }
 
 function ButtonUploadAudio({
+  label,
   key,
   setAudioUrl,
   setStateDownloadProps,
@@ -83,7 +85,7 @@ function ButtonUploadAudio({
       className="flex items-center justify-center mx-auto w-[90%]"
     >
       <label
-        htmlFor="dropzone-file2"
+        htmlFor={label}
         className="flex flex-col items-center justify-center w-full p-1 border-2 border-[#bd10e0] border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 h-[180px] "
       >
         {stateDownloadProps ? (
@@ -123,7 +125,7 @@ function ButtonUploadAudio({
 
         <input
           name="file2"
-          id="dropzone-file2"
+          id={label}
           type="file"
           className="hidden"
           onChange={handleFileChange2}

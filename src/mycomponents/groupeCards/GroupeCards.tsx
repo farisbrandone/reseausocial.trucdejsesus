@@ -210,7 +210,7 @@ function GroupeCards({
                       {icon}
                       <span
                         className={clsx(
-                          "text-[11px] sm:text-[16px] font-bold ",
+                          "text-[11px] hidden sm:inline-block sm:text-[16px] font-bold ",
                           "text-black dark:text-gray-100"
                         )}
                       >
@@ -373,16 +373,16 @@ function GroupeCards({
 
           {/* part of tab */}
           <div className="flex flex-col min-[980px]:ml-4 min-[980px]:mr-2 max-[980px]:w-[95%]   items-start  gap-5 mt-8 lg:max-w-[500px] flex-shrink-1">
-            <div className="relative flex  flex-col gap-2 shadow-xl">
-              <p className=" infoGroupeCards font-[400] text-[16px] ">
+            <div className="relative flex  flex-col gap-2 shadow-xl text-[14px] sm:text-[16px]">
+              <p className=" infoGroupeCards font-[400]  ">
                 Information sur le groupe
               </p>
-              <p className=" mt-3 whitespace-pre-wrap">
+              <p className=" mt-3 whitespace-pre-wrap ">
                 Indique où tu te trouves sur la carte du monde, ainsi que tes
                 événements si tu souhaites que d'autres frères et soeurs
                 puissent te rejoindre en live.
               </p>
-              <div className="flex items-center gap-8 mt-6 mb-4">
+              <div className="flex items-center gap-8 mt-6 mb-4 ">
                 <p>
                   <span className="icon-[ion--locked] "></span> Privé
                 </p>
@@ -409,28 +409,28 @@ function GroupeCards({
             </div>
             {/* ............................................. */}
 
-            <div className="relative flex  flex-col gap-2 shadow-xl">
-              <div className=" infoGroupeCards font-[400] text-[16px] flex justify-between mb-7">
+            <div className="relative flex flex-wrap flex-col gap-2 shadow-xl text-[12px] sm:text-[16px]  ">
+              <div className=" infoGroupeCards font-[400]  flex justify-between mb-7">
                 <p>Mes Mercis bénis</p>
                 <p> 1 </p>
               </div>
-              <div className="  text-[16px] flex justify-between ">
+              <div className="   flex justify-between flex-wrap">
                 <p>1 Post =</p>
                 <p> 3 Mercis bénis </p>
               </div>
-              <div className="  text-[16px] flex justify-between ">
+              <div className="  sm: flex justify-between flex-wrap">
                 <p>1 Commentaire =</p>
                 <p> 2 Mercis bénis </p>
               </div>
-              <div className="  text-[16px] flex justify-between ">
+              <div className="   flex justify-between flex-wrap ">
                 <p>1 Like =</p>
                 <p> 1 Mercis bénis </p>
               </div>
-              <div className="  text-[16px] flex justify-between ">
+              <div className="   flex justify-between flex-wrap">
                 <p>1 Filleul(e) =</p>
                 <p> 4 Mercis bénis </p>
               </div>
-              <div className="flex gap-0 items-center p-0 mt-2">
+              <div className="flex gap-0 items-center p-0 mt-2 flex-wrap">
                 <input
                   title="Copier l'url"
                   className="outline-none bg-transparent rounded-l-md bg-white p-2 text-center text-[#191919]"

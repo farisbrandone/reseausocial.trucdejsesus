@@ -12,7 +12,6 @@ import {
   postCommentaireByUser,
   updateCommentairewithLike,
 } from "../../../seedAndGetData/seedData";
-import { ButtonUploadFile2 } from "./ButtonUploadImage";
 import { ButtonUploadFileForComment } from "./ButtonUploadfileForComment";
 
 export default function CommentaireComponent({
@@ -137,28 +136,27 @@ export default function CommentaireComponent({
             <p className="whitespace-pre-wrap">{commentaireData.text} </p>
           </div>
           <div className="flex items-center">
-            <Button
+            <div
               title="Liker"
               className="bg-transparent hover:bg-transparent border-none flex items-center justify-center text-center p-1 pl-2 mr-2 "
               onClick={handleLike}
             >
               <span className="icon-[si-glyph--like]  text-xl text-[#000]"></span>{" "}
               <p className="text-[#000] ">
-                Liker (
+                <span className="hidden sm:inline">Liker</span> (
                 {commentaireData?.userLikes?.length
                   ? commentaireData?.userLikes?.length
                   : 0}
                 )
               </p>
-            </Button>
-            <Button
+            </div>
+            <div
               title="Répondre"
               className="bg-transparent hover:bg-transparent text-center border-none p-1 flex items-center justify-center w-[30px] "
               onClick={handleOpendReplyPart}
             >
               <span className="icon-[fa-solid--reply] mr-1 text-xl text-[#000] "></span>{" "}
-              <p className="text-[#000] "></p>
-            </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -201,6 +199,7 @@ export default function CommentaireComponent({
 
               <div>
                 <ButtonUploadFileForComment
+                  label="button for comment"
                   key="button211"
                   setImageUrl={setImageCommentaire}
                   setStateDownloadProps={setStateDownload}

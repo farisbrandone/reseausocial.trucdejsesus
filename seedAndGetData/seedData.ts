@@ -204,7 +204,17 @@ export async function requestTogetAllGroupeData(): Promise<GroupeDataType[]> {
 }
 
 export const postMessageByUser = async (
-  { userId, userName, text, photo, audio, video, groupeName }: MessageData,
+  {
+    userId,
+    userName,
+    text,
+    photo,
+    audio,
+    video,
+    groupeName,
+    userLikes,
+    userAvatar,
+  }: MessageData,
   groupeId: string
 ) => {
   try {
@@ -216,12 +226,14 @@ export const postMessageByUser = async (
     const promise1 = setDoc(doc(messageRef), {
       userId,
       userName,
+      userAvatar,
       text,
       photo,
       audio,
       video,
       date,
       groupeName,
+      userLikes,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -250,6 +262,11 @@ export const postCommentaireByUser = async ({
   messageId,
   userId,
   userName,
+  userAvatar,
+  userLikes,
+  idOfUserThatWithReply,
+  nameOfUserThatWithReply,
+  textOfUserThatWithReply,
 }: CommentaireData) => {
   const commentaireRef = collection(db, "CommentaireData");
   const membreDataRef = doc(db, "MembreData", userId);
@@ -261,6 +278,11 @@ export const postCommentaireByUser = async ({
       messageId,
       userId,
       userName,
+      userAvatar,
+      userLikes,
+      idOfUserThatWithReply,
+      nameOfUserThatWithReply,
+      textOfUserThatWithReply,
       date,
     });
 
@@ -322,28 +344,35 @@ export const updateMessagewithLike = async (
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
         /*  const id = doc.id; */
-        userLikes = [...doc.data().userLikes];
+
+        if (doc.data()?.userLikes && doc.data()?.userLikes?.length !== 0) {
+          userLikes = [...doc.data().userLikes];
+        }
       });
     }
-    const result = userLikes?.includes(userId);
-    if (!result) {
-      userLikes.push(userId);
-      const promise1 = updateDoc(doc(messageRef, messageId), {
-        userLikes,
-      });
-      const membreDataRef = doc(db, "MembreData", userId);
-      const promise2 = updateDoc(membreDataRef, {
-        nombreLikes: increment(1),
-        nombreDeMerciBenis: increment(1),
-        nombreDactivite: increment(1),
-      });
-      const [value1, value2] = await Promise.all([promise1, promise2]);
-      console.log(value1, value2);
+    console.log({ userLikes });
+    if (userLikes) {
+      console.log("dedans por celui ci");
+      const result = userLikes?.includes(userId);
+      if (!result) {
+        userLikes.push(userId);
+        const promise1 = updateDoc(doc(messageRef, messageId), {
+          userLikes,
+        });
+        const membreDataRef = doc(db, "MembreData", userId);
+        const promise2 = updateDoc(membreDataRef, {
+          nombreLikes: increment(1),
+          nombreDeMerciBenis: increment(1),
+          nombreDactivite: increment(1),
+        });
+        const [value1, value2] = await Promise.all([promise1, promise2]);
+        console.log(value1, value2);
 
-      return {
-        message: "Les likes ont été mise à jour avec success",
-        success: true,
-      };
+        return {
+          message: "Les likes ont été mise à jour avec success",
+          success: true,
+        };
+      }
     }
     return {
       message: "vous avez deja liker",

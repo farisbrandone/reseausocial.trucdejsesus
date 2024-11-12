@@ -8,6 +8,7 @@ type typesetStateBollean = React.Dispatch<React.SetStateAction<boolean>>;
 type typesetStatestring = React.Dispatch<React.SetStateAction<string>>;
 
 interface statePropsButtonse {
+  label: string;
   key: string;
   setImageUrl: typesetStatestring;
   setStateDownloadProps: typesetStateBollean;
@@ -15,6 +16,7 @@ interface statePropsButtonse {
 }
 
 function ButtonUploadFileForComment({
+  label,
   key,
   setImageUrl,
   setStateDownloadProps,
@@ -83,7 +85,7 @@ function ButtonUploadFileForComment({
       className="flex items-center justify-center mx-auto w-[30px] h-[30px] "
     >
       <label
-        htmlFor="dropzone-file2"
+        htmlFor={label}
         className="flex flex-col items-center justify-center w-full p-1 border-1 border-[#000] border-solid rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 h-[30px] "
       >
         {stateDownloadProps ? (
@@ -109,7 +111,7 @@ function ButtonUploadFileForComment({
 
         <input
           name="file2"
-          id="dropzone-file2"
+          id={label}
           type="file"
           className="hidden"
           onChange={handleFileChange2}

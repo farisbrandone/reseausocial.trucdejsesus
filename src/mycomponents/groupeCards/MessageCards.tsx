@@ -144,28 +144,43 @@ function MessageCards({
         {value.text && <p className="text whitespace-pre-wrap">{value.text}</p>}
         {value.photo && (
           <div className="image mt-2">
-            <img src={value.photo} alt="" />
+            <img
+              src={value.photo}
+              alt=""
+              className="max-h-[300px] sm:max-h-[400px] w-full "
+            />
           </div>
         )}
         {value.video && (
-          <div className="video">
-            <video controls width="250">
-              <source src={value.video} type="video/webm" />
-              <source src={videoTransformer(value.video)} type="video/mp4" />
-              Download the
-              <a href={value.video}>WEBM</a>
-              or
-              <a href={value.video}>MP4</a>
-              video.
-            </video>
+          <div className="video relative ">
+            <iframe
+              id="about_mp_video_src"
+              title="vimeo-player"
+              src={videoTransformer(value.video)}
+              className="w-full min-h-[300px] sm:min-h-[400px]"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+            <p className="absolute bottom-2 left-1 text-white text-[15px] px-1 py-2 bg-[#000]/40 font-bold">
+              {" "}
+              {/*  <a
+                title="Regarder sur Youtube"
+                href={videoTransformer(value.video)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1"
+              >
+                <p> Regarder sur</p>{" "}
+                <span className="icon-[whh--youtube] text-[#fff] "></span>
+                <p>YouTube</p>
+              </a>{" "} */}
+            </p>
           </div>
         )}
         {value.audio && (
           <div className="audio">
             <figure>
-              <figcaption>Listen to the T-Rex:</figcaption>
               <audio controls src={value.audio}></audio>
-              <a href={value.audio}> Download audio </a>
             </figure>
           </div>
         )}
@@ -175,7 +190,8 @@ function MessageCards({
           className=" text-center p-1 bg-[#fff] text-[#000] hover:bg-[#fff]/60 "
           onClick={handleLike}
         >
-          <span className="icon-[si-glyph--like] text-xl  "></span> Liker (
+          <span className="icon-[si-glyph--like] text-xl  "></span>{" "}
+          <span className="hidden sm:inline">Liker</span> (
           {stateMessage?.userLikes?.length ? stateMessage?.userLikes.length : 0}
           )
         </Button>
@@ -184,10 +200,12 @@ function MessageCards({
           className="bg-[#fff] text-[#000] hover:bg-[#fff]/60  text-center p-1"
         >
           <span className="icon-[iconamoon--comment-dots-fill]  "></span>{" "}
-          Commentaires ({commentairesData.length})
+          <span className="hidden sm:inline">Commentaires</span> (
+          {commentairesData.length})
         </Button>
         <Button className="bg-[#fff] text-[#000] hover:bg-[#fff]/60  text-center p-1">
-          <span className="icon-[material-symbols--share] "></span> Partager
+          <span className="icon-[material-symbols--share] "></span>{" "}
+          <span className="hidden sm:inline">Partager</span>
         </Button>
       </div>
       <div className="flex flex-col gap-2 mt-5 py-3 ">
@@ -229,6 +247,7 @@ function MessageCards({
 
               <div>
                 <ButtonUploadFileForComment
+                  label="cards message"
                   key="button211"
                   setImageUrl={setImageCommentaire}
                   setStateDownloadProps={setStateDownload}

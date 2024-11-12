@@ -31,7 +31,7 @@ export function SidebarForMobile({ groupeState }: SidebarForMobileType) {
       <DrawerTrigger asChild>
         <Button
           variant="outline"
-          className=" fixed flex items-center min-[980px]:hidden top-1 left-1"
+          className=" fixed flex items-center min-[1030px]:hidden top-1 left-1"
         >
           <span className="icon-[pajamas--hamburger] text-2xl bg-[#000] text-[#fff]"></span>
         </Button>

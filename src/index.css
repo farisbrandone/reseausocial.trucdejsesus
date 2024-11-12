@@ -181,7 +181,8 @@ h1 {
   }
   .infoGroupeCards::after,
   .infoGroupeCards::before {
-    @apply max-[981px]:top-[50px];
+    @apply max-[981px]:top-[30px];
+    @apply max-[640px]:top-[30px];
   }
   .infoGroupeCards::after,
   .infoGroupeCards::before {

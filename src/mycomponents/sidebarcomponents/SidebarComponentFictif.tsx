@@ -8,7 +8,7 @@ interface SidebarComponentType {
 
 function SidebarComponentFictif({ groupeState }: SidebarComponentType) {
   return (
-    <div className="fixed hidden min-[980px]:flex flex-col gap-2 items-center ml-4 sm:ml-8 top-0  ">
+    <div className="fixed hidden min-[1030px]:flex flex-col gap-2 items-center ml-4 sm:ml-8 top-0  ">
       <a
         href="/"
         className="header flex flex-col gap-8 items-center mt-6 px-2 pb-1"
