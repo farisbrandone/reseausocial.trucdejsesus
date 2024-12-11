@@ -1,6 +1,13 @@
-import { GroupeDataType } from "seedAndGetData/seedData";
+import {
+  CommunityDataType,
+  GroupeDataType,
+  MessageData,
+} from "seedAndGetData/seedData";
+import { getAllCommunityMessageData } from "../../../seedAndGetData/seedData";
 import AvatarComponent from "./AvatarComponent";
 import CardGroupAcceuil from "./CardGroupAcceuil";
+import { useEffect, useState } from "react";
+import MessageCommunityElement from "./MessageCommunityElement";
 
 /* const objectCards = [
   {
@@ -68,7 +75,36 @@ import CardGroupAcceuil from "./CardGroupAcceuil";
   },
 ]; */
 
-function AcceuilPage({ groupeData }: { groupeData: GroupeDataType[] }) {
+function AcceuilPage({
+  groupeData,
+  value,
+}: {
+  groupeData: GroupeDataType[];
+  value: CommunityDataType;
+}) {
+  const [messageCoommunity, setMessageCommunity] = useState<MessageData[]>();
+  const [loadingFail, setLoadingFail] = useState(false);
+
+  useEffect(() => {
+    const getAllMessageWithCommunityId = async () => {
+      try {
+        const result = await getAllCommunityMessageData(value.id as string);
+        setMessageCommunity(result);
+      } catch (error) {
+        setLoadingFail(true);
+      }
+    };
+
+    getAllMessageWithCommunityId();
+  }, []);
+  if (loadingFail) {
+    return (
+      <div className="w-full text-center pt-4">
+        Une erreur est survenue pendant le chargement ou problème de connexion
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center px-1 sm:pr-2 w-full p-0 ">
       <div className="h-8 sm:h-7 w-full bg-white"></div>
@@ -83,37 +119,62 @@ function AcceuilPage({ groupeData }: { groupeData: GroupeDataType[] }) {
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
-        <div className="image w-full h-[180px]  relative">
-          <img
+        <div className=" w-full h-[250px]  relative">
+          {value.banniereUrl && value.banniereUrl.includes(".mp4") ? (
+            <video
+              autoPlay={true}
+              muted={true}
+              className="object-cover w-full h-[250px]"
+            >
+              <source src={value.banniereUrl} type="video/mp4" />
+              Votre navigateur ne supporte pas la balise vidéo.
+            </video>
+          ) : (
+            <img
+              src={value.banniereUrl}
+              alt=""
+              className="object-cover w-full h-full"
+            />
+          )}
+
+          {/*  <img
             src="https://communitor.smartcommunity.biz/upload/774/lib/74539_1725898047_lib.jpeg"
             alt=""
             className="object-cover w-full h-full bg-transparent"
-          />
-          <div className="absolute right-0 left-0 bottom-0 top-0 image"></div>
+          /> */}
+          {/*  <div className="absolute right-0 left-0 bottom-0 top-0 image"></div> */}
           <p className="textOnImage text-[20px] text-white absolute bottom-2 left-2 font-extrabold ">
-            <strong>Réseau 100% JÉSUS</strong>
+            <strong>{value.title}</strong>
           </p>
         </div>
 
-        <p className="text-[20px] mt-4 mb-6 ">
-          Groupes de partages Un Truc de JÉSUS ! 1er Réseau 100% JÉSUS
-        </p>
+        <p className="text-[20px] mt-4 mb-6 ">{value.description}</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row-reverse lg:gap-6 w-full 2xl:w-[1250px]  mt-4">
-        <div className="body1 flex lg:flex-1 lg:ml-2 flex-col items-start gap-4 pl-3">
+      <div className="flex flex-col lg:flex-row lg:gap-6 w-full 2xl:w-[1250px]  mt-4">
+        {/*  <div className="body1 flex lg:flex-1 lg:ml-2 flex-col items-start gap-4 pl-3">
           <p className="textBody1 text-[18px]">JÉSUS te passionne ?</p>
           <p className="">Faisons connaissance ! 💛</p>
           <p className=" flex items-center">
             <span className="icon-[lsicon--user-crowd-filled] mr-2 text-2xl"></span>
-            {groupeData[0].nombreDePassionnner} Passionnés
+            {groupeData[0]?.nombreDePassionnner} Passionnés
           </p>
           <div></div>
+        </div> */}
+        <div className="flex items-center gap-1 w-full">
+          <div className="body2 hidden sm:flex flex-col gap-4 ">
+            {groupeData.map((objectCard) => (
+              <CardGroupAcceuil objectCard={objectCard} />
+            ))}
+          </div>
         </div>
-        <div className="body2 flex flex-col gap-4">
-          {groupeData.map((objectCard) => (
-            <CardGroupAcceuil objectCard={objectCard} />
-          ))}
+        <div className="flex flex-col w-full ">
+          <h1 className="font-bold text-[20px] ">Partage recents </h1>
+          <div className="flex flex-col gap-1 mt-5 w-full ">
+            {messageCoommunity?.map((message) => (
+              <MessageCommunityElement message={message} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

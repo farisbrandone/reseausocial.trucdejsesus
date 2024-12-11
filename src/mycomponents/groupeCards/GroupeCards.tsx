@@ -8,6 +8,7 @@ import { PassionneTable } from "./passionne/PassionneTable";
 import { columns } from "./passionne/Columns";
 import {
   getAllMessageData,
+  GroupeDataType,
   MembreData,
   MessageData,
   requestTogetAllMembreData,
@@ -59,13 +60,7 @@ const tabs1: Tab[] = [
   },
 ];
 
-function GroupeCards({
-  groupeId,
-  groupeName,
-}: {
-  groupeId: string;
-  groupeName: string;
-}) {
+function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
   const [appearText, setAppearText] = useState(true);
   const [appearVideo, setAppearVideo] = useState(false);
   const [appearImage, setAppearImage] = useState(false);
@@ -112,9 +107,9 @@ function GroupeCards({
   useEffect(() => {
     const getMembreData = async () => {
       const result = await requestTogetAllMembreData();
-      console.log({ groupeName });
-      const messages = await getAllMessageData(groupeName as string);
-      console.log(messages);
+
+      const messages = await getAllMessageData(groupeValue.titleGroupe);
+
       setMessagesData([...messages]);
       setMembreOfData([...result]);
     };
@@ -160,15 +155,36 @@ function GroupeCards({
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-8 pl-3  ">
-        <div className="image w-full h-[350px]  relative">
-          <img
+        <div className=" w-full h-[350px]  relative">
+          {groupeValue.banniereUrlGroupe &&
+          groupeValue.banniereUrlGroupe.includes(".mp4") ? (
+            <video
+              loop
+              autoPlay={true}
+              muted={true}
+              className="object-contain sm:object-cover w-[95%] min-[640px]:w-full h-full bg-transparent"
+            >
+              <source src={groupeValue.banniereUrlGroupe} type="video/mp4" />
+              Votre navigateur ne supporte pas la balise vidéo.
+            </video>
+          ) : (
+            <img
+              src={groupeValue.banniereUrlGroupe}
+              alt="Image bannière"
+              className="object-contain sm:object-cover w-[95%] min-[640px]:w-full h-full bg-transparent"
+            />
+          )}
+
+          {/*  <img
             src="https://communitor.smartcommunity.biz/upload/774/lib/90086_1715504538_lib.png"
             alt=""
             className="object-contain sm:object-cover w-[95%] min-[640px]:w-full h-full bg-transparent"
-          />
-          <div className="absolute right-0 left-0 bottom-0 top-0 image"></div>
-          <div className=" textOnImage text-[20px] text-white absolute bottom-6 left-4 right-4 font-bold flex  items-center justify-between flex-wrap gap-3">
-            <p className="text-[20px] sm:text-[26px]">CARTE INTERACTIVE</p>
+          /> */}
+          {/* <div className="absolute right-0 left-0 bottom-0 top-0 image"></div> */}
+          <div className=" textOnImage text-[20px] text-[#000] absolute bottom-6 left-4 right-4 font-bold flex  items-center justify-between flex-wrap gap-3">
+            <p className="text-[20px] sm:text-[26px]">
+              {groupeValue.titleGroupe}
+            </p>
             <button
               type="button"
               title="Quitter definitivement le groupe"
@@ -245,9 +261,10 @@ function GroupeCards({
                     handleappearAudio={handleappearAudio}
                     textePartage={textePartage}
                     setTextePartage={setTextePartage}
-                    groupeId={groupeId}
-                    groupeName={groupeName}
+                    groupeId={groupeValue.id as string}
+                    groupeName={groupeValue.titleGroupe}
                     membreOfData={membreOfData}
+                    groupeValue={groupeValue}
                   />
                 </div>
                 {messagesData &&
@@ -341,7 +358,7 @@ function GroupeCards({
                   "flex-shrink-1 rounded-b-lg bg-white px-6 py-4 dark:bg-gray-800 "
                 )}
               >
-                <ChainesOfGroupe groupeId={groupeId} />
+                <ChainesOfGroupe groupeId={groupeValue.id as string} />
               </TabsPrimitive.Content>
 
               <TabsPrimitive.Content

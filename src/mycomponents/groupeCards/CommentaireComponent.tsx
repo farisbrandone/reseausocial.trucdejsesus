@@ -13,6 +13,7 @@ import {
   updateCommentairewithLike,
 } from "../../../seedAndGetData/seedData";
 import { ButtonUploadFileForComment } from "./ButtonUploadfileForComment";
+import { toast } from "@/hooks/use-toast";
 
 export default function CommentaireComponent({
   commentaireData,
@@ -28,6 +29,8 @@ export default function CommentaireComponent({
   const [textCommentaire, setTextCommentaire] = useState("");
   const [imageCommentaire, setImageCommentaire] = useState("");
   const [stateDownload, setStateDownload] = useState(false);
+  const [desableButton, setDisableButton] = useState(false);
+  const [startSendLike, setStartSendLike] = useState(false);
   const [putHidden, setPutHidden] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -68,26 +71,35 @@ export default function CommentaireComponent({
       text: textCommentaire,
       image: imageCommentaire,
       messageId: commentaireData.messageId,
-      userId: membreOfData[0].id,
+      userId: membreOfData[0].id as string,
       userAvatar: membreOfData[0].image,
       userName: membreOfData[0].name,
-      id: "",
       userLikes: [],
-      date: "",
       idOfUserThatWithReply: commentaireData.userId,
       nameOfUserThatWithReply: commentaireData.userName,
       textOfUserThatWithReply: commentaireData.text,
     };
     try {
+      setDisableButton(true);
       await postCommentaireByUser(commentData);
       const result = await getAllCommentaireData(commentaireData.messageId);
       if (result) {
         setCommentairesData([...result]);
         setOpenReplyPart(false);
+        setDisableButton(false);
+        setTextCommentaire("");
+        setImageCommentaire("");
         return;
       }
     } catch (error) {
       console.error(error);
+      setDisableButton(false);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant l'envoie du message, vérifier votre connexion",
+      });
     }
   };
 
@@ -98,19 +110,43 @@ export default function CommentaireComponent({
 
   const handleLike = async () => {
     try {
+      setStartSendLike(true);
       const result = await updateCommentairewithLike(
-        membreOfData[0].id,
-        commentaireData.id
+        membreOfData[0].id as string,
+        commentaireData.id as string
       );
-      const result2 = await getAllCommentaireData(commentaireData.messageId);
-      if (result2) {
-        setCommentairesData([...result2]);
-        setOpenReplyPart(false);
+      if (result?.success) {
+        const result2 = await getAllCommentaireData(commentaireData.messageId);
+        if (result2) {
+          setCommentairesData([...result2]);
+          setOpenReplyPart(false);
+          setStartSendLike(false);
+          return;
+        } else {
+          setStartSendLike(false);
+          toast({
+            variant: "destructive",
+            title: "Erreur",
+            description: "Une erreur est survenue ",
+          });
+        }
+      } else {
+        setStartSendLike(false);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Une erreur est survenue pendant l'envoie du message",
+        });
       }
-      if (result.success) {
-        console.log(result);
-      }
-    } catch (error) {}
+    } catch (error) {
+      setStartSendLike(false);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant l'envoie du message, vérifier votre connexion",
+      });
+    }
   };
 
   return (
@@ -138,17 +174,32 @@ export default function CommentaireComponent({
           <div className="flex items-center">
             <div
               title="Liker"
-              className="bg-transparent hover:bg-transparent border-none flex items-center justify-center text-center p-1 pl-2 mr-2 "
+              className="bg-transparent hover:bg-transparent border-none flex items-center justify-center text-center p-1 pl-2 mr-2 cursor-pointer "
               onClick={handleLike}
             >
-              <span className="icon-[si-glyph--like]  text-xl text-[#000]"></span>{" "}
+              <span className="icon-[si-glyph--like] text-xl  "></span>{" "}
+              {!startSendLike ? (
+                <>
+                  {" "}
+                  <span>
+                    {"("}
+                    {commentaireData?.userLikes?.length
+                      ? commentaireData?.userLikes?.length
+                      : 0}
+                    {")"}
+                  </span>
+                </>
+              ) : (
+                <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+              )}
+              {/*  <span className="icon-[si-glyph--like]  text-xl text-[#000]"></span>{" "}
               <p className="text-[#000] ">
                 <span className="hidden sm:inline">Liker</span> (
                 {commentaireData?.userLikes?.length
                   ? commentaireData?.userLikes?.length
                   : 0}
                 )
-              </p>
+              </p> */}
             </div>
             <div
               title="Répondre"
@@ -174,6 +225,7 @@ export default function CommentaireComponent({
               className="flex-1 border-none text-[#000] px-[12px] py-[8px] focus:border-none focus:outline-none "
               value={textCommentaire}
               onChange={handleTextCommentaire}
+              disabled={desableButton}
             />
             <div className=" relative flex items-center justify-start gap-2">
               <div className="py-2 z-50 ">
@@ -188,7 +240,7 @@ export default function CommentaireComponent({
                 })}
               >
                 <EmojiPicker
-                  open={putHidden}
+                  open={putHidden && !desableButton}
                   searchDisabled={true}
                   width={300}
                   height={280}
@@ -204,6 +256,7 @@ export default function CommentaireComponent({
                   setImageUrl={setImageCommentaire}
                   setStateDownloadProps={setStateDownload}
                   stateDownloadProps={stateDownload}
+                  desableButton={desableButton}
                 />
                 {imageCommentaire && <img src={imageCommentaire} alt="" />}
               </div>
@@ -211,8 +264,13 @@ export default function CommentaireComponent({
               <Button
                 className="border-none bg-transparent hover:bg-transparent"
                 onClick={sendCommentaire}
+                disabled={desableButton}
               >
-                <span className="icon-[mingcute--send-plane-fill] text-[#000] "></span>
+                {desableButton ? (
+                  <span className="icon-[eos-icons--three-dots-loading] text-[#000]  text-xl"></span>
+                ) : (
+                  <span className="icon-[mingcute--send-plane-fill] text-[#000] text-xl "></span>
+                )}
               </Button>
             </div>
           </div>

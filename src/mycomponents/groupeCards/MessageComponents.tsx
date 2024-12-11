@@ -19,13 +19,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RocketIcon } from "@radix-ui/react-icons";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { SelectUserToSendMessage } from "./SelectUserToSendMessage";
+import {
+  SelectUserToSendMessage,
+  UserSelectType,
+} from "./SelectUserToSendMessage";
 import {
   getAllMessageData,
+  GroupeDataType,
   MembreData,
   MessageData,
   postMessageByUser,
 } from "../../../seedAndGetData/seedData";
+import { toast } from "@/hooks/use-toast";
 
 export interface MessageComponentsType {
   groupeId: string;
@@ -43,6 +48,7 @@ export interface MessageComponentsType {
   setAppearAudio: React.Dispatch<React.SetStateAction<boolean>>;
   textePartage: string;
   setTextePartage: React.Dispatch<React.SetStateAction<string>>;
+  groupeValue: GroupeDataType;
   handleappearText: () => void;
   handleappearImage: () => void;
   handleappearVideo: () => void;
@@ -50,6 +56,7 @@ export interface MessageComponentsType {
 }
 
 export function MessageComponents({
+  groupeValue,
   groupeName,
   groupeId,
   setMessagesData,
@@ -76,7 +83,24 @@ export function MessageComponents({
   const [videoUrlEvent, setVideoUrlEvent] = useState("");
 
   const [desableButton, setDisableButton] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const [userSelect, setUserSelect] = useState<UserSelectType[]>([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleOpenState = () => {
+    if (openState === true) {
+      setTextePartage("");
+      setImageUrlEvent("");
+      setAudioUrlEvent("");
+      setVideoUrlEvent("");
+      setUserSelect([]);
+      setOpenState(false);
+      return;
+    }
+    setOpenState(true);
+  };
 
   const handleTextePartage = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setTextePartage(() => e.target.value);
@@ -110,36 +134,48 @@ export function MessageComponents({
   const sendingMessage = async () => {
     try {
       setDisableButton(true);
-      console.log({ avatar: membreOfData[0].image });
+
       const data: MessageData = {
-        userId: membreOfData[0].id,
+        userId: membreOfData[0].id as string,
         userName: membreOfData[0].name,
         userAvatar: membreOfData[0].image,
         text: textePartage,
         photo: imageUrlEvent,
         audio: audioUrlEvent,
         video: videoUrlEvent,
-        id: "",
         userLikes: [],
-        date: "",
         groupeName: !!groupeName ? groupeName : "",
+        communityId: groupeValue.communityId as string,
       };
-      console.log("django");
+
       const result = await postMessageByUser(data, groupeId);
       if (result.success) {
         if (groupeName) {
           const messages = await getAllMessageData(groupeName);
           setMessagesData([...messages]);
+          setOpenState(false);
+          setTextePartage("");
+          setImageUrlEvent("");
+          setAudioUrlEvent("");
+          setVideoUrlEvent("");
         }
       }
     } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant l'envoie du message, vérifier votre connexion",
+      });
     } finally {
       setDisableButton(false);
+      setUserSelect([]);
+      setOpenState(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={openState} onOpenChange={() => handleOpenState()}>
       <DialogTrigger asChild={false}>
         <div
           className="flex items-center gap-2 py-5 border-b border-b-[#35353583] "
@@ -341,7 +377,12 @@ export function MessageComponents({
             )}
           </div>
           <div>
-            <SelectUserToSendMessage />
+            <SelectUserToSendMessage
+              userSelect={userSelect}
+              setUserSelect={setUserSelect}
+              alertOpen={alertOpen}
+              setAlertOpen={setAlertOpen}
+            />
             {/*  <Button className="bg-transparent  text-[#000] hover:bg-transparent/10 flex items-center gap-1 h-[100%] ">
               <span className="icon-[mdi--tag] mr-1 self-start text-4xl "></span>
               <p className="text-wrap text-start text-[14px] text ">
@@ -351,10 +392,10 @@ export function MessageComponents({
             </Button> */}
           </div>
         </div>
-        <DialogFooter className="mx-3 mb-3">
+        <DialogFooter className="mx-3 mb-3 flex flex-col gap-1">
           <Button
-            type="submit"
-            className="w-full text-[16px] bg-[#fff700] hover:bg-[#fff7008c] text-[#000] "
+            type="button"
+            className="w-full text-[16px] bg-[#fff700] hover:bg-[#fff7008c] text-[#000] disabled:bg-[#fff7008c] "
             disabled={
               !textePartage &&
               !imageUrlEvent &&
@@ -362,9 +403,18 @@ export function MessageComponents({
               !videoUrlEvent &&
               !desableButton
             }
-            onClick={sendingMessage}
+            onClick={() => {
+              if (userSelect.length > 0) {
+                sendingMessage();
+              } else {
+                setAlertOpen(true);
+              }
+            }}
           >
-            Partager
+            Partager{" "}
+            {desableButton && (
+              <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -12,15 +12,16 @@ import {
   DrawerTitle, */
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { ButtonSideBar } from "./ButtonSidebar";
-import { CommunityDataType, GroupeDataType } from "seedAndGetData/seedData";
+import { CommunityDataType } from "seedAndGetData/seedData";
+import { ButtonSideBarCommunity } from "./ButtonSideBarCommunity";
 
 interface SidebarForMobileType {
-  groupeState: GroupeDataType[] | undefined;
-  val: CommunityDataType;
+  communityState: CommunityDataType[] | undefined;
 }
 
-export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
+export function SidebarForMobileCommunity({
+  communityState,
+}: SidebarForMobileType) {
   /*  const [goal, setGoal] = React.useState(350);
 
   function onClick(adjustment: number) {
@@ -44,9 +45,11 @@ export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
             className="header flex flex-col gap-8 items-center mt-6 px-2 pb-1"
           >
             <img
-              src={val.logoUrl}
-              alt=""
-              className="object-cover w-[40px] h-[40px]"
+              src="https://trucdejesus.appowls.io/assets/apps/user_1837/app_3120/draft/icon/app_logo.png"
+              alt="Logo"
+              width="40"
+              height="40"
+              className=""
             />
 
             <p className=" flex items-center">
@@ -57,9 +60,9 @@ export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
           <div className="corpsSidebar flex flex-col items-center min-[980px]:pl-3 border-t-2 border-t-[#242424] border-solid">
             <p className="title my-3">Groupes</p>
             <div className="partNavigation flex flex-col gap-2 items-start">
-              {groupeState?.map((value) => (
+              {communityState?.map((value) => (
                 <React.Fragment key={value.id}>
-                  <ButtonSideBar value={value} val={val} />
+                  <ButtonSideBarCommunity value={value} />
                 </React.Fragment>
               ))}
 

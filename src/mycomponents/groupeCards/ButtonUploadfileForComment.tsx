@@ -13,6 +13,7 @@ interface statePropsButtonse {
   setImageUrl: typesetStatestring;
   setStateDownloadProps: typesetStateBollean;
   stateDownloadProps: boolean;
+  desableButton: boolean;
 }
 
 function ButtonUploadFileForComment({
@@ -21,6 +22,7 @@ function ButtonUploadFileForComment({
   setImageUrl,
   setStateDownloadProps,
   stateDownloadProps,
+  desableButton,
 }: statePropsButtonse) {
   /* const [file, setFile] = useState(null);
     const [url, setUrl] = useState(""); */
@@ -115,7 +117,7 @@ function ButtonUploadFileForComment({
           type="file"
           className="hidden"
           onChange={handleFileChange2}
-          disabled={stateDownloadProps}
+          disabled={stateDownloadProps || desableButton}
         />
       </label>
     </div>

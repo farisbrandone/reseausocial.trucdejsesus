@@ -1,37 +1,40 @@
-import { GroupeDataType } from "seedAndGetData/seedData";
+import { CommunityDataType, GroupeDataType } from "seedAndGetData/seedData";
 import { ButtonSideBar } from "./ButtonSidebar";
 import { Fragment } from "react/jsx-runtime";
 
 interface SidebarComponentType {
   groupeState: GroupeDataType[] | undefined;
+  val: CommunityDataType;
 }
 
-function SidebarComponentFictif({ groupeState }: SidebarComponentType) {
+function SidebarComponentFictif({ groupeState, val }: SidebarComponentType) {
   return (
-    <div className="fixed hidden min-[1030px]:flex flex-col gap-2 items-center ml-4 sm:ml-8 top-0  ">
+    <div className="fixed hidden min-[1030px]:flex flex-col gap-2 items-center ml-3 sm:ml-3 top-0 w-[200px]  ">
       <a
-        href="/"
-        className="header flex flex-col gap-8 items-center mt-6 px-2 pb-1"
+        href={`/community/${val.title}`}
+        className="header flex flex-col gap-4 items-center mt-6 px-1  pb-1"
       >
-        <img
-          src="https://trucdejesus.appowls.io/assets/apps/user_1837/app_3120/draft/icon/app_logo.png"
-          alt="Logo"
-          width="40"
-          height="40"
-          className=""
-        />
+        {val.logoUrl && val.logoUrl.includes(".mp4") ? (
+          <video autoPlay={true} muted={true}>
+            <source src={val.logoUrl} type="video/mp4" />
+            Votre navigateur ne supporte pas la balise vidéo.
+          </video>
+        ) : (
+          <img
+            src={val.logoUrl}
+            alt=""
+            className="object-cover w-[40px] h-[40px]"
+          />
+        )}
 
-        <p className=" flex items-center">
-          <span className="icon-[lsicon--user-crowd-filled] mr-2 text-2xl"></span>
-          Réseau 100% JÉSUS
-        </p>
+        <p className=" flex items-center">{val.title}</p>
       </a>
-      <div className="corpsSidebar flex flex-col items-center pl-3 border-t-2 border-t-[#242424] border-solid">
+      <div className="corpsSidebar flex flex-col border-t-2 border-t-[#242424] border-solid w-full">
         <p className="title my-3">Groupes</p>
         <div className="partNavigation flex flex-col gap-2 items-start">
           {groupeState?.map((value) => (
             <Fragment key={value.id}>
-              <ButtonSideBar value={value} />
+              <ButtonSideBar value={value} val={val} />
             </Fragment>
           ))}
           {/*  <ButtonSideBar text="CARTE INTERACTIVE" />

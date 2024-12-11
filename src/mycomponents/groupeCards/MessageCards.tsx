@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { videoTransformer } from "@/lib/videoTransformer";
-import { format } from "date-fns";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   CommentaireData,
@@ -18,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import clsx from "clsx";
 import { ButtonUploadFileForComment } from "./ButtonUploadfileForComment";
+import { formatDateWithString } from "@/lib/formatDate";
+import { toast } from "@/hooks/use-toast";
 
 function MessageCards({
   value,
@@ -41,6 +42,8 @@ function MessageCards({
   const [imageCommentaire, setImageCommentaire] = useState("");
   const [stateDownload, setStateDownload] = useState(false);
   const [putHidden, setPutHidden] = useState(false);
+  const [desableButton, setDisableButton] = useState(false);
+  const [startSendLike, setStartSendLike] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleHidenEmoji = () => {
     setPutHidden((prev) => !prev);
@@ -76,43 +79,80 @@ function MessageCards({
     const commentData: CommentaireData = {
       text: textCommentaire,
       image: imageCommentaire,
-      messageId: value.id,
-      userId: membreOfData[0].id,
+      messageId: value.id as string,
+      userId: membreOfData[0].id as string,
       userAvatar: membreOfData[0].image,
       userName: membreOfData[0].name,
-      id: "",
       userLikes: [],
-      date: "",
       idOfUserThatWithReply: "",
       nameOfUserThatWithReply: "",
       textOfUserThatWithReply: "",
     };
     try {
+      setDisableButton(true);
       await postCommentaireByUser(commentData);
-      const result = await getAllCommentaireData(value.id);
+      const result = await getAllCommentaireData(value.id as string);
       if (result) {
         setCommentairesData([...result]);
+        setTextCommentaire("");
+        setImageCommentaire("");
+        setDisableButton(false);
         return;
       }
     } catch (error) {
-      console.error(error);
+      setDisableButton(false);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant l'envoie du message, vérifier votre connexion",
+      });
     }
   };
   const handleLike = async () => {
     try {
-      const result = await updateMessagewithLike(membreOfData[0].id, value.id);
-      const result2 = await getMessageWithId(value.id);
-      if (result2) {
-        setStateMessage({ ...result2 });
+      setStartSendLike(true);
+      const result = await updateMessagewithLike(
+        membreOfData[0].id as string,
+        value.id as string
+      );
+      if (result?.success) {
+        const result2 = await getMessageWithId(value.id as string);
+        console.log(result);
+        if (result2) {
+          setStateMessage({ ...result2 });
+          setStartSendLike(false);
+          return;
+        } else {
+          setStartSendLike(false);
+          toast({
+            variant: "destructive",
+            title: "Erreur",
+            description: "Une erreur est survenue ",
+          });
+        }
+      } else {
+        setStartSendLike(false);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Une erreur est survenue pendant l'envoie du message",
+        });
       }
-      if (result.success) {
-      }
-    } catch (error) {}
+    } catch (error) {
+      setStartSendLike(false);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant l'envoie du message, vérifier votre connexion",
+      });
+    }
   };
 
   useEffect(() => {
     const getComment = async () => {
-      const result = await getAllCommentaireData(value.id);
+      const result = await getAllCommentaireData(value.id as string);
       if (result) {
         setCommentairesData([...result]);
         return;
@@ -136,7 +176,7 @@ function MessageCards({
                 Administrateur
               </span>
             )}
-            {format(new Date(value.date), "'publié le' dd/MM/yyyy")}
+            {formatDateWithString(value.dateOfCreation as string)}
           </p>
         </div>
       </div>
@@ -187,13 +227,24 @@ function MessageCards({
       </div>
       <div className="flex items-center justify-start flex-wrap gap-3 w-full text-[#000] border-solid border-t-[1px] border-b-[1px] border-[#000]/30 mt-2 py-2">
         <Button
-          className=" text-center p-1 bg-[#fff] text-[#000] hover:bg-[#fff]/60 "
+          className=" text-center p-1 bg-[#fff] text-[#000] hover:bg-[#fff]/60 disabled:bg-[#fff]/50 "
           onClick={handleLike}
+          disabled={startSendLike}
         >
           <span className="icon-[si-glyph--like] text-xl  "></span>{" "}
-          <span className="hidden sm:inline">Liker</span> (
-          {stateMessage?.userLikes?.length ? stateMessage?.userLikes.length : 0}
-          )
+          {!startSendLike ? (
+            <>
+              {" "}
+              <span className="hidden sm:inline">Liker</span>
+              <span>
+                {stateMessage?.userLikes?.length
+                  ? stateMessage?.userLikes.length
+                  : 0}
+              </span>
+            </>
+          ) : (
+            <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+          )}
         </Button>
         <Button
           onClick={handleOpenCommentaire}
@@ -219,9 +270,10 @@ function MessageCards({
               ref={inputRef}
               type="text"
               placeholder="Ajouter un commentaire"
-              className="flex-1 border-none text-[#000] px-[12px] py-[8px] focus:border-none focus:outline-none "
+              className="flex-1 border-none text-[#000] px-[12px] py-[8px] focus:border-none focus:outline-none disabled:bg-[#fff]/40 "
               value={textCommentaire}
               onChange={handleTextCommentaire}
+              disabled={desableButton}
             />
             <div className=" relative flex items-center justify-start gap-2">
               <div className="py-2 z-50 ">
@@ -236,7 +288,7 @@ function MessageCards({
                 })}
               >
                 <EmojiPicker
-                  open={putHidden}
+                  open={putHidden && !desableButton}
                   searchDisabled={true}
                   width={300}
                   height={280}
@@ -252,6 +304,7 @@ function MessageCards({
                   setImageUrl={setImageCommentaire}
                   setStateDownloadProps={setStateDownload}
                   stateDownloadProps={stateDownload}
+                  desableButton={desableButton}
                 />
                 {imageCommentaire && <img src={imageCommentaire} alt="" />}
               </div>
@@ -259,8 +312,13 @@ function MessageCards({
               <Button
                 className="border-none bg-transparent hover:bg-transparent"
                 onClick={sendCommentaire}
+                disabled={desableButton}
               >
-                <span className="icon-[mingcute--send-plane-fill] text-[#000] text-xl "></span>
+                {desableButton ? (
+                  <span className="icon-[eos-icons--three-dots-loading] text-[#000]  text-xl"></span>
+                ) : (
+                  <span className="icon-[mingcute--send-plane-fill] text-[#000] text-xl "></span>
+                )}
               </Button>
             </div>
           </div>

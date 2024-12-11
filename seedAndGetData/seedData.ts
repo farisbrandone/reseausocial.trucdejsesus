@@ -20,19 +20,19 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-/* export interface MembreData {
-  name: string;
-  email: string;
-  motsDepasse: string;
-  sexe: string;
-  birthDay: string;
-  phone: string;
-  dateCreation: string;
-  dateMiseAJour: string;
+export interface CommunityDataType {
+  title: string;
+  description: string;
+  logoUrl: string;
+  banniereUrl: string;
+  communityUrl: string;
+  faviconUrl: string;
+  timeZone: string;
   status: string;
-  image: string;
-  id: string;
-} */
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
+}
 
 export interface MembreData {
   name: string;
@@ -41,21 +41,24 @@ export interface MembreData {
   sexe: string;
   birthDay: string;
   phone: string;
-  dateCreation: string;
-  dateMiseAJour: string;
   status: string;
   image: string;
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   nombrePartage: number;
   nombreLikes: number;
   nombreCommentaire: number;
   nombreDeMerciBenis: number;
   nombreDactivite: number;
   nombreDeBadge: number;
+  communityId: string;
 }
 
 export interface MessageData {
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   userId: string;
   userName: string;
   userAvatar: string;
@@ -64,17 +67,18 @@ export interface MessageData {
   audio: string;
   video: string;
   userLikes: string[];
-  date: string;
   groupeName: string;
+  communityId: string;
 }
 
 export interface CommentaireData {
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   text: string;
   image: string;
   messageId: string;
   userLikes: string[];
-  date: string;
   userId: string;
   userName: string;
   userAvatar: string;
@@ -84,11 +88,12 @@ export interface CommentaireData {
 }
 
 export interface ReponseData {
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   text: string;
   image: string;
   commentaireId: string;
-  date: string;
   userId: string;
   userName: string;
 }
@@ -110,8 +115,9 @@ export interface EventDataType {
   textCTAEvent: string;
   locationOfEvent: string;
   groupeForEventSelect: stateGroupeEvent[];
-  date: string;
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
 }
 
 export interface ChannelPageDataType {
@@ -122,30 +128,40 @@ export interface ChannelPageDataType {
   imageChannel: string;
   amountChannel: string;
   groupeIdChannel: string;
-  dateUpdatedChannel: string;
-  dateCreatedChannel: string;
   statusChannel: string;
   channelRessources: RessourcesDataType[];
-  id: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
 }
 
 export interface RessourcesDataType {
   titleRessource: string;
-  descriptionRessource: string;
-  imageRessource: string;
-  textButtonRessource: string;
+  communityId?: string;
+  descriptionRessource?: string;
+  imageRessource?: string;
+  textButtonRessource?: string;
   typeRessources: string;
-  urlRessources: string;
-  date: string;
-  id: string;
+  urlRessources?: string;
+  urlExterne?: string;
+  urlVideo?: string;
+  urlAudio?: string;
+  instruction?: string;
+  status: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
 }
 
 export interface GroupeDataType {
   titleGroupe: string;
   descriptionGroupe: string;
   typeAccess: string;
-  date: string;
-  id: string;
+  communityId?: string;
+  memberId?: string[];
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   banniereUrlGroupe: string;
   logoUrlGroupe: string;
   status: string;
@@ -155,48 +171,56 @@ export interface GroupeDataType {
   nombreDePassionnner: number;
 }
 
-export async function requestTogetAllGroupeData(): Promise<GroupeDataType[]> {
-  let groupeData: GroupeDataType[] = [];
+export interface MemberWaitingDataType {
+  name: string;
+  email: string;
+  motsDepasse: string;
+  sexe: string;
+  birthDay: string;
+  phone: string;
+  status: string;
+  image: string;
+  communityId?: string;
+  groupeId?: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
+  nombrePartage: number;
+  nombreLikes: number;
+  nombreCommentaire: number;
+  nombreDeMerciBenis: number;
+  nombreDactivite: number;
+  nombreDeBadge: number;
+}
+
+export async function requestTogetAllUniversalData<T>(
+  databaseName: string
+): Promise<T[]> {
+  let data: T[] = [];
   try {
-    const querySnapshot = await getDocs(collection(db, "GroupeData"));
-    console.log({ length: querySnapshot.docs.length });
+    const querySnapshot = await getDocs(collection(db, databaseName));
+    if (querySnapshot.empty) {
+      console.log("qqq");
+      throw new Error("Une erreur est survenue cotée serveur");
+    }
+
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
         const id = doc.id;
-        const {
-          titleGroupe,
-          descriptionGroupe,
-          logoUrlGroupe,
-          banniereUrlGroupe,
-          typeAccess,
-          status,
-          date,
-          nombreDePartages,
-          nombreDevenements,
-          nombreDeChaines,
-          nombreDePassionnner,
-        } = doc.data();
-        groupeData.push({
+
+        const partialdata = doc.data();
+        data.push({
           id,
-          titleGroupe,
-          descriptionGroupe,
-          logoUrlGroupe,
-          banniereUrlGroupe,
-          typeAccess,
-          date,
-          status,
-          nombreDePartages,
-          nombreDevenements,
-          nombreDeChaines,
-          nombreDePassionnner,
-        });
+          ...partialdata,
+        } as T);
       });
-      return groupeData;
+
+      return data;
     }
 
     return [];
   } catch (error) {
-    console.log({ error: error });
+    console.log("qqq");
     throw new Error(
       "Une erreur est survenue pendant la récupération des données"
     );
@@ -214,15 +238,17 @@ export const postMessageByUser = async (
     groupeName,
     userLikes,
     userAvatar,
+    communityId,
   }: MessageData,
   groupeId: string
 ) => {
   try {
     console.log({ userId, groupeId });
     const messageRef = collection(db, "MessageData");
-    const membreDataRef = doc(db, "MembreData", userId);
+    const membreDataRef = doc(db, "MemberData", userId);
     const groupeDataRef = doc(db, "GroupeData", groupeId);
-    const date = new Date().toUTCString();
+    const dateOfCreation = new Date().toUTCString();
+    const dateOfUpdate = new Date().toUTCString();
     const promise1 = setDoc(doc(messageRef), {
       userId,
       userName,
@@ -231,9 +257,11 @@ export const postMessageByUser = async (
       photo,
       audio,
       video,
-      date,
+      dateOfCreation,
+      dateOfUpdate,
       groupeName,
       userLikes,
+      communityId,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -269,7 +297,7 @@ export const postCommentaireByUser = async ({
   textOfUserThatWithReply,
 }: CommentaireData) => {
   const commentaireRef = collection(db, "CommentaireData");
-  const membreDataRef = doc(db, "MembreData", userId);
+  const membreDataRef = doc(db, "MemberData", userId);
   const date = new Date().toUTCString();
   try {
     const promise1 = setDoc(doc(commentaireRef), {
@@ -345,34 +373,38 @@ export const updateMessagewithLike = async (
       querySnapshot.forEach((doc) => {
         /*  const id = doc.id; */
 
-        if (doc.data()?.userLikes && doc.data()?.userLikes?.length !== 0) {
+        if (
+          doc.data()?.userLikes &&
+          doc.data()?.userLikes?.length !== 0 &&
+          doc.data().id === messageId
+        ) {
+          console.log("papou");
           userLikes = [...doc.data().userLikes];
         }
       });
     }
-    console.log({ userLikes });
-    if (userLikes) {
-      console.log("dedans por celui ci");
-      const result = userLikes?.includes(userId);
-      if (!result) {
-        userLikes.push(userId);
-        const promise1 = updateDoc(doc(messageRef, messageId), {
-          userLikes,
-        });
-        const membreDataRef = doc(db, "MembreData", userId);
-        const promise2 = updateDoc(membreDataRef, {
-          nombreLikes: increment(1),
-          nombreDeMerciBenis: increment(1),
-          nombreDactivite: increment(1),
-        });
-        const [value1, value2] = await Promise.all([promise1, promise2]);
-        console.log(value1, value2);
+    console.log(userLikes);
 
-        return {
-          message: "Les likes ont été mise à jour avec success",
-          success: true,
-        };
-      }
+    console.log("dedans por celui ci");
+    const result = userLikes?.includes(userId);
+    if (!result) {
+      userLikes.push(userId);
+      const promise1 = updateDoc(doc(messageRef, messageId), {
+        userLikes,
+      });
+      const membreDataRef = doc(db, "MemberData", userId);
+      const promise2 = updateDoc(membreDataRef, {
+        nombreLikes: increment(1),
+        nombreDeMerciBenis: increment(1),
+        nombreDactivite: increment(1),
+      });
+      const [value1, value2] = await Promise.all([promise1, promise2]);
+      console.log(value1, value2);
+
+      return {
+        message: "Les likes ont été mise à jour avec success",
+        success: true,
+      };
     }
     return {
       message: "vous avez deja liker",
@@ -395,34 +427,40 @@ export const updateCommentairewithLike = async (
 
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
-        userLikes = [...doc.data().userLikes];
+        if (
+          doc.data()?.userLikes &&
+          doc.data()?.userLikes?.length !== 0 &&
+          doc.data().id === commentaireId
+        ) {
+          userLikes = [...doc.data().userLikes];
+        }
       });
-    }
-    const result = userLikes?.includes(userId);
-    if (!result) {
-      userLikes.push(userId);
-      const promise1 = updateDoc(doc(commentaireRef, commentaireId), {
-        userLikes,
-      });
+      const result = userLikes?.includes(userId);
+      if (!result) {
+        userLikes.push(userId);
+        const promise1 = updateDoc(doc(commentaireRef, commentaireId), {
+          userLikes,
+        });
 
-      const membreDataRef = doc(db, "MembreData", userId);
-      const promise2 = updateDoc(membreDataRef, {
-        nombreLikes: increment(1),
-        nombreDeMerciBenis: increment(1),
-        nombreDactivite: increment(1),
-      });
-      const [value1, value2] = await Promise.all([promise1, promise2]);
-      console.log(value1, value2);
+        const membreDataRef = doc(db, "MemberData", userId);
+        const promise2 = updateDoc(membreDataRef, {
+          nombreLikes: increment(1),
+          nombreDeMerciBenis: increment(1),
+          nombreDactivite: increment(1),
+        });
+        const [value1, value2] = await Promise.all([promise1, promise2]);
+        console.log(value1, value2);
 
+        return {
+          message: "Les likes ont été mise à jour avec success",
+          success: true,
+        };
+      }
       return {
-        message: "Les likes ont été mise à jour avec success",
+        message: "vous avez deja liker",
         success: true,
       };
     }
-    return {
-      message: "vous avez deja liker",
-      success: true,
-    };
   } catch (error) {
     console.log({ error: error });
     throw new Error("Une erreur est survenue pendant la mise à jour des likes");
@@ -447,8 +485,10 @@ export const getAllMessageData = async (groupeName: string) => {
           audio,
           video,
           userLikes,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
           groupeName,
+          communityId,
         } = doc.data();
         messagesData.push({
           id,
@@ -460,17 +500,25 @@ export const getAllMessageData = async (groupeName: string) => {
           audio,
           video,
           userLikes,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
           groupeName,
+          communityId,
         });
       });
     }
     return messagesData
       .filter((value) => value.groupeName === groupeName)
-      .sort(
-        (value, value1) =>
-          new Date(value.date).getSeconds() - new Date(value1.date).getSeconds()
-      );
+      .sort((value, value1) => {
+        const diff =
+          new Date(value.dateOfUpdate as string).getTime() -
+          new Date(value1.dateOfUpdate as string).getTime();
+        if (diff < 0) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
   } catch (error) {
     console.log({ error: error });
     throw new Error(
@@ -493,7 +541,8 @@ export const getAllCommentaireData = async (messageId: string) => {
           image,
           messageId,
           userLikes,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
           userId,
           userName,
           userAvatar,
@@ -507,7 +556,8 @@ export const getAllCommentaireData = async (messageId: string) => {
           image,
           messageId,
           userLikes,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
           userId,
           userName,
           userAvatar,
@@ -537,14 +587,22 @@ export const getAllResponseData = async () => {
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
         const id = doc.id;
-        const { text, image, commentaireId, date, userId, userName } =
-          doc.data();
+        const {
+          text,
+          image,
+          commentaireId,
+          dateOfCreation,
+          dateOfUpdate,
+          userId,
+          userName,
+        } = doc.data();
         reponsesData.push({
           id,
           text,
           image,
           commentaireId,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
           userId,
           userName,
         });
@@ -577,6 +635,7 @@ export const getMessageWithId = async (messageId: string) => {
         userLikes,
         date,
         groupeName,
+        communityId,
       } = docSnap.data();
       return {
         id,
@@ -590,6 +649,7 @@ export const getMessageWithId = async (messageId: string) => {
         userLikes,
         date,
         groupeName,
+        communityId,
       };
     } else {
       throw new Error("Le message n'existe pas");
@@ -604,7 +664,7 @@ export const getMessageWithId = async (messageId: string) => {
 export async function requestTogetAllMembreData(): Promise<MembreData[]> {
   let membreData: MembreData[] = [];
   try {
-    const querySnapshot = await getDocs(collection(db, "MembreData"));
+    const querySnapshot = await getDocs(collection(db, "MemberData"));
     console.log({ length: querySnapshot.docs.length });
     if (querySnapshot.docs.length !== 0) {
       querySnapshot.forEach((doc) => {
@@ -618,14 +678,15 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           birthDay,
           phone,
           status,
-          dateCreation,
-          dateMiseAJour,
+          dateOfCreation,
+          dateOfUpdate,
           nombrePartage,
           nombreLikes,
           nombreCommentaire,
           nombreDeMerciBenis,
           nombreDactivite,
           nombreDeBadge,
+          communityId,
         } = doc.data();
         membreData.push({
           id,
@@ -637,14 +698,15 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           birthDay,
           phone,
           status,
-          dateCreation,
-          dateMiseAJour,
+          dateOfCreation,
+          dateOfUpdate,
           nombrePartage,
           nombreLikes,
           nombreCommentaire,
           nombreDeMerciBenis,
           nombreDactivite,
           nombreDeBadge,
+          communityId,
         });
       });
 
@@ -682,7 +744,8 @@ export async function requestTogetAllEventDataofGroupe(
           textCTAEvent,
           locationOfEvent,
           groupeForEventSelect,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
         } = doc.data();
         groupeData.push({
           id,
@@ -697,7 +760,8 @@ export async function requestTogetAllEventDataofGroupe(
           textCTAEvent,
           locationOfEvent,
           groupeForEventSelect,
-          date,
+          dateOfCreation,
+          dateOfUpdate,
         });
       });
       console.log({ drdr_drdr: groupeData[0].id });
@@ -738,8 +802,8 @@ export async function requestTogetAllChannelDataOfGroupe(
           typeChannel,
           imageChannel,
           groupeIdChannel,
-          dateUpdatedChannel,
-          dateCreatedChannel,
+          dateOfCreation,
+          dateOfUpdate,
           statusChannel,
           typeAccessChannel,
           amountChannel,
@@ -752,8 +816,8 @@ export async function requestTogetAllChannelDataOfGroupe(
           typeChannel,
           imageChannel,
           groupeIdChannel,
-          dateUpdatedChannel,
-          dateCreatedChannel,
+          dateOfCreation,
+          dateOfUpdate,
           statusChannel,
           typeAccessChannel,
           amountChannel,
@@ -772,3 +836,66 @@ export async function requestTogetAllChannelDataOfGroupe(
     );
   }
 }
+
+export const getAllCommunityMessageData = async (communityId: string) => {
+  let messagesData: MessageData[] = [];
+  try {
+    const messageRef = collection(db, "MessageData");
+    const querySnapshot = await getDocs(messageRef);
+    console.log("nindja");
+    if (querySnapshot.docs.length !== 0) {
+      querySnapshot.forEach((doc) => {
+        const id = doc.id;
+        const {
+          userId,
+          userName,
+          userAvatar,
+          text,
+          photo,
+          audio,
+          video,
+          userLikes,
+          dateOfCreation,
+          dateOfUpdate,
+          groupeName,
+          communityId,
+        } = doc.data();
+        messagesData.push({
+          id,
+          userId,
+          userName,
+          userAvatar,
+          text,
+          photo,
+          audio,
+          video,
+          userLikes,
+          dateOfCreation,
+          dateOfUpdate,
+          groupeName,
+          communityId,
+        });
+      });
+    }
+    console.log({ messagesData });
+    const ca = messagesData
+      .filter((value) => value.communityId === communityId)
+      .sort((value, value1) => {
+        const diff =
+          new Date(value.dateOfUpdate as string).getTime() -
+          new Date(value1.dateOfUpdate as string).getTime();
+        if (diff < 0) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+    console.log(ca);
+    return ca;
+  } catch (error) {
+    console.log({ error: error });
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des messages"
+    );
+  }
+};

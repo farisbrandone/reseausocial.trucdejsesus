@@ -1,16 +1,22 @@
 import { NavLink } from "react-router-dom";
-import { GroupeDataType } from "seedAndGetData/seedData";
+import { CommunityDataType, GroupeDataType } from "seedAndGetData/seedData";
 
-function ButtonSideBar({ value }: { value: GroupeDataType }) {
-  const myClass = "flex items-center gap-3 p-2 rounded-lg";
+function ButtonSideBar({
+  value,
+  val,
+}: {
+  value: GroupeDataType;
+  val: CommunityDataType;
+}) {
+  const myClass = "flex  gap-3  rounded-lg";
   return (
     <NavLink
-      to={value.titleGroupe}
+      to={`/community/${val.title}/${value.titleGroupe}`}
       className={({ isActive, isPending }) =>
         isActive
-          ? "active  bg-[#FFF700] " + myClass
+          ? "active  bg-[#FFF700] p-2 " + myClass
           : isPending
-          ? "pending  bg-[#ffffffd8] " + myClass
+          ? "pending  bg-[#ffffffd8] p-2" + myClass
           : myClass
       }
     >

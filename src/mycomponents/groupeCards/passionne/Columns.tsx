@@ -22,11 +22,11 @@ export type Payment = {
   sexe: string;
   birthDay: string;
   phone: string;
-  dateCreation: string;
-  dateMiseAJour: string;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
   status: string;
   image: string;
-  id: string;
   nombrePartage: number;
   nombreLikes: number;
   nombreCommentaire: number;
@@ -58,7 +58,10 @@ export const columns: ColumnDef<Payment>[] = [
             <p className="text-[10px] bg-[#fff700] rounded-md p-[2px] leading-[10px] ">
               nous a rejoint le{" "}
               <span>
-                {format(new Date(row.original.dateCreation), "dd MMM yyyy")}
+                {format(
+                  new Date(row.original.dateOfCreation as string),
+                  "dd MMM yyyy"
+                )}
               </span>
             </p>
           </div>
