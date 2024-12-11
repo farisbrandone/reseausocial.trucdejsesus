@@ -17,6 +17,9 @@ import {
 import MainPageCommunity from "./mycomponents/mainPage/MainPageCommunity";
 import AcceuilPageCommunity from "./mycomponents/acceuilPage/AcceuilPageCommunity";
 import LoginMother from "./Sign/login/LoginMother";
+import Signup from "./Sign/signup/Signup";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "firebaseConfig";
 
 /* interface mymy {
   path: string;
@@ -48,13 +51,10 @@ import LoginMother from "./Sign/login/LoginMother";
   },
 ]); */
 
-export const context = createContext(null);
-const data =
-  !!localStorage.getItem("user") && localStorage.getItem("user") !== null
-    ? JSON.parse(localStorage.getItem("user") as string)
-    : undefined;
+export const context = createContext<User | null>(null);
 
 const communityDeliverGroupe = (
+  user: User,
   value: CommunityDataType,
   result: GroupeDataType[]
 ) => {
@@ -75,8 +75,11 @@ const communityDeliverGroupe = (
     const newValue = {
       path: `/community/${value.title}/${val.titleGroupe}`,
       element: (
-        <context.Provider value={data}>
-          <LoginMother>
+        <context.Provider value={user}>
+          <LoginMother
+            communityId={value.id as string}
+            groupeId={val.id as string}
+          >
             <GroupeCards groupeValue={val} />
           </LoginMother>
         </context.Provider>
@@ -93,6 +96,20 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [routesTotal, setRoutesTotal] = useState<RouteObject[]>([]);
   const [loadingFail, setLoadingFail] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user);
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const getGroupeData = async () => {
       try {
@@ -106,9 +123,13 @@ function App() {
 
         const principalRouteCommunity = [
           {
+            path: "/signup/:communityId/:groupeId",
+            element: <Signup />,
+          },
+          {
             path: "/",
             element: (
-              <context.Provider value={data}>
+              <context.Provider value={user as User}>
                 <LoginMother>
                   <MainPageCommunity communityData={communityData} />
                 </LoginMother>
@@ -128,7 +149,7 @@ function App() {
           const newValue = {
             /* path: `/community/${value.title}`,
             element: <CommunityMainCards />, */
-            ...communityDeliverGroupe(value, result),
+            ...communityDeliverGroupe(user as User, value, result),
           };
           principalRouteCommunity.push({ ...newValue });
         });

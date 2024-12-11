@@ -1,151 +1,156 @@
-import { toast } from "@/hooks/use-toast";
-import axios from "axios";
-import { format } from "date-fns";
+import clsx from "clsx";
 import { ChangeEvent, useState } from "react";
+import { auth } from "firebaseConfig";
+import { toast } from "@/hooks/use-toast";
+import { NavLink, useParams } from "react-router-dom";
 
-export interface dataLoginServerType {
-  token?: string;
-  error?: string;
-  status: number;
-}
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-export default function Login() {
+function Login() {
+  const { communityId, groupeId } = useParams();
+
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [classEmail, setClassEmail] = useState(false);
-  const [classPassword, setClassPassword] = useState(false);
+  const [classOfEmail, setClassOfEmail] = useState(false);
+
+  const [motsDepasse, setMotsDepasse] = useState("");
+  const [classOfMotsDepasse, setClassOfMotsDepasse] = useState(false);
+
   const [startSending, setStartSending] = useState(false);
+  const [messageSending, setMessageSending] = useState("");
+
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setEmail(e.target.value);
-    setClassEmail(false);
+    setClassOfEmail(false);
   };
 
-  const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleMotsDepasse = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setPassword(e.target.value);
-    setClassPassword(false);
+    setMotsDepasse(e.target.value);
+    setClassOfMotsDepasse(false);
   };
 
-  const onsubmitData = async () => {
-    if (!email || !password) {
+  const loginMembre = async () => {
+    setStartSending(() => true);
+
+    if (!email || !motsDepasse) {
+      if (!motsDepasse) {
+        setClassOfMotsDepasse(true);
+      }
+
       if (!email) {
-        setClassEmail(true);
+        setClassOfEmail(true);
       }
-      if (!password) {
-        setClassPassword(true);
-      }
+
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Tous les champs ne sont pas remplis",
+        description: "Tous les champs requis n'ont pas été remplis",
       });
+      setStartSending(() => false);
       return;
     }
     try {
-      setStartSending(true);
-      const data = {
-        email,
-        password,
-      };
-      const result = JSON.stringify(data);
-      console.log("bounga");
-      const resultat = await axios.post(
-        "https://serverbackofficetrucdejesus.onrender.com/api/backoffice/login",
-        data
-      );
-      console.log(resultat);
-      if (resultat.status === 200) {
-        localStorage.setItem("user", result);
-        window.location.replace("/");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Utilisateur non enregistré",
-        });
-        setStartSending(false);
-      }
+      await signInWithEmailAndPassword(auth, email, motsDepasse);
+
+      toast({
+        title: "Success",
+        description: "Le membre a été crée avec success",
+      });
+      setMessageSending("Authentification reussie");
+      window.location.replace(`/community/${communityId}/${groupeId}`);
+      return;
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur s'est produite, vérifiez votre connexion",
+        description: "Une erreur est survenue",
       });
-      setStartSending(false);
+      setStartSending(() => false);
+      console.error("");
     }
-    console.log({ email, password });
   };
 
   return (
-    <div className="w-screen h-screen p-2 max-[640px]:flex max-[640px]:items-center max-[640px]:justify-center sm:grid sm:grid-cols-2 bg-white">
-      <div className="absolute top-3 left-3">
-        <div className="flex items-center justify-center">
-          <img
-            src="https://trucdejesus.appowls.io/assets/apps/user_1837/app_3120/draft/icon/app_logo.png"
-            alt="Logo"
-            width="40"
-            height="40"
-            className=""
-          />
-          <span className="pl-1  self-center">Truc de JESUS !</span>
-        </div>
-      </div>
-      <div className="sm:place-content-center flex flex-col items-center w-full">
-        <div className="flex flex-col items-center gap-0 w-full text-center">
-          <p className="text-[20px] font-bold"> BON RETOUR PARMI NOUS</p>
-          <p className="text-[14px]">Veuillez entrer vos coordonnées</p>
-        </div>
-        <div className="w-[95%] flex flex-col items-center gap-3 mt-4 min-[350px]:w-[300px]">
-          <div className="flex flex-col gap-1 w-full">
-            <label htmlFor="email">Email</label>
-            <input
-              type="text"
-              id="email"
-              value={email}
-              onChange={handleEmail}
-              className={`inputStyle3 py-1.5 w-full disabled:opacity-75 ${
-                classEmail ? " border-[#ff1717]" : ""
-              } `}
-              disabled={startSending}
+    <div className="sm:h-screen sm:w-screen flex flex-col items-center justify-center pt13 text-[14px] text-[#000]  ">
+      <div className="bg-white shadow-xl px-3 sm:px-4 lg:px-8 pb-3 rounded-md border-[1px] border-solid border-[#F8E71C] ">
+        <div className="flex flex-col gap-4 mt-3">
+          <div className="flex flex-col gap-1">
+            <img
+              src=" https://www.trucdejesus.com/5322770/65d5f2e5b5b87_LOGOJAUNEUNTRUCDEJESUSTRANSPARENT.png"
+              alt=""
+              className="w-[50px] h-[50px] object-cover "
             />
+            <p className="-mt-3">Un Truc de Jesus</p>
           </div>
-          <div className="flex flex-col gap-1  w-full">
-            <label htmlFor="password">Mot de passe</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={handlePassword}
-              className={`inputStyle3 py-1.5 w-full disabled:opacity-75 ${
-                classPassword ? " border-[#ff1717]" : ""
-              } `}
-              disabled={startSending}
-            />
+          <div className="flex flex-col gap-1">
+            <h1 className="text-[20px] font-bold ">Se connecter</h1>
+            <p className="text-[#0000009a] ">
+              Entrez vos coordonnées ci-dessous pour créer votre compte et
+              démarrer.
+            </p>
+            {!!messageSending && (
+              <p className="text-green-700 text-[16px] "> {messageSending}</p>
+            )}
           </div>
-          {startSending && (
-            <div>Patienter, l'action est en cours d'éxécution...</div>
-          )}
+        </div>
+        <div className="flex flex-col w-full  gap-4 sm:grid sm:grid-cols-2 sm:gap-x-20 mt-3">
+          <div className=" flex flex-col gap-4">
+            <div className=" flex flex-col gap-1">
+              <label htmlFor="password">Mots de passe</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Entrer.."
+                value={motsDepasse}
+                onChange={handleMotsDepasse}
+                className={clsx("inputStyle3", {
+                  "border-red-700 focus:border-red-700": classOfMotsDepasse,
+                })}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4  ">
+            <div className=" flex flex-col gap-1">
+              <label htmlFor="email">Email</label>
+              <input
+                type="text"
+                id="email"
+                placeholder="Entrer..."
+                value={email}
+                onChange={handleEmail}
+                className={clsx("inputStyle3", {
+                  "border-red-700 focus:border-red-700": classOfEmail,
+                })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full flex justify-center items-center gap-1">
           <button
-            className="flex items-center justify-center text-white bg-[#E6C068] hover:bg-[#E6C068]/60 w-full py-1.5 mt-2 rounded-md disabled:opacity-75"
-            onClick={onsubmitData}
+            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md "
+            onClick={loginMembre}
             disabled={startSending}
           >
-            Se connecter
+            Confirmer{" "}
+            {startSending && (
+              <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+            )}{" "}
           </button>
+          <div className="flex items-center gap-1">
+            <p>Vous etes dejà inscrit:</p>
+            <NavLink
+              to={`/login/${communityId}/${groupeId}`}
+              className="text-[#BD10E0] "
+            >
+              Se connecter
+            </NavLink>
+          </div>
         </div>
-      </div>
-      <div className=" hidden sm:flex items-center justify-center bg-[#E6C068] p-5 ">
-        {/* <img
-          src="./christian_symbols.svg"
-          alt=""
-          className="w-[600px] h-[600px] object-cover p-2"
-        /> */}
-      </div>
-      <div className=" absolute bottom-3 left-3 ">
-        {format(Date.now(), "yyyy")} ©{" "}
-        <strong className="text-[#E6C068] ">Truc de JESUS !</strong>
       </div>
     </div>
   );
 }
+
+export default Login;

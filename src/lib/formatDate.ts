@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-
+import * as moment from "moment";
 export function formatDate(stringDate: string) {
   const dateValue = new Date(stringDate);
   const dateNow = new Date();
@@ -30,4 +30,8 @@ export function formatDateWithString(stringDate: string) {
   } else if (d > 7 * oneDay) {
     return format(dateValue, "'' dd/MM/yyyy");
   }
+}
+
+export function verifyFormatDate(date: string): boolean {
+  return moment(date, "DD/MM/YYYY", true).isValid(); // false
 }

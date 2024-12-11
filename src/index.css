@@ -188,4 +188,118 @@ h1 {
   .infoGroupeCards::before {
     @apply min-[982px]:top-[35px];
   }
+  .inputStyle3 {
+    @apply border-[#191919] focus:border-[#BD10E0] border-[1px] border-solid focus:outline-none rounded-md px-2 py-1.5;
+  }
+  .inputStyle2 {
+    @apply border-[#191919] focus:border-[#e91e63] border-[1px] border-solid focus:outline-none rounded-l-md  px-2 py-1.5;
+  }
+}
+.selectCountry {
+  border-color: red;
+  border: 1px solid red;
+}
+.selectCountry:focus {
+  border: 1px solid #bd10e0;
+}
+
+.pt13 {
+  background-color: #fff;
+  background-size: 100% 1.2em;
+  background-image: -webkit-linear-gradient(
+      0deg,
+      transparent 79px,
+      #abced4 79px,
+      #abced4 81px,
+      transparent 81px
+    ),
+    -webkit-linear-gradient(#eee 0.05em, transparent 0.05em);
+  background-image: -moz-linear-gradient(
+      0deg,
+      transparent 79px,
+      #abced4 79px,
+      #abced4 81px,
+      transparent 81px
+    ),
+    -moz-linear-gradient(#eee 0.05em, transparent 0.05em);
+  background-image: -ms-linear-gradient(
+      0deg,
+      transparent 79px,
+      #abced4 79px,
+      #abced4 81px,
+      transparent 81px
+    ),
+    -ms-linear-gradient(#eee 0.05em, transparent 0.05em);
+  background-image: -o-linear-gradient(
+      0deg,
+      transparent 79px,
+      #abced4 79px,
+      #abced4 81px,
+      transparent 81px
+    ),
+    -o-linear-gradient(#eee 0.05em, transparent 0.05em);
+  background-image: linear-gradient(
+      0deg,
+      transparent 79px,
+      #abced4 79px,
+      #abced4 81px,
+      transparent 81px
+    ),
+    linear-gradient(#eee 0.05em, transparent 0.05em);
+}
+
+.pt25 {
+  background-color: black;
+  background-image: -webkit-radial-gradient(
+      white,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 40px
+    ),
+    -webkit-radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent
+          30px),
+    -webkit-radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent
+          40px),
+    -webkit-radial-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1)
+          2px, transparent 30px);
+  background-image: -moz-radial-gradient(
+      white,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 40px
+    ),
+    -moz-radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
+    -moz-radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px),
+    -moz-radial-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1) 2px, transparent
+          30px);
+  background-image: -ms-radial-gradient(
+      white,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 40px
+    ),
+    -ms-radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
+    -ms-radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px),
+    -ms-radial-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1) 2px, transparent
+          30px);
+  background-image: -o-radial-gradient(
+      white,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 40px
+    ),
+    -o-radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
+    -o-radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px),
+    -o-radial-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1) 2px, transparent
+          30px);
+  background-image: radial-gradient(
+      white,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 40px
+    ),
+    radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
+    radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px),
+    radial-gradient(
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.1) 2px,
+      transparent 30px
+    );
+  background-position: 0 0px, 40px 60px, 130px 270px, 70px 100px;
+  background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
 }

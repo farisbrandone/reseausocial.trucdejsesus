@@ -1,5 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/hooks/use-toast";
 import clsx from "clsx";
+import { signOut } from "firebase/auth";
+import { auth } from "firebaseConfig";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 
 /* interface AvatarComponentType {
@@ -76,7 +79,20 @@ function AvatarComponent() {
           <span className="icon-[whh--stocks] text-xl mr-1"></span>
           <p>Mes commandes</p>
         </li>
-        <li className="mybutton hover:text-black  text-[#000] flex items-center pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md">
+        <li
+          className="mybutton hover:text-black  text-[#000] flex items-center pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md"
+          onClick={async () => {
+            try {
+              await signOut(auth);
+            } catch (err: any) {
+              toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: "Une erreur est survenue cotée serveur",
+              });
+            }
+          }}
+        >
           <span className="icon-[mdi--logout] text-xl mr-1"></span>
           <p>Me déconnecter</p>
         </li>
