@@ -20,6 +20,7 @@ import LoginMother from "./Sign/login/LoginMother";
 import Signup from "./Sign/signup/Signup";
 import { User } from "firebase/auth";
 import Login from "./Sign/login/Login";
+import NotAccessiblePage from "./mycomponents/errorPage/NotAccessiblePage";
 
 /* interface mymy {
   path: string;
@@ -126,9 +127,11 @@ function App() {
             path: "/",
             element: (
               <context.Provider value={user as User}>
-                <LoginMother>
-                  <MainPageCommunity communityData={communityData} />
-                </LoginMother>
+                <NotAccessiblePage>
+                  <LoginMother>
+                    <MainPageCommunity communityData={communityData} />
+                  </LoginMother>
+                </NotAccessiblePage>
               </context.Provider>
             ),
             errorElement: <ErrorPage />,

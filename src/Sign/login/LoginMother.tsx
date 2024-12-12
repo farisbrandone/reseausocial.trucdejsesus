@@ -1,5 +1,6 @@
 import { context } from "@/App";
 import { ReactNode, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginMother({
   communityId,
@@ -10,10 +11,11 @@ export default function LoginMother({
   groupeId?: string;
   children: ReactNode;
 }) {
+  const navigate = useNavigate();
   const data = useContext(context);
   console.log({ communityId, groupeId });
   if (!data) {
-    window.location.replace(`/signup/${communityId}/${groupeId}`);
+    navigate(`/signup/${communityId}/${groupeId}`);
   }
 
   return <>{data && children}</>;
