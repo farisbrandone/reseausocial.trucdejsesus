@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import * as moment from "moment";
+import moment from "moment";
 export function formatDate(stringDate: string) {
   const dateValue = new Date(stringDate);
   const dateNow = new Date();
@@ -9,7 +9,7 @@ export function formatDate(stringDate: string) {
   if (d < oneDay) {
     return format(dateValue, " HH:mm");
   } else if (d > oneDay && d < 7 * oneDay) {
-    const diffDay = dateNow.getDate() - dateNow.getDate();
+    const diffDay = dateNow.getDate() - dateValue.getDate();
     return `${diffDay}j`;
   } else if (d > 7 * oneDay) {
     return format(dateValue, "'' dd/MM/yyyy");

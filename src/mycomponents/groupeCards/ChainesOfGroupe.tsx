@@ -106,7 +106,10 @@ export function RessourcesChannelsDetailCards({
               />
               <p className="text-[12px] ">
                 {" "}
-                {format(new Date(ressource.date), "dd MMM yyy 'à' hh:mm")}{" "}
+                {format(
+                  new Date(ressource.dateOfCreation as string),
+                  "dd MMM yyy 'à' hh:mm"
+                )}{" "}
               </p>
             </div>
             <div className="flex flex-col gap-2">

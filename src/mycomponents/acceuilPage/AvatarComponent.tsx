@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import { signOut } from "firebase/auth";
-import { auth } from "firebaseConfig";
+import { auth } from "../../../firebaseConfig";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 
 /* interface AvatarComponentType {
@@ -14,7 +14,7 @@ function AvatarComponent() {
   const [putHidden, setPutHidden] = useState(true);
 
   const elementRef = useRef<HTMLDivElement>(null);
-
+  const user = JSON.parse(localStorage.getItem("user") as string);
   const handleVisible = (event: MouseEvent<HTMLDivElement>) => {
     const clickedElement = event.target as HTMLElement;
 
@@ -64,7 +64,7 @@ function AvatarComponent() {
       > */}
       <p className="">
         <Avatar className="w-[35px] h-[35px] ">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage src={user?.image} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </p>

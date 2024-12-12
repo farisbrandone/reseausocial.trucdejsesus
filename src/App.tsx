@@ -18,8 +18,8 @@ import MainPageCommunity from "./mycomponents/mainPage/MainPageCommunity";
 import AcceuilPageCommunity from "./mycomponents/acceuilPage/AcceuilPageCommunity";
 import LoginMother from "./Sign/login/LoginMother";
 import Signup from "./Sign/signup/Signup";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "firebaseConfig";
+import { User } from "firebase/auth";
+import Login from "./Sign/login/Login";
 
 /* interface mymy {
   path: string;
@@ -60,12 +60,12 @@ const communityDeliverGroupe = (
 ) => {
   const res = result.filter((val) => val.communityId === value.id);
   const principalRoute = {
-    path: `/community/${value.title}`,
+    path: `/community/${value.id}`,
     element: <MainPage groupeData={res} value={value} />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: `/community/${value.title}/`,
+        path: `/community/${value.id}/`,
         element: <AcceuilPage groupeData={res} value={value} />,
       },
     ],
@@ -73,7 +73,7 @@ const communityDeliverGroupe = (
 
   res.forEach((val) => {
     const newValue = {
-      path: `/community/${value.title}/${val.titleGroupe}`,
+      path: `/community/${value.id}/${val.id}`,
       element: (
         <context.Provider value={user}>
           <LoginMother
@@ -96,19 +96,10 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [routesTotal, setRoutesTotal] = useState<RouteObject[]>([]);
   const [loadingFail, setLoadingFail] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log(user);
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  /* const [commit, setCommit] = useState<CommunityDataType[]>();
+  const [groupes, setGroupes] = useState<GroupeDataType[]>(); */
+  // const [user, setUser] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user") as string);
 
   useEffect(() => {
     const getGroupeData = async () => {
@@ -116,6 +107,7 @@ function App() {
         const result = await requestTogetAllUniversalData<GroupeDataType>(
           "GroupeData"
         );
+
         const communityData =
           await requestTogetAllUniversalData<CommunityDataType>(
             "CommunityData"
@@ -125,6 +117,10 @@ function App() {
           {
             path: "/signup/:communityId/:groupeId",
             element: <Signup />,
+          },
+          {
+            path: "/login/:communityId/:groupeId",
+            element: <Login />,
           },
           {
             path: "/",

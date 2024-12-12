@@ -11,7 +11,7 @@ function ButtonSideBar({
   const myClass = "flex  gap-3  rounded-lg";
   return (
     <NavLink
-      to={`/community/${val.title}/${value.titleGroupe}`}
+      to={`/community/${val.id}/${value.id}`}
       className={({ isActive, isPending }) =>
         isActive
           ? "active  bg-[#FFF700] p-2 " + myClass

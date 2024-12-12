@@ -1,11 +1,8 @@
 import clsx from "clsx";
 import { ChangeEvent, useState } from "react";
-import { auth } from "firebaseConfig";
 import { toast } from "@/hooks/use-toast";
-import { NavLink, useParams } from "react-router-dom";
-
-import { signInWithEmailAndPassword } from "firebase/auth";
-
+import { useParams } from "react-router-dom";
+import axios from "axios";
 function Login() {
   const { communityId, groupeId } = useParams();
 
@@ -51,16 +48,24 @@ function Login() {
       return;
     }
     try {
-      await signInWithEmailAndPassword(auth, email, motsDepasse);
+      const body = { email, password: motsDepasse };
+      const data = await axios.post(
+        "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/login",
+        body
+      );
 
-      toast({
-        title: "Success",
-        description: "Le membre a été crée avec success",
-      });
-      setMessageSending("Authentification reussie");
-      window.location.replace(`/community/${communityId}/${groupeId}`);
+      if (data.data.email === email) {
+        localStorage.setItem("user", JSON.stringify(data.data));
+        toast({
+          title: "Success",
+          description: "Le membre a été crée avec success",
+        });
+        setMessageSending("Authentification reussie");
+        window.location.replace(`/community/${communityId}/${groupeId}`);
+      }
       return;
     } catch (error) {
+      console.log(error);
       toast({
         variant: "destructive",
         title: "Erreur",
@@ -72,7 +77,7 @@ function Login() {
   };
 
   return (
-    <div className="sm:h-screen sm:w-screen flex flex-col items-center justify-center pt13 text-[14px] text-[#000]  ">
+    <div className="h-screen w-screen flex flex-col items-center justify-center pt13 text-[14px] text-[#000]  ">
       <div className="bg-white shadow-xl px-3 sm:px-4 lg:px-8 pb-3 rounded-md border-[1px] border-solid border-[#F8E71C] ">
         <div className="flex flex-col gap-4 mt-3">
           <div className="flex flex-col gap-1">
@@ -86,8 +91,7 @@ function Login() {
           <div className="flex flex-col gap-1">
             <h1 className="text-[20px] font-bold ">Se connecter</h1>
             <p className="text-[#0000009a] ">
-              Entrez vos coordonnées ci-dessous pour créer votre compte et
-              démarrer.
+              Entrez vos coordonnées ci-dessous pour vous connecter et démarrer.
             </p>
             {!!messageSending && (
               <p className="text-green-700 text-[16px] "> {messageSending}</p>
@@ -127,18 +131,18 @@ function Login() {
           </div>
         </div>
 
-        <div className="w-full flex justify-center items-center gap-1">
+        <div className="w-full flex flex-col justify-center items-center gap-1">
           <button
-            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md "
+            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md flex gap-1 items-center"
             onClick={loginMembre}
             disabled={startSending}
           >
-            Confirmer{" "}
+            <span>Confirmer</span>{" "}
             {startSending && (
-              <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+              <span className="icon-[eos-icons--three-dots-loading] text-2xl"></span>
             )}{" "}
           </button>
-          <div className="flex items-center gap-1">
+          {/*  <div className="flex items-center gap-1">
             <p>Vous etes dejà inscrit:</p>
             <NavLink
               to={`/login/${communityId}/${groupeId}`}
@@ -146,7 +150,7 @@ function Login() {
             >
               Se connecter
             </NavLink>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

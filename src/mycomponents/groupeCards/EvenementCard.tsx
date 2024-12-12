@@ -105,7 +105,10 @@ export function EvenementDetailCards({
           <img src={event.imageUrlEvent} alt={event.titleEvent} />
           <p className="text-[12px] ">
             {" "}
-            {format(new Date(event.date), "dd MMM yyy 'à' hh:mm")}{" "}
+            {format(
+              new Date(event.dateOfCreation as string),
+              "dd MMM yyy 'à' hh:mm"
+            )}{" "}
           </p>
         </div>
         <a

@@ -41,7 +41,10 @@ export const columnsClassement: ColumnDef<MembreData>[] = [
             <p className="text-[10px] bg-[#fff700] rounded-md p-[2px] leading-[10px] ">
               nous a rejoint le{" "}
               <span>
-                {format(new Date(row.original.dateCreation), "dd MMM yyyy")}
+                {format(
+                  new Date(row.original.dateOfCreation as string),
+                  "dd MMM yyyy"
+                )}
               </span>
             </p>
           </div>

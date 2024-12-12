@@ -11,7 +11,7 @@ export default function LoginMother({
   children: ReactNode;
 }) {
   const data = useContext(context);
-  console.log(data);
+  console.log({ communityId, groupeId });
   if (!data) {
     window.location.replace(`/signup/${communityId}/${groupeId}`);
   }

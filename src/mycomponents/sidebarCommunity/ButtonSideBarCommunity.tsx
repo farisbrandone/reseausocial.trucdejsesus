@@ -5,7 +5,7 @@ function ButtonSideBarCommunity({ value }: { value: CommunityDataType }) {
   const myClass = "flex  gap-3  rounded-lg";
   return (
     <NavLink
-      to={`/community/${value.title}`}
+      to={`/community/${value.id}`}
       className={({ isActive, isPending }) =>
         isActive
           ? "active  bg-[#FFF700] " + myClass

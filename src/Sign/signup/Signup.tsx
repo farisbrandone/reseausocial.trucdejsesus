@@ -33,12 +33,6 @@ import { verifyFormatDate } from "@/lib/formatDate";
   nombreDeBadge: number;
 } */
 
-interface axiosType {
-  success: string;
-  error: string;
-  alreadyExist: boolean;
-}
-
 function Signup() {
   const { communityId, groupeId } = useParams();
   const [name, setName] = useState("");
@@ -60,7 +54,7 @@ function Signup() {
   );
   const [classOfPhone, setClassOfPhone] = useState(false);
 
-  const [sexe, setSexe] = useState("");
+  const [sexe, setSexe] = useState("Male");
 
   const [motsDepasse, setMotsDepasse] = useState("");
   const [classOfMotsDepasse, setClassOfMotsDepasse] = useState(false);
@@ -142,10 +136,10 @@ function Signup() {
   };
 
   const addMembre = async () => {
-    setStartSending(() => true);
     if (!verifyFormatDate(birthDay)) {
       setQualityDate(true);
       setClassOfBirthDay(true);
+      return;
     }
     if (
       !name ||
@@ -181,11 +175,12 @@ function Signup() {
         title: "Erreur",
         description: "Tous les champs requis n'ont pas été remplis",
       });
-      setStartSending(() => false);
+
       return;
     }
     const myDate = new Date().toUTCString();
     try {
+      setStartSending(() => true);
       var data = {
         name: name,
         email: email,
@@ -207,34 +202,32 @@ function Signup() {
         dateOfUpdate: myDate,
       };
       console.log(data);
-      const { success, error, alreadyExist } = await axios.post<
-        axiosType,
-        axiosType
-      >(
+      const mydata = await axios.post(
         "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/signup",
         data
       );
-      console.log(error);
-      if (alreadyExist) {
-        setMessageSending(success);
+
+      if (mydata.data.alreadyExist) {
+        setMessageSending(mydata.data.success);
         return;
       }
 
-      if (!alreadyExist && success) {
+      console.log(mydata);
+      if (!mydata.data.alreadyExist && mydata.data.success) {
         toast({
           title: "Success",
-          description: "Le membre a été crée avec success",
+          description: mydata.data.success,
         });
         setMessageSending(
           "Un email vous a été envoyé à votre adresse, vérifier si possible dans les spams"
         );
-
+        setStartSending(() => false);
         return;
       } else {
         toast({
           variant: "destructive",
           title: "Erreur",
-          description: "Une erreur est survenue cotée serveur",
+          description: mydata.data.success,
         });
         setStartSending(() => false);
       }
@@ -384,7 +377,7 @@ function Signup() {
             <div className=" flex flex-col gap-1">
               <label htmlFor="passwordConfirm">Confirme le mots de passe</label>
               <input
-                type="passwordConfirm"
+                type="password"
                 id="passwordConfirm"
                 placeholder="Entrer.."
                 value={motsDepasseConfirm}
@@ -420,15 +413,15 @@ function Signup() {
             />
           </div>
         </div>
-        <div className="w-full flex justify-center items-center gap-1">
+        <div className="w-full flex  flex-col justify-center items-center gap-1">
           <button
-            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md "
+            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md flax items-center gap-1 "
             onClick={addMembre}
             disabled={startSending}
           >
-            Confirmer{" "}
+            <span>Confirmer </span>
             {startSending && (
-              <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
+              <span className="icon-[eos-icons--three-dots-loading] text-3xl"></span>
             )}{" "}
           </button>
           <div className="flex items-center gap-1">
