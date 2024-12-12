@@ -1,5 +1,5 @@
 import { context } from "@/App";
-import { ReactNode, useContext } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginMother({
@@ -14,9 +14,12 @@ export default function LoginMother({
   const navigate = useNavigate();
   const data = useContext(context);
   console.log({ communityId, groupeId });
-  if (!data) {
-    navigate(`/signup/${communityId}/${groupeId}`);
-  }
+
+  useEffect(() => {
+    if (!data) {
+      navigate(`/signup/${communityId}/${groupeId}`);
+    }
+  }, []);
 
   return <>{data && children}</>;
 }
