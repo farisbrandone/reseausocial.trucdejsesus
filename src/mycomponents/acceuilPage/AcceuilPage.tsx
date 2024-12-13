@@ -161,8 +161,8 @@ function AcceuilPage({
           </p>
           <div></div>
         </div> */}
-        <div className="flex items-center gap-1 w-full">
-          <div className="body2 hidden sm:flex flex-col gap-4 ">
+        <div className="flex items-center gap-1 w-full lg:border-r-[#000] lg:border-solid lg:border-[2px] ">
+          <div className="body2 hidden  lg:flex flex-col gap-4  self-start ">
             {groupeData.map((objectCard) => (
               <CardGroupAcceuil objectCard={objectCard} />
             ))}
