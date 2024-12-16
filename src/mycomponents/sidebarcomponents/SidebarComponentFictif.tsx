@@ -9,7 +9,7 @@ interface SidebarComponentType {
 
 function SidebarComponentFictif({ groupeState, val }: SidebarComponentType) {
   return (
-    <div className="fixed hidden min-[1030px]:flex flex-col gap-2 items-center ml-3 sm:ml-3 top-0 w-[200px]  ">
+    <div className="fixed hidden min-[1030px]:flex flex-col gap-2 items-center ml-3 sm:ml-3 top-0 w-[260px]  ">
       <a
         href={`/community/${val.title}`}
         className="header flex flex-col gap-4 items-center mt-6 px-1  pb-1"

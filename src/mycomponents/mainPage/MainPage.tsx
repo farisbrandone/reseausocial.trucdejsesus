@@ -8,6 +8,9 @@ import {
   GroupeDataType,
   /*  requestTogetAllGroupeData, */
 } from "../../../seedAndGetData/seedData";
+import { Action, MyReducer, State } from "@/store/MyReducer";
+import { useReducer } from "react";
+import { Context, DispatchContext } from "@/hooks/useContextReducer";
 
 function MainPage({
   groupeData,
@@ -16,26 +19,24 @@ function MainPage({
   groupeData: GroupeDataType[];
   value: CommunityDataType;
 }) {
-  /*  const [groupeState, setGroupeState] = useState<GroupeDataType[]>(); */
-
-  /* useEffect(() => {
-    const getGroupeData = async () => {
-      const result = await requestTogetAllGroupeData();
-      setGroupeState([...result]);
-    };
-
-    getGroupeData();
-  }, []); */
+  const [state, dispatch] = useReducer<React.Reducer<State, Action>>(
+    MyReducer,
+    { stateSideBar: false, statePrev: false, prev: "" }
+  );
 
   return (
-    <div className="flex gap-1">
-      <SidebarComponent />
-      <SidebarComponentFictif groupeState={groupeData} val={value} />
-      <SidebarForMobile groupeState={groupeData} val={value} />
-      <div className="max-[400px]:w-full min-[400px]:mx-auto flex flex-1 max-[400px]:px-1 max-[980px]:px-3">
-        <Outlet />
-      </div>
-    </div>
+    <Context.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <div className="flex gap-1">
+          <SidebarComponent />
+          <SidebarComponentFictif groupeState={groupeData} val={value} />
+          <SidebarForMobile groupeState={groupeData} val={value} />
+          <div className="max-[400px]:w-full min-[400px]:mx-auto flex flex-1 max-[400px]:px-1 max-[980px]:px-3">
+            <Outlet />
+          </div>
+        </div>
+      </DispatchContext.Provider>
+    </Context.Provider>
   );
 }
 

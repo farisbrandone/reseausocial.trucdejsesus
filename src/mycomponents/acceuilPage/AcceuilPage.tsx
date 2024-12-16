@@ -8,6 +8,8 @@ import AvatarComponent from "./AvatarComponent";
 import CardGroupAcceuil from "./CardGroupAcceuil";
 import { useEffect, useState } from "react";
 import MessageCommunityElement from "./MessageCommunityElement";
+import clsx from "clsx";
+import { useContextReducer } from "@/hooks/useContextReducer";
 
 /* const objectCards = [
   {
@@ -84,7 +86,7 @@ function AcceuilPage({
 }) {
   const [messageCoommunity, setMessageCommunity] = useState<MessageData[]>();
   const [loadingFail, setLoadingFail] = useState(false);
-
+  const [state, dispatch] = useContextReducer();
   useEffect(() => {
     const getAllMessageWithCommunityId = async () => {
       try {
@@ -94,6 +96,7 @@ function AcceuilPage({
         setLoadingFail(true);
       }
     };
+    console.log({ state });
 
     getAllMessageWithCommunityId();
   }, []);
@@ -106,16 +109,35 @@ function AcceuilPage({
   }
 
   return (
-    <div className="flex flex-col items-center px-1 sm:pr-2 w-full p-0 ">
-      <div className="h-8 sm:h-7 w-full bg-white"></div>
-      <div className="headerAcceuil sticky w-full flex items-center justify-end gap-4 top-0 z-40 h-[50px] sm:h-[80px]  bg-white ">
-        <div className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]">
-          <span className="icon-[mdi--bell] text-2xl"></span>
+    <div
+      className={clsx(
+        "relative flex flex-col items-center px-1 sm:pr-2 w-full p-0 "
+      )}
+    >
+      <div className="h-2 sm:h-7 w-full bg-white"></div>
+
+      <div className="headerAcceuil sticky w-full flex items-center justify-between gap-4 top-0 z-40 h-[50px] sm:h-[80px]  bg-white ">
+        <div
+          className={clsx(
+            "self-center flex items-center justify-center lg:overflow-hidden cursor-pointer",
+            {
+              " overflow-hidden": state?.stateSideBar,
+            }
+          )}
+          onClick={() => {
+            console.log("ee");
+            dispatch({ type: "open", payload: "" });
+          }}
+        >
+          <span className="icon-[ci--hamburger] text-3xl lg:hidden"></span>
         </div>
-        {/*  <div className="flex items-center justify-center w-[30px] h-[30px] bg-[#c7bfbf] rounded-full mr-2 cursor-pointer border-[1px] border-solid border-[#00000026] ">
-          <p className="object-fill"> A</p>
-        </div> */}
-        <AvatarComponent />
+        <div className="flex items-center gap-2">
+          <div className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]">
+            <span className="icon-[mdi--bell] text-2xl"></span>
+          </div>
+
+          <AvatarComponent />
+        </div>
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
@@ -177,6 +199,9 @@ function AcceuilPage({
           </div>
         </div>
       </div>
+      {state?.stateSideBar && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 z-50"></div>
+      )}
     </div>
   );
 }

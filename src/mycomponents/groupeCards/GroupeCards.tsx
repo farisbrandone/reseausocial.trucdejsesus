@@ -21,6 +21,7 @@ import { columnsClassement } from "./passionne/ColumnClassement";
 import { CopyIcon } from "lucide-react";
 import ButtonForCopy from "./ButtonForCopy";
 import MessageCards from "./MessageCards";
+import { useContextReducer } from "@/hooks/useContextReducer";
 
 interface Tab {
   title: string;
@@ -68,7 +69,7 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
   const [textePartage, setTextePartage] = useState("");
   const [messagesData, setMessagesData] = useState<MessageData[]>([]);
   const [membreOfData, setMembreOfData] = useState<MembreData[]>([]);
-
+  const [state, dispatch] = useContextReducer();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -117,9 +118,21 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
   }, []);
 
   return (
-    <div className=" flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white ">
+    <div
+      className={clsx(
+        " flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white"
+      )}
+    >
       <div className="h-6 max-[980px]:h-8 w-full bg-white "></div>
       <div className="headerAcceuil sticky w-full flex items-center justify-between min-[400px]:justify-end  min-[400px]:gap-4  top-0 bg-white pt-4 max-[980px]:pt-6 z-10 ">
+        <div
+          className={clsx("flex items-center justify-center lg:hidden", {
+            hidden: state?.stateSideBar,
+          })}
+          onClick={() => dispatch({ type: "open", payload: "" })}
+        >
+          <span className="icon-[ci--hamburger] lg:hidden"></span>
+        </div>
         <div className="flex min-[400px]:flex-1  sm:justify-end items-center">
           <input
             title="Rechercher"
@@ -348,7 +361,11 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
                 )}
               >
                 <div>
-                  <PassionneTable columns={columns} data={membreOfData} />
+                  <PassionneTable
+                    columns={columns}
+                    data={membreOfData.map((val) => ({ ...val, groupeValue }))}
+                    /*  Mycomponent={Mycomponent} */
+                  />
                 </div>
               </TabsPrimitive.Content>
               <TabsPrimitive.Content
@@ -381,7 +398,7 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
                 <div>
                   <PassionneTable
                     columns={columnsClassement}
-                    data={membreOfData}
+                    data={membreOfData.map((val) => ({ ...val, groupeValue }))}
                   />
                 </div>
               </TabsPrimitive.Content>
@@ -480,6 +497,9 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
           </div>
         </div>
       </div>
+      {state?.stateSideBar && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 z-50"></div>
+      )}
     </div>
   );
 }

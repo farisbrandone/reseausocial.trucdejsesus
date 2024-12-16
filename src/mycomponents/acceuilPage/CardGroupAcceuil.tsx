@@ -11,7 +11,7 @@ export interface ObjectCardType {
 
 function CardGroupAcceuil({ objectCard }: { objectCard: GroupeDataType }) {
   return (
-    <div className="flex flex-col sm:flex-row self-start">
+    <div className="flex flex-col sm:flex-row ">
       <img
         src={objectCard.banniereUrlGroupe}
         alt=""

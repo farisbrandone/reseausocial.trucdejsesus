@@ -16,6 +16,7 @@ import {
   endBefore,
   startAt, */
   increment,
+  deleteDoc,
   /* where, */
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -46,19 +47,21 @@ export interface MembreData {
   dateOfCreation?: string;
   dateOfUpdate?: string;
   id?: string;
+  communityId?: string;
+  groupeId?: string[];
   nombrePartage: number;
   nombreLikes: number;
   nombreCommentaire: number;
   nombreDeMerciBenis: number;
   nombreDactivite: number;
   nombreDeBadge: number;
-  communityId: string;
 }
 
 export interface MessageData {
   dateOfCreation?: string;
   dateOfUpdate?: string;
   id?: string;
+  userReceiverId?: string;
   userId: string;
   userName: string;
   userAvatar: string;
@@ -66,9 +69,12 @@ export interface MessageData {
   photo: string;
   audio: string;
   video: string;
+  othersFile: string;
   userLikes: string[];
   groupeName: string;
+  groupeId?: string;
   communityId: string;
+  typeMessage: string;
 }
 
 export interface CommentaireData {
@@ -239,6 +245,8 @@ export const postMessageByUser = async (
     userLikes,
     userAvatar,
     communityId,
+    typeMessage,
+    othersFile,
   }: MessageData,
   groupeId: string
 ) => {
@@ -262,6 +270,8 @@ export const postMessageByUser = async (
       groupeName,
       userLikes,
       communityId,
+      typeMessage,
+      othersFile,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -489,6 +499,8 @@ export const getAllMessageData = async (groupeName: string) => {
           dateOfUpdate,
           groupeName,
           communityId,
+          typeMessage,
+          othersFile,
         } = doc.data();
         messagesData.push({
           id,
@@ -504,6 +516,8 @@ export const getAllMessageData = async (groupeName: string) => {
           dateOfUpdate,
           groupeName,
           communityId,
+          typeMessage,
+          othersFile,
         });
       });
     }
@@ -636,6 +650,8 @@ export const getMessageWithId = async (messageId: string) => {
         date,
         groupeName,
         communityId,
+        typeMessage,
+        othersFile,
       } = docSnap.data();
       return {
         id,
@@ -650,6 +666,8 @@ export const getMessageWithId = async (messageId: string) => {
         date,
         groupeName,
         communityId,
+        typeMessage,
+        othersFile,
       };
     } else {
       throw new Error("Le message n'existe pas");
@@ -859,6 +877,8 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           dateOfUpdate,
           groupeName,
           communityId,
+          typeMessage,
+          othersFile,
         } = doc.data();
         messagesData.push({
           id,
@@ -874,6 +894,8 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           dateOfUpdate,
           groupeName,
           communityId,
+          typeMessage,
+          othersFile,
         });
       });
     }
@@ -899,3 +921,113 @@ export const getAllCommunityMessageData = async (communityId: string) => {
     );
   }
 };
+
+export async function requestToGetAllUniversalDataWithId<T>(
+  parameterId: string,
+  databaseName: string
+): Promise<T> {
+  try {
+    const docRef = doc(db, databaseName, parameterId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const result = { ...docSnap.data() };
+      return result as T;
+    } else {
+      throw new Error("Le document n'existe pas");
+    }
+  } catch (error) {
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des données"
+    );
+  }
+}
+
+export const getAllSenderReceiverMessage = async (
+  senderId: string,
+  receiverId: string
+) => {
+  let messagesData: MessageData[] = [];
+  try {
+    const messageRef = collection(db, "MessageData");
+    const querySnapshot = await getDocs(messageRef);
+
+    if (querySnapshot.docs.length !== 0) {
+      querySnapshot.forEach((doc) => {
+        const id = doc.id;
+        const {
+          userId,
+          userName,
+          userAvatar,
+          text,
+          photo,
+          audio,
+          video,
+          userLikes,
+          dateOfCreation,
+          dateOfUpdate,
+          groupeName,
+          communityId,
+          typeMessage,
+          othersFile,
+        } = doc.data();
+        messagesData.push({
+          id,
+          userId,
+          userName,
+          userAvatar,
+          text,
+          photo,
+          audio,
+          video,
+          userLikes,
+          dateOfCreation,
+          dateOfUpdate,
+          groupeName,
+          communityId,
+          typeMessage,
+          othersFile,
+        });
+      });
+    }
+    console.log("papounet");
+    return messagesData
+      .filter(
+        (value) =>
+          value.userId === senderId && value.userReceiverId === receiverId
+      )
+      .sort((value, value1) => {
+        const diff =
+          new Date(value.dateOfUpdate as string).getTime() -
+          new Date(value1.dateOfUpdate as string).getTime();
+        if (diff < 0) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+  } catch (error) {
+    console.log({ error: error });
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des messages"
+    );
+  }
+};
+
+export async function requestToDeleteUniversalDataWithId(
+  dataId: string,
+  databaseName: string
+) {
+  const docRef = doc(db, databaseName, dataId);
+  try {
+    await deleteDoc(docRef);
+    return {
+      message: "le document à été supprimer avec success",
+      success: true,
+    };
+  } catch (error) {
+    return {
+      message: "Un problème est survenu pendant la suppression",
+      success: false,
+    };
+  }
+}

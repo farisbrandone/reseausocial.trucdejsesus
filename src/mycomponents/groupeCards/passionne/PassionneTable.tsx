@@ -28,6 +28,7 @@ import { DataTableViewOptions } from "./DataTableViewOptions";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  Mycomponent?: ({ row }: { row: TData }) => JSX.Element;
 }
 
 export function PassionneTable<TData, TValue>({
@@ -107,21 +108,25 @@ export function PassionneTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="relative"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                        {/*  {!!Mycomponent && Mycomponent({ row: row.original })} */}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell

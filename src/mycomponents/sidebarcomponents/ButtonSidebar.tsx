@@ -8,7 +8,7 @@ function ButtonSideBar({
   value: GroupeDataType;
   val: CommunityDataType;
 }) {
-  const myClass = "flex  gap-3  rounded-lg";
+  const myClass = "flex  gap-2  rounded-lg";
   return (
     <NavLink
       to={`/community/${val.id}/${value.id}`}
@@ -23,7 +23,10 @@ function ButtonSideBar({
       <div className="flex items-center justify-center w-[25px] h-[25px] p-2 rounded-full text-white bg-[#000] ">
         {value.titleGroupe.charAt(0).toUpperCase()}
       </div>
-      <div> {value.titleGroupe} </div>
+      <div className="w-[210px] overflow-clip text-ellipsis text-nowrap">
+        {" "}
+        {value.titleGroupe}
+      </div>
       {/* <div>{text === "/" ? "ACCEUIL" : text}</div> */}
     </NavLink>
   );

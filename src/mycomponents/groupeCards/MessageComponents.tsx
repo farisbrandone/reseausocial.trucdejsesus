@@ -146,6 +146,8 @@ export function MessageComponents({
         userLikes: [],
         groupeName: !!groupeName ? groupeName : "",
         communityId: groupeValue.communityId as string,
+        typeMessage: "public",
+        othersFile: "",
       };
 
       const result = await postMessageByUser(data, groupeId);
