@@ -78,7 +78,7 @@ export function verifyPassword(password: string) {
   const specialCharCondition = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
   // Check all conditions
-  let message = "Password must contain:";
+  let message = "Le mot de passe doit contenir :";
   if (!lengthCondition) message += "\n- Au moins 8 caractères";
   if (!uppercaseCondition) message += "\n- Une lettre majuscule";
   if (!lowercaseCondition) message += "\n- Une lettre minuscule";
