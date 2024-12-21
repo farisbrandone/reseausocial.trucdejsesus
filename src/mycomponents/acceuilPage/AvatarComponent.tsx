@@ -70,8 +70,8 @@ function AvatarComponent({
       > */}
       <p className="">
         <Avatar className="w-[35px] h-[35px] ">
-          <AvatarImage src={user?.image} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src={user?.image} alt={"@shadcn"} />
+          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
         </Avatar>
       </p>
 

@@ -219,6 +219,7 @@ function Profil() {
         });
         const dd = await createUser(email, motsDepasse, auth);
         const tt = await signInWithEmailAndPassword(auth, email, motsDepasse);
+        localStorage.setItem("user", JSON.stringify(data));
         console.log(dd, tt);
         setStartSending(() => false);
         //window.location.replace(`/login/${communityId}/${groupeId}`);
