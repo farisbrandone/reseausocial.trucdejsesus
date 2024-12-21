@@ -186,16 +186,18 @@ export const columns: ColumnDef<Payment>[] = [
                 </p>
                 <span>Membre info</span>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="itemDrop hover:bg-black/30 cursor-pointer w-full py-1.5 pl-1 rounded-sm flex items-center gap-1"
-                onClick={openPrivateDiscution}
-              >
-                <p className="iconDrop">
-                  {" "}
-                  <span className="icon-[hugeicons--message-02] text-xl"></span>
-                </p>{" "}
-                <span> Discuter en privée </span>
-              </DropdownMenuItem>
+              {row.original.email !== auth.currentUser?.email && (
+                <DropdownMenuItem
+                  className="itemDrop hover:bg-black/30 cursor-pointer w-full py-1.5 pl-1 rounded-sm flex items-center gap-1"
+                  onClick={openPrivateDiscution}
+                >
+                  <p className="iconDrop">
+                    {" "}
+                    <span className="icon-[hugeicons--message-02] text-xl"></span>
+                  </p>{" "}
+                  <span> Discuter en privée </span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           {open && (
@@ -367,7 +369,7 @@ export default function PrivateMessageComponent({
       try {
         setStartLoading(true);
         const myUsers = await axios.post(
-          "http://localhost:4000/api/frontoffice/getmemberwithemail",
+          "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/getmemberwithemail",
           { email: userAmin?.email }
         );
 
