@@ -79,11 +79,11 @@ export function verifyPassword(password: string) {
 
   // Check all conditions
   let message = "Password must contain:";
-  if (!lengthCondition) message += "\n- At least 8 characters";
-  if (!uppercaseCondition) message += "\n- An uppercase letter";
-  if (!lowercaseCondition) message += "\n- A lowercase letter";
-  if (!digitCondition) message += "\n- A digit";
-  if (!specialCharCondition) message += "\n- A special character";
+  if (!lengthCondition) message += "\n- Au moins 8 caractères";
+  if (!uppercaseCondition) message += "\n- Une lettre majuscule";
+  if (!lowercaseCondition) message += "\n- Une lettre minuscule";
+  if (!digitCondition) message += "\n- Un chiffre";
+  if (!specialCharCondition) message += "\n- Un caractère spécial";
 
   if (
     lengthCondition &&

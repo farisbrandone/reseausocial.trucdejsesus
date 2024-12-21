@@ -397,12 +397,12 @@ function Signup() {
                 })}
               />
               {messagePassword ? (
-                <p className="text-red-700 text-[12px] w-[240px] text-wrap ">
+                <p className="text-red-700 text-[12px] w-[240px] text-wrap  whitespace-pre">
                   {" "}
                   {messagePassword}{" "}
                 </p>
               ) : (
-                <p className="text-green-700 text-[12px] w-[240px] text-wrap">
+                <p className="text-green-700 text-[12px] w-[240px] text-wrap whitespace-pre">
                   {valid}
                 </p>
               )}
