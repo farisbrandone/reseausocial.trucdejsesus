@@ -694,11 +694,7 @@ export const InfoMembre = ({
       <div className="w-full flex-1 flex flex-col gap-2">
         <p> Nom : {membre.name}</p>
         <p>Email : {membre.email} </p>
-        <p>
-          {" "}
-          Date de naissance :{" "}
-          {format(new Date(membre.birthDay as string), "dd/MM/yyyy")}{" "}
-        </p>
+        <p> Date de naissance : {membre.birthDay}</p>
         <p> Sexe : {membre.sexe} </p>
         <p>Telephone : {membre.phone} </p>
       </div>
