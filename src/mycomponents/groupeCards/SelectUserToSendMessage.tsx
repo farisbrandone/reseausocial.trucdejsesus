@@ -11,8 +11,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { MembreData } from "seedAndGetData/seedData";
 
-const items = [
+/* const items = [
   {
     id: "recents",
     label: "Recents",
@@ -37,17 +38,19 @@ const items = [
     id: "documents",
     label: "Documents",
   },
-] as const;
+] as const; */
 
 export interface UserSelectType {
   id: string;
   label: string;
 }
 interface SelectUserToSendMessageProps {
-  setUserSelect: React.Dispatch<React.SetStateAction<UserSelectType[]>>;
-  userSelect: UserSelectType[];
+  setUserSelect: React.Dispatch<React.SetStateAction<MembreData[]>>;
+  userSelect: MembreData[];
   setAlertOpen: React.Dispatch<React.SetStateAction<boolean>>;
   alertOpen: boolean;
+  membreOfData: MembreData[];
+  groupeId: string;
 }
 
 export function SelectUserToSendMessage({
@@ -55,16 +58,22 @@ export function SelectUserToSendMessage({
   userSelect,
   alertOpen,
   setAlertOpen,
+  membreOfData,
+  groupeId,
 }: SelectUserToSendMessageProps) {
   /*  const [userSelect, setUserSelect] = useState<UserSelectType[]>([]); */
   const [cliquerAll, setCliquerAll] = useState(false);
+
+  const memberSelect = membreOfData.filter((value) =>
+    value.groupeId?.includes(groupeId)
+  );
   const selectAll = () => {
     if (cliquerAll) {
       setUserSelect([]);
       setCliquerAll(false);
       return;
     }
-    items.forEach((value) => {
+    memberSelect.forEach((value) => {
       setUserSelect((prev) => [...prev, { ...value }]);
     });
     setCliquerAll(true);
@@ -100,7 +109,7 @@ export function SelectUserToSendMessage({
               </label>
             </div>
             <div className="grid grid-cols-2 p-2 gap-8">
-              {items.map((item) => (
+              {memberSelect.map((item) => (
                 <div
                   className="flex items-center space-x-2 place-items-center"
                   key={item.id}
@@ -122,7 +131,7 @@ export function SelectUserToSendMessage({
                     htmlFor="terms"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {item.label}
+                    {item.name}
                   </label>
                 </div>
               ))}

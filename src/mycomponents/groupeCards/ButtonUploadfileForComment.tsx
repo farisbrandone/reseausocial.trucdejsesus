@@ -35,11 +35,10 @@ function ButtonUploadFileForComment({
   const { toast } = useToast();
   const handleFileChange2 = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    console.log("bunga");
-    console.log(e.target.name);
+
     if (!e?.target.files) return;
     const file = e.target.files[0];
-    console.log("bunga");
+
     const storageRef = ref(storage, `images/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -49,7 +48,7 @@ function ButtonUploadFileForComment({
         setStateDownloadProps(() => {
           return true;
         });
-        console.log("sonko");
+
         const progression = Math.round(
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );

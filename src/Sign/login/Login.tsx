@@ -1,19 +1,26 @@
 import clsx from "clsx";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
+//import ButtonUploadFile from "../signup/ui/ButtonUploadFile";
+import { createUser } from "./createUser";
 function Login() {
   const { communityId, groupeId } = useParams();
 
   const [email, setEmail] = useState("");
   const [classOfEmail, setClassOfEmail] = useState(false);
-
+  // const [exist, setExist] = useState(false);
   const [motsDepasse, setMotsDepasse] = useState("");
   const [classOfMotsDepasse, setClassOfMotsDepasse] = useState(false);
-
+  const existValuealue = useRef(false);
   const [startSending, setStartSending] = useState(false);
   const [messageSending, setMessageSending] = useState("");
+
+  //const [image, setImage] = useState("");
+  //const [stateDownload, setStateDownload] = useState(false);
 
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -27,9 +34,12 @@ function Login() {
     setClassOfMotsDepasse(false);
   };
 
-  const loginMembre = async () => {
-    setStartSending(() => true);
+  /* const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setImage(() => e.target.value);
+  }; */
 
+  const loginMembre = async () => {
     if (!email || !motsDepasse) {
       if (!motsDepasse) {
         setClassOfMotsDepasse(true);
@@ -47,24 +57,79 @@ function Login() {
       setStartSending(() => false);
       return;
     }
+
     try {
-      const body = { email, password: motsDepasse };
+      setStartSending(() => true);
+      const body = { email, password: motsDepasse, image: "" };
       const data = await axios.post(
         "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/login",
         body
       );
+      console.log(data);
 
-      if (data.data.email === email) {
-        localStorage.setItem("user", JSON.stringify(data.data));
+      if (data.data.status === "membre en attente") {
+        setMessageSending(
+          "Vous n'est pas encore inscrit comme membre, votre demande est en cour de validation"
+        );
+        return;
+      }
+
+      if (data.data.status === "membre ni inscrit ni en attente") {
+        setMessageSending("Vous n'est pas encore inscrit sur le site");
+        return;
+      }
+
+      if (data.data.status === "membre deja inscrit") {
+        localStorage.setItem("user", JSON.stringify(data.data.data));
         toast({
           title: "Success",
           description: "Le membre a été crée avec success",
         });
+        const dd = await createUser(email, motsDepasse, auth);
+
+        console.log(dd);
+        /* createUserWithEmailAndPassword(auth, email, motsDepasse)
+          .then((u) => {
+            console.log(u);
+          })
+          .catch((error) => {
+            console.log(error.code);
+            switch (error.code) {
+              case "auth/email-already-in-use":
+                existValuealue.current = true;
+                console.log(error.code);
+                return;
+              case "auth/invalid-email":
+                throw error;
+
+              case "auth/operation-not-allowed":
+                throw error;
+
+              case "auth/weak-password":
+                throw error;
+
+              default:
+                throw error;
+            }
+          }); */
+
+        //await createUserWithEmailAndPassword(auth, email, motsDepasse);
+
+        const tt = await signInWithEmailAndPassword(auth, email, motsDepasse);
+        console.log(tt);
+        /* ************************* */
         setMessageSending("Authentification reussie");
+        setStartSending(false);
+        console.log(auth.currentUser);
         window.location.replace(`/community/${communityId}/${groupeId}`);
       }
       return;
     } catch (error) {
+      console.log(existValuealue.current);
+      if (existValuealue.current) {
+        console.log("damso");
+      }
+
       console.log(error);
       toast({
         variant: "destructive",
@@ -86,7 +151,7 @@ function Login() {
               alt=""
               className="w-[50px] h-[50px] object-cover "
             />
-            <p className="-mt-3">Un Truc de Jesus</p>
+            <p className="-mt-3">Un Truc de JÉSUS!</p>
           </div>
           <div className="flex flex-col gap-1">
             <h1 className="text-[20px] font-bold ">Se connecter</h1>
@@ -130,7 +195,31 @@ function Login() {
             </div>
           </div>
         </div>
-
+        {/*  <div className="flex flex-col gap-1 mt-8">
+          <label htmlFor="image">
+            Insérer une image de profil si c'est pas encore fait (optionnel)
+          </label>
+          <div className="flex items-center" key="button21">
+            <input
+              key="button11"
+              id="image"
+              name="image"
+              value={image}
+              placeholder="Insérer une image de profil"
+              onChange={handleImage}
+              disabled={stateDownload || startSending}
+              className="inputStyle2"
+            />
+            <ButtonUploadFile
+              name="file1"
+              valueForHtml="drop-zone-1"
+              key="button111"
+              setImageUrl={setImage}
+              setStateDownloadProps={setStateDownload}
+              stateDownloadProps={stateDownload}
+            />
+          </div>
+        </div> */}
         <div className="w-full flex flex-col justify-center items-center gap-1">
           <button
             className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md flex gap-1 items-center"

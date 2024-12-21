@@ -19,7 +19,7 @@ const SelectCountry = ({
   const value = 2;
   const result = useMemo(() => deliverCountryPhoneCode(), [value]);
 
-  const classValue = classOfCountry ? "selectCountry" : "";
+  const classValue = classOfCountry ? "selectCountry" : "selectCountry2";
   return (
     <ReactFlagsSelect
       selected={country}

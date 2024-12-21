@@ -4,7 +4,6 @@ import {
   MessageData,
 } from "seedAndGetData/seedData";
 import { getAllCommunityMessageData } from "../../../seedAndGetData/seedData";
-import AvatarComponent from "./AvatarComponent";
 import CardGroupAcceuil from "./CardGroupAcceuil";
 import { useEffect, useState } from "react";
 import MessageCommunityElement from "./MessageCommunityElement";
@@ -96,7 +95,6 @@ function AcceuilPage({
         setLoadingFail(true);
       }
     };
-    console.log({ state });
 
     getAllMessageWithCommunityId();
   }, []);
@@ -125,7 +123,6 @@ function AcceuilPage({
             }
           )}
           onClick={() => {
-            console.log("ee");
             dispatch({ type: "open", payload: "" });
           }}
         >
@@ -136,7 +133,7 @@ function AcceuilPage({
             <span className="icon-[mdi--bell] text-2xl"></span>
           </div>
 
-          <AvatarComponent />
+          {/*  <AvatarComponent communityId={value.id as string} /> */}
         </div>
       </div>
 

@@ -4,13 +4,20 @@ import clsx from "clsx";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import { MouseEvent, useEffect, useRef, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 /* interface AvatarComponentType {
   top: string;
   right: string;
 } */
 
-function AvatarComponent() {
+function AvatarComponent({
+  communityId,
+  groupeId,
+}: {
+  communityId: string;
+  groupeId: string;
+}) {
   const [putHidden, setPutHidden] = useState(true);
 
   const elementRef = useRef<HTMLDivElement>(null);
@@ -18,7 +25,6 @@ function AvatarComponent() {
   const handleVisible = (event: MouseEvent<HTMLDivElement>) => {
     const clickedElement = event.target as HTMLElement;
 
-    console.log(clickedElement.className);
     if (clickedElement.className.includes("mybutton")) {
       return;
     }
@@ -72,18 +78,27 @@ function AvatarComponent() {
       {/*  </div> */}
       <ul className={buttonClass} onClick={() => setPutHidden(false)}>
         <li className="mybutton hover:text-black  text-[#000] flex items-center pl-1   hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md  ">
-          <span className="icon-[iconamoon--profile-fill] text-xl mr-1"></span>
-          <p>Profile</p>
+          <NavLink
+            to={`/profil/${communityId}/${groupeId}`}
+            className="flex items-center gap-2.5"
+          >
+            <span className="icon-[iconamoon--profile-fill] text-xl mr-1"></span>
+            <p>Profile</p>
+          </NavLink>
         </li>
-        <li className="mybutton hover:text-black  text-[#000] flex items-center pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md ">
-          <span className="icon-[whh--stocks] text-xl mr-1"></span>
+        <li className="mybutton hover:text-black  text-[#000] flex items-center gap-2.5 pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md ">
+          <span className="icon-[ant-design--stock-outlined]"></span>
           <p>Mes commandes</p>
         </li>
         <li
-          className="mybutton hover:text-black  text-[#000] flex items-center pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md"
+          className="mybutton hover:text-black  text-[#000] flex items-center gap-2.5 pl-1  hover:bg-black/20 py-2 px-1 transition-all duration-500 w-[98%] rounded-md"
           onClick={async () => {
             try {
               await signOut(auth);
+              toast({
+                title: "Success",
+                description: "Vous etes déconnecter",
+              });
             } catch (err: any) {
               toast({
                 variant: "destructive",

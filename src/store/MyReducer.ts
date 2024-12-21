@@ -12,7 +12,6 @@ export type Action =
 
 export function MyReducer(state: State, action: Action): State {
   if (action.type === "open") {
-    console.log("zouzou");
     return { stateSideBar: true, prev: state.prev, statePrev: state.statePrev };
   } else if (action.type === "close") {
     return {

@@ -1,5 +1,4 @@
 import { CommunityDataType } from "seedAndGetData/seedData";
-import AvatarComponent from "./AvatarComponent";
 import CardGroupAcceuilCommunaute from "./CardGroupAcceuilCommunaute";
 import { Fragment } from "react/jsx-runtime";
 
@@ -84,7 +83,7 @@ function AcceuilPageCommunity({
         {/*  <div className="flex items-center justify-center w-[30px] h-[30px] bg-[#c7bfbf] rounded-full mr-2 cursor-pointer border-[1px] border-solid border-[#00000026] ">
           <p className="object-fill"> A</p>
         </div> */}
-        <AvatarComponent />
+        {/*  <AvatarComponent /> */}
       </div>
 
       {/* <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">

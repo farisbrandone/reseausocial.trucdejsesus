@@ -24,7 +24,7 @@ export function SidebarForMobileCommunity({
     >
       <div
         className="absolute left-[180px] top-[80px] "
-        onClick={() => dispatch({ type: "close" })}
+        onClick={() => dispatch({ type: "close", payload: "" })}
       >
         <span className="icon-[fa-solid--less-than]"></span>
       </div>

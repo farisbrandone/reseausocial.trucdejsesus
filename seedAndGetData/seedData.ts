@@ -44,6 +44,7 @@ export interface MembreData {
   phone: string;
   status: string;
   image: string;
+  pays?: string;
   dateOfCreation?: string;
   dateOfUpdate?: string;
   id?: string;
@@ -65,6 +66,7 @@ export interface MessageData {
   userId: string;
   userName: string;
   userAvatar: string;
+  userEmail?: string;
   text: string;
   photo: string;
   audio: string;
@@ -237,6 +239,7 @@ export const postMessageByUser = async (
   {
     userId,
     userName,
+    userEmail,
     text,
     photo,
     audio,
@@ -247,9 +250,11 @@ export const postMessageByUser = async (
     communityId,
     typeMessage,
     othersFile,
+    userReceiverId,
   }: MessageData,
   groupeId: string
 ) => {
+  console.log(userEmail);
   try {
     console.log({ userId, groupeId });
     const messageRef = collection(db, "MessageData");
@@ -261,6 +266,7 @@ export const postMessageByUser = async (
       userId,
       userName,
       userAvatar,
+      userEmail,
       text,
       photo,
       audio,
@@ -272,6 +278,7 @@ export const postMessageByUser = async (
       communityId,
       typeMessage,
       othersFile,
+      userReceiverId,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -287,6 +294,59 @@ export const postMessageByUser = async (
       promise3,
     ]);
     console.log(value1, value2, value3);
+    return { message: "Le message a été créer avec success", success: true };
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Une erreur est survenue pendant la création du message");
+  }
+};
+
+export const updateMessageByUser = async (
+  {
+    userId,
+    userName,
+    userEmail,
+    text,
+    photo,
+    audio,
+    video,
+    groupeName,
+    userLikes,
+    userAvatar,
+    communityId,
+    typeMessage,
+    othersFile,
+    userReceiverId,
+  }: MessageData,
+  groupeId: string,
+  id: string
+) => {
+  try {
+    console.log({ userId, groupeId });
+    const messageRef = collection(db, "MessageData");
+    const dateOfCreation = new Date().toUTCString();
+    const dateOfUpdate = new Date().toUTCString();
+    const promise1 = updateDoc(doc(messageRef, id), {
+      userId,
+      userName,
+      userAvatar,
+      userEmail,
+      text,
+      photo,
+      audio,
+      video,
+      dateOfCreation,
+      dateOfUpdate,
+      groupeName,
+      userLikes,
+      communityId,
+      typeMessage,
+      othersFile,
+      userReceiverId,
+    });
+
+    const [value1] = await Promise.all([promise1]);
+    console.log(value1);
     return { message: "Le message a été créer avec success", success: true };
   } catch (error) {
     console.log({ error });
@@ -490,6 +550,7 @@ export const getAllMessageData = async (groupeName: string) => {
           userId,
           userName,
           userAvatar,
+          userEmail,
           text,
           photo,
           audio,
@@ -501,12 +562,14 @@ export const getAllMessageData = async (groupeName: string) => {
           communityId,
           typeMessage,
           othersFile,
+          userReceiverId,
         } = doc.data();
         messagesData.push({
           id,
           userId,
           userName,
           userAvatar,
+          userEmail,
           text,
           photo,
           audio,
@@ -518,11 +581,14 @@ export const getAllMessageData = async (groupeName: string) => {
           communityId,
           typeMessage,
           othersFile,
+          userReceiverId,
         });
       });
     }
     return messagesData
-      .filter((value) => value.groupeName === groupeName)
+      .filter(
+        (value) => value.groupeName === groupeName && !value.userReceiverId
+      )
       .sort((value, value1) => {
         const diff =
           new Date(value.dateOfUpdate as string).getTime() -
@@ -705,6 +771,7 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombreDactivite,
           nombreDeBadge,
           communityId,
+          groupeId,
         } = doc.data();
         membreData.push({
           id,
@@ -725,6 +792,7 @@ export async function requestTogetAllMembreData(): Promise<MembreData[]> {
           nombreDactivite,
           nombreDeBadge,
           communityId,
+          groupeId,
         });
       });
 
@@ -969,6 +1037,7 @@ export const getAllSenderReceiverMessage = async (
           communityId,
           typeMessage,
           othersFile,
+          userReceiverId,
         } = doc.data();
         messagesData.push({
           id,
@@ -986,10 +1055,11 @@ export const getAllSenderReceiverMessage = async (
           communityId,
           typeMessage,
           othersFile,
+          userReceiverId,
         });
       });
     }
-    console.log("papounet");
+    console.log(messagesData);
     return messagesData
       .filter(
         (value) =>
@@ -1000,9 +1070,9 @@ export const getAllSenderReceiverMessage = async (
           new Date(value.dateOfUpdate as string).getTime() -
           new Date(value1.dateOfUpdate as string).getTime();
         if (diff < 0) {
-          return 1;
-        } else {
           return -1;
+        } else {
+          return 1;
         }
       });
   } catch (error) {
@@ -1020,6 +1090,7 @@ export async function requestToDeleteUniversalDataWithId(
   const docRef = doc(db, databaseName, dataId);
   try {
     await deleteDoc(docRef);
+    console.log();
     return {
       message: "le document à été supprimer avec success",
       success: true,

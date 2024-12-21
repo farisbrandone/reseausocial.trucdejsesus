@@ -104,7 +104,6 @@ export default function CommentaireComponent({
   };
 
   const handleOpendReplyPart = async () => {
-    console.log("bla");
     setOpenReplyPart((prev) => !prev);
   };
 

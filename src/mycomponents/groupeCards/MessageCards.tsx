@@ -5,27 +5,50 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   CommentaireData,
   getAllCommentaireData,
+  getAllMessageData,
   getMessageWithId,
+  GroupeDataType,
   MembreData,
   MessageData,
   postCommentaireByUser,
+  requestToDeleteUniversalDataWithId,
   updateMessagewithLike,
 } from "../../../seedAndGetData/seedData";
 import CommentaireComponent from "./CommentaireComponent";
-import { faker } from "@faker-js/faker";
 import { Input } from "@/components/ui/input";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import clsx from "clsx";
 import { ButtonUploadFileForComment } from "./ButtonUploadfileForComment";
 import { formatDateWithString } from "@/lib/formatDate";
 import { toast } from "@/hooks/use-toast";
+import { auth } from "../../../firebaseConfig";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  AlertDialog,
+  /*  AlertDialogAction, */ AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { UpdateMessageComponent } from "./UpdateMessageComponent";
 
 function MessageCards({
   value,
   membreOfData,
+  setMessagesData,
+  groupeValue,
 }: {
   value: MessageData;
   membreOfData: MembreData[];
+  setMessagesData: React.Dispatch<React.SetStateAction<MessageData[]>>;
+  groupeValue: GroupeDataType;
 }) {
   /*  const user = {
     userAvatar: faker.image.avatar(),
@@ -44,6 +67,8 @@ function MessageCards({
   const [putHidden, setPutHidden] = useState(false);
   const [desableButton, setDisableButton] = useState(false);
   const [startSendLike, setStartSendLike] = useState(false);
+  const [deleteAction, setDeleteAction] = useState(false);
+  const [openAlertDelete, setOpenAlertDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleHidenEmoji = () => {
     setPutHidden((prev) => !prev);
@@ -118,7 +143,7 @@ function MessageCards({
       );
       if (result?.success) {
         const result2 = await getMessageWithId(value.id as string);
-        console.log(result);
+
         if (result2) {
           setStateMessage({ ...result2 });
           setStartSendLike(false);
@@ -150,6 +175,37 @@ function MessageCards({
     }
   };
 
+  const deleteMessage = async () => {
+    try {
+      setDeleteAction(true);
+      const result = await requestToDeleteUniversalDataWithId(
+        value.id as string,
+        "MessageData"
+      );
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Le membre a été crée avec success",
+        });
+        /*  const total = await requestTogetAllUniversalData<MessageData>(
+          "MessageData"
+        ); */
+        const total = await getAllMessageData(groupeValue.titleGroupe);
+        setMessagesData([...total]);
+        setOpenAlertDelete(false);
+      }
+      setDeleteAction(false);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          "Une erreur est survenue pendant la suppression, vérifier votre connexion",
+      });
+      setDeleteAction(false);
+    }
+  };
+
   useEffect(() => {
     const getComment = async () => {
       const result = await getAllCommentaireData(value.id as string);
@@ -163,23 +219,91 @@ function MessageCards({
 
   return (
     <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
-      <div className="flex items-center gap-2">
-        <Avatar className="w-[30px] h-[30px] ">
-          <AvatarImage src={membreOfData[0].image} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col  text-[#000]">
-          <p>{value.userName}</p>
-          <p>
-            {value.userName === "Administrateur" && (
-              <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
-                Administrateur
-              </span>
-            )}
-            {formatDateWithString(value.dateOfCreation as string)}
-          </p>
+      <div className="flex justify-between items-center px-1">
+        <div className="flex items-center gap-2">
+          {auth.currentUser && (
+            <Avatar className="w-[30px] h-[30px] ">
+              <AvatarImage
+                src={
+                  membreOfData.find(
+                    (value) => value.email === auth.currentUser?.email
+                  )?.image
+                }
+                alt=""
+              />
+              <AvatarFallback>
+                {membreOfData
+                  .find((value) => value.email === auth.currentUser?.email)
+                  ?.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          )}
+          <div className="flex flex-col  text-[#000]">
+            <p>{value.userName}</p>
+            <p>
+              {value.userName === "Administrateur" && (
+                <span className="text-[12px] p-1 bg-[#fff700] rounded-[2px] mr-1 ">
+                  Administrateur
+                </span>
+              )}
+              {formatDateWithString(value.dateOfCreation as string)}
+            </p>
+          </div>
         </div>
+
+        {auth.currentUser?.email === value.userEmail && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className="bg-transparent text-black hover:bg-transparent ">
+                <span className="icon-[mdi--dots-vertical]"></span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 flex flex-col gap-1 w-[140px] shadow-xl ">
+              <AlertDialog open={openAlertDelete}>
+                <AlertDialogTrigger asChild className="">
+                  <Button
+                    variant="outline"
+                    onClick={() => setOpenAlertDelete(true)}
+                    className="hover:bg-[#fff]/60 "
+                  >
+                    Supprimer
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Êtes-vous absolument sûr ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Cette action ne peut être annulée. Elle supprimera
+                      définitivement le message.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    {deleteAction && (
+                      <p>Patienter la suppression est en cour...</p>
+                    )}
+                    <AlertDialogCancel
+                      onClick={() => setOpenAlertDelete(false)}
+                    >
+                      Annuler
+                    </AlertDialogCancel>
+                    <Button onClick={deleteMessage}>Supprimer</Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <UpdateMessageComponent
+                setMessagesData={setMessagesData}
+                membreOfData={membreOfData}
+                value={value}
+                groupeValue={groupeValue}
+              />
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
+
       <div className="flex flex-col mt-2">
         {value.text && <p className="text whitespace-pre-wrap">{value.text}</p>}
         {value.photo && (
@@ -259,11 +383,10 @@ function MessageCards({
           <span className="hidden sm:inline">Partager</span>
         </Button>
       </div>
-      <div className="flex flex-col gap-2 mt-5 py-3 ">
+      <div className="flex flex-col gap-2 mt-3 py-3 ">
         <div className="flex items-center gap-2">
-          <Avatar className="w-[30px] h-[30px] ">
-            <AvatarImage src={faker.image.avatar()} alt="@shadcn" />
-            <AvatarFallback>AV</AvatarFallback>
+          <Avatar className="w-[30px] h-[30px] flex items-center justify-center ">
+            <span className="icon-[bi--person-circle] text-2xl"></span>
           </Avatar>
           <div className=" flex-1  flex items-center gap-2 flex-wrap">
             <Input

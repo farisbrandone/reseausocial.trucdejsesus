@@ -1,20 +1,26 @@
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import SelectCountry from "./ui/SelectCountry";
 import {
   deliverCountryPhoneCode,
   getCountryAndFlagWitnCode,
-  verifyPassword,
+  gitIsoWithCountryCodePhone,
 } from "@/lib/utils";
 
 import { toast } from "@/hooks/use-toast";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { verifyFormatDate } from "@/lib/formatDate";
+import { auth } from "../../../firebaseConfig";
 import {
   CommunityDataType,
+  GroupeDataType,
+  requestTogetAllMembreData,
   requestToGetAllUniversalDataWithId,
 } from "../../../seedAndGetData/seedData";
+import ButtonUploadFile from "../signup/ui/ButtonUploadFile";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUser } from "../login/createUser";
+import AvatarComponent from "@/mycomponents/acceuilPage/AvatarComponent";
 
 /* interface MemberWaitingDataType {
   name: string;
@@ -38,14 +44,16 @@ import {
   nombreDeBadge: number;
 } */
 
-function Signup() {
+function Profil() {
   const { communityId, groupeId } = useParams();
+
+  const [idUser, setIdUser] = useState("");
   const [name, setName] = useState("");
   const [classOfName, setClassOfName] = useState(false);
 
   const [prenom, setPrenom] = useState("");
   const [classOfPrenom, setClassOfPrenom] = useState(false);
-
+  const [motsDepasse, setMotsDePasse] = useState("");
   const [email, setEmail] = useState("");
   const [classOfEmail, setClassOfEmail] = useState(false);
 
@@ -53,31 +61,29 @@ function Signup() {
   const [classOfBirthDay, setClassOfBirthDay] = useState(false);
   const [qualityDate, setQualityDate] = useState(false);
 
-  const [country, setCountry] = useState("FR");
-  const [classOfCountry, setClassOfCountry] = useState(false);
-
   const [codeCountry, setCodeCountry] = useState("FR");
   const [phone, setPhone] = useState(
-    "+" + getCountryAndFlagWitnCode(country).phone + "-"
+    "+" + getCountryAndFlagWitnCode("FR").phone + "-"
   );
   const [classOfPhone, setClassOfPhone] = useState(false);
 
   const [sexe, setSexe] = useState("Male");
 
-  const [motsDepasse, setMotsDepasse] = useState("");
-  const [classOfMotsDepasse, setClassOfMotsDepasse] = useState(false);
-  const [motsDepasseConfirm, setMotsDepasseConfirm] = useState("");
-  const [classOfMotsDepasseConfirm, setClassOfMotsDepasseConfirm] =
-    useState(false);
-  const [valid, setValid] = useState("");
+  const [image, setImage] = useState("");
+  const [stateDownload, setStateDownload] = useState(false);
   const [startSending, setStartSending] = useState(false);
-  const [messagePassword, setMessagePassword] = useState("");
-  const [messageSending, setMessageSending] = useState("");
-  const value = 2;
-  const result = useMemo(() => deliverCountryPhoneCode(), [value]);
+
   const [communaute, setCommunaute] = useState<CommunityDataType>();
+  const [groupe, setGroupe] = useState<GroupeDataType>();
+
   const [loading, setLoading] = useState(false);
   const [loadingFail, setLoadingFail] = useState(false);
+
+  const value = 2;
+  const result = useMemo(() => deliverCountryPhoneCode(), [value]);
+
+  const currentUser = auth.currentUser;
+
   const handleName = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setName(e.target.value);
@@ -134,23 +140,9 @@ function Signup() {
     setQualityDate(false);
   };
 
-  const handleMotsDepasse = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setMotsDepasse(e.target.value);
-    if (!verifyPassword(e.target.value).success) {
-      setClassOfMotsDepasse(true);
-      setMessagePassword(verifyPassword(e.target.value).message);
-      return;
-    }
-    setValid("Mots de passe valide");
-    setClassOfMotsDepasse(false);
-    setMessagePassword("");
-  };
-
-  const handleMotsDepasseConfirm = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setMotsDepasseConfirm(e.target.value);
-    setClassOfMotsDepasseConfirm(false);
+    setImage(() => e.target.value);
   };
 
   const addMembre = async () => {
@@ -159,29 +151,12 @@ function Signup() {
       setClassOfBirthDay(true);
       return;
     }
-    if (
-      !prenom ||
-      !name ||
-      !motsDepasse ||
-      !motsDepasseConfirm ||
-      motsDepasse !== motsDepasseConfirm ||
-      !email ||
-      !birthDay ||
-      !sexe ||
-      !phone
-    ) {
+    if (!prenom || !name || !email || !birthDay || !sexe || !phone) {
       if (!name) {
         setClassOfName(true);
       }
       if (!prenom) {
         setClassOfPrenom(true);
-      }
-      if (!motsDepasse || !verifyPassword(motsDepasse).success) {
-        setClassOfMotsDepasse(true);
-        setMessagePassword(verifyPassword(motsDepasse).message);
-      }
-      if (!motsDepasseConfirm || motsDepasse !== motsDepasseConfirm) {
-        setClassOfMotsDepasseConfirm(true);
       }
       if (!email) {
         setClassOfEmail(true);
@@ -193,17 +168,10 @@ function Signup() {
       if (!phone) {
         setClassOfPhone(true);
       }
-      if (!verifyPassword(motsDepasse).success) {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: verifyPassword(motsDepasse).message,
-        });
-      }
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Tous les champs ne sont pas remplis",
+        description: "Tous les champs requis n'ont pas été remplis",
       });
 
       return;
@@ -214,43 +182,46 @@ function Signup() {
       var data = {
         name: name + " " + prenom,
         email: email,
-        motsDepasse: motsDepasse,
-        image: "",
+        image: image,
         sexe: sexe,
         birthDay: birthDay,
         phone,
         status: "activate",
-        groupeId: groupeId,
-        communityId: communityId,
         nombrePartage: 0,
         nombreLikes: 0,
         nombreCommentaire: 0,
         nombreDeMerciBenis: 0,
         nombreDactivite: 0,
         nombreDeBadge: 0,
-        dateOfCreation: myDate,
         dateOfUpdate: myDate,
       };
 
+      const myDataBody = { data, id: idUser, uid: currentUser?.uid };
       const mydata = await axios.post(
-        "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/signup",
-        data
+        "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/updateuser",
+        myDataBody
       );
-
-      if (mydata.data.alreadyExist) {
-        setMessageSending(mydata.data.success);
+      /* https://serverbackofficetrucdejesus.onrender.com */
+      if (!mydata.data.update) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Une erreur est survenue",
+        });
+        setStartSending(() => false);
         return;
       }
 
-      if (!mydata.data.alreadyExist && mydata.data.success) {
+      if (mydata.data.update) {
         toast({
           title: "Success",
-          description: mydata.data.success,
+          description: mydata.data.message,
         });
-        setMessageSending(
-          "Un email vous a été envoyé à votre adresse, vérifier si possible dans les spams"
-        );
+        const dd = await createUser(email, motsDepasse, auth);
+        const tt = await signInWithEmailAndPassword(auth, email, motsDepasse);
+        console.log(dd, tt);
         setStartSending(() => false);
+        //window.location.replace(`/login/${communityId}/${groupeId}`);
         return;
       } else {
         toast({
@@ -264,7 +235,7 @@ function Signup() {
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue pendant la creation de ce membre",
+        description: "Une erreur est survenue",
       });
       setStartSending(() => false);
     }
@@ -275,14 +246,36 @@ function Signup() {
       try {
         setLoading(true);
 
+        const result = (await requestTogetAllMembreData()).filter(
+          (value) =>
+            value.email === currentUser?.email &&
+            value.communityId === communityId
+        )[0];
+
         const communaute =
           await requestToGetAllUniversalDataWithId<CommunityDataType>(
             communityId as string,
             "CommunityData"
           );
+        const groupeData =
+          await requestToGetAllUniversalDataWithId<GroupeDataType>(
+            groupeId as string,
+            "GroupeData"
+          );
 
         setCommunaute({ ...communaute });
-
+        setGroupe({ ...groupeData });
+        setBirthDay(result.birthDay);
+        setCodeCountry(
+          gitIsoWithCountryCodePhone(result.phone.split("-")[0]).iso
+        );
+        setEmail(result.email);
+        setName(result.name.split(" ")[0]);
+        setPhone(result.phone);
+        setPrenom(result.name.split(" ")[1]);
+        setSexe(result.sexe);
+        setIdUser(result.id as string);
+        setMotsDePasse(result.motsDepasse);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -310,38 +303,42 @@ function Signup() {
   }
 
   return (
-    <div className="sm:h-screen sm:w-screen flex flex-col items-center justify-center pt13 text-[14px] text-[#000]  ">
-      <div className="bg-white shadow-xl px-3 sm:px-4 lg:px-8 pb-3 rounded-md border-[1px] border-solid border-[#F8E71C] ">
-        <div className="flex flex-col gap-4 mt-3">
-          <a
-            href={`/community/${communaute?.id}`}
-            className="header flex flex-col gap-4 items-center mt-6 px-1  pb-1"
-          >
-            {communaute?.logoUrl && communaute?.logoUrl.includes(".mp4") ? (
-              <video autoPlay={true} muted={true}>
-                <source src={communaute?.logoUrl} type="video/mp4" />
-                Votre navigateur ne supporte pas la balise vidéo.
-              </video>
-            ) : (
-              <img
-                src={communaute?.logoUrl}
-                alt=""
-                className="object-cover w-[40px] h-[40px]"
-              />
-            )}
+    <div className="relative min-h-screen sm:h-screen sm:w-screen flex flex-col items-center sm:justify-center pt13 text-[14px] text-[#000]  ">
+      <div className="sticky sm:absolute flex items-center justify-between w-full top-0 px-5 z-40 bg-white">
+        <a
+          href={`/community/${communaute?.id}`}
+          className="header flex flex-col gap-4 items-center mt-6 px-1  pb-1"
+        >
+          {communaute?.logoUrl && communaute?.logoUrl.includes(".mp4") ? (
+            <video autoPlay={true} muted={true}>
+              <source src={communaute?.logoUrl} type="video/mp4" />
+              Votre navigateur ne supporte pas la balise vidéo.
+            </video>
+          ) : (
+            <img
+              src={communaute?.logoUrl}
+              alt=""
+              className="object-cover w-[40px] h-[40px]"
+            />
+          )}
 
-            <p className=" flex items-center">{communaute?.title}</p>
-          </a>
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1  justify-center">
-              <span className="icon-[ion--person-circle-sharp] text-xl"></span>
-              <p className="text-[#0000009a] text-[20px] ">
-                Informations personnelles
-              </p>
-            </div>
-            {!!messageSending && (
-              <p className="text-green-700 text-[16px] "> {messageSending}</p>
-            )}
+          <p className=" flex items-center">{communaute?.title}</p>
+        </a>
+
+        {groupe && (
+          <AvatarComponent
+            communityId={groupe.communityId as string}
+            groupeId={groupe.id as string}
+          />
+        )}
+      </div>
+      <div className="bg-white shadow-xl px-3 sm:px-4 lg:px-8 pb-3 rounded-md border-[1px] border-solid border-[#F8E71C] mt-4 sm:mt-0">
+        <div className="flex flex-col gap-4 mt-3">
+          <div className="flex items-center gap-1  justify-center">
+            <span className="icon-[ion--person-circle-sharp] text-xl"></span>
+            <p className="text-[#0000009a] text-[20px] ">
+              Informations personnelles
+            </p>
           </div>
         </div>
         <div className="flex flex-col w-full  gap-4 sm:grid sm:grid-cols-2 sm:gap-x-20 mt-3">
@@ -375,34 +372,6 @@ function Signup() {
                 <p className="text-red-700 ">Format de date non valide</p>
               )}
             </div>
-            <div className=" flex flex-col gap-1">
-              <label htmlFor="nationnalite">Nationnalité</label>
-              <SelectCountry
-                country={country}
-                setCountry={setCountry}
-                classOfCountry={classOfCountry}
-                setClassOfCountry={setClassOfCountry}
-              />
-            </div>
-            <div className=" flex flex-col gap-1">
-              <label htmlFor="password">Mots de passe</label>
-              <input
-                type="password"
-                id="password"
-                placeholder="Entrer.."
-                value={motsDepasse}
-                onChange={handleMotsDepasse}
-                className={clsx("inputStyle3", {
-                  "border-red-700 focus:border-red-700": classOfMotsDepasse,
-                })}
-              />
-              {messagePassword ? (
-                <p className="text-red-700 text-[12px] "> {messagePassword} </p>
-              ) : (
-                <p className="text-green-700 text-[12px] ">{valid}</p>
-              )}
-            </div>
-
             <div className=" flex flex-col gap-1 h-[74px] ">
               <label htmlFor="nationnalite">Genre</label>
               <select
@@ -472,26 +441,9 @@ function Signup() {
                 />
               </div>
             </div>
-
-            <div className=" flex flex-col gap-1">
-              <label htmlFor="passwordConfirm">
-                Confirmer le mots de passe
-              </label>
-              <input
-                type="password"
-                id="passwordConfirm"
-                placeholder="Entrer.."
-                value={motsDepasseConfirm}
-                onChange={handleMotsDepasseConfirm}
-                className={clsx("inputStyle3", {
-                  "border-red-700 focus:border-red-700":
-                    classOfMotsDepasseConfirm,
-                })}
-              />
-            </div>
           </div>
         </div>
-        {/*  <div className="flex flex-col gap-1 mt-8">
+        <div className="flex flex-col gap-1 mt-8">
           <label htmlFor="image">Insérer une image de profil</label>
           <div className="flex items-center" key="button21">
             <input
@@ -513,31 +465,32 @@ function Signup() {
               stateDownloadProps={stateDownload}
             />
           </div>
-        </div> */}
-        <div className="w-full flex  flex-col justify-center items-center gap-1">
+        </div>
+        <div className="w-full flex items-center gap-2">
           <button
-            className="text-[16px] mx-auto w-[85%] sm:px-40 py-3 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md flax items-center gap-1 "
+            className="text-[16px]  px-2.5  py-2.5 font-bold text-center bg-[#F8E71C] hover:bg-[#F8E71C]/80 disabled:bg-[#F8E71C]/60 text-[#000] my-8  rounded-md flex items-center gap-1 "
             onClick={addMembre}
             disabled={startSending}
           >
-            <span>S'inscrire </span>
+            <span>Mettre à jour </span>
             {startSending && (
               <span className="icon-[eos-icons--three-dots-loading] text-3xl"></span>
             )}{" "}
           </button>
-          <div className="flex items-center gap-1">
-            <p>Vous etes dejà inscrit:</p>
-            <NavLink
-              to={`/login/${communityId}/${groupeId}`}
-              className="text-[#BD10E0] "
-            >
-              Se connecter
-            </NavLink>
-          </div>
+
+          <button
+            title="retour"
+            onClick={() => window.history.back()}
+            className="bg-[#fff700] text-[#000] px-2.5 py-2.5 rounded-sm hover:bg-[#fff700]/70 text-[16px] flex items-center "
+          >
+            {" "}
+            <span className="icon-[material-symbols--arrow-circle-left]"></span>{" "}
+            <span>Retour</span>
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-export default Signup;
+export default Profil;

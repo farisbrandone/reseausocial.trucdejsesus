@@ -1,5 +1,6 @@
-import { context } from "@/App";
-import { ReactNode, useContext, useEffect } from "react";
+import { User } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginMother({
@@ -12,14 +13,29 @@ export default function LoginMother({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
-  const data = useContext(context);
-  console.log({ communityId, groupeId });
+  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    if (!data) {
+  console.log({ communityId, groupeId });
+  console.log(auth.currentUser);
+
+  /* useEffect(() => {
+    if (!auth.currentUser) {
       navigate(`/signup/${communityId}/${groupeId}`);
     }
-  }, []);
+  }, []); */
 
-  return <>{data && children}</>;
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        navigate(`/signup/${communityId}/${groupeId}`);
+        return;
+      }
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+  /* if (!user){
+
+  } */
+  return <>{user && children}</>;
 }

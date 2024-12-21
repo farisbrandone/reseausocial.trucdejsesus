@@ -22,6 +22,13 @@ import { CopyIcon } from "lucide-react";
 import ButtonForCopy from "./ButtonForCopy";
 import MessageCards from "./MessageCards";
 import { useContextReducer } from "@/hooks/useContextReducer";
+import SocialMediaShare from "./SocialMediaShare";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 interface Tab {
   title: string;
@@ -71,11 +78,16 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
   const [membreOfData, setMembreOfData] = useState<MembreData[]>([]);
   const [state, dispatch] = useContextReducer();
   const [copied, setCopied] = useState(false);
+  const [copied2, setCopied2] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(
       "https://untrucdejesus.gererlesclients.com/client"
     );
+    setCopied(true);
+  };
+  const handleCopy2 = () => {
+    navigator.clipboard.writeText("https://trucdejesus.com/rejoindre");
     setCopied(true);
   };
 
@@ -123,22 +135,22 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
         " flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white"
       )}
     >
-      <div className="h-6 max-[980px]:h-8 w-full bg-white "></div>
-      <div className="headerAcceuil sticky w-full flex items-center justify-between min-[400px]:justify-end  min-[400px]:gap-4  top-0 bg-white pt-4 max-[980px]:pt-6 z-10 ">
+      <div className="max-[980px]:sticky  h-6 max-[980px]:h-3 w-full bg-white  "></div>
+      <div className="headerAcceuil max-[980px]:mt-3 sticky w-full flex items-center justify-between min-[400px]:justify-end  min-[400px]:gap-4  top-0 bg-white pt-4 max-[980px]:pt-6  max-[400px]:pt-3 z-10 ">
         <div
           className={clsx("flex items-center justify-center lg:hidden", {
             hidden: state?.stateSideBar,
           })}
           onClick={() => dispatch({ type: "open", payload: "" })}
         >
-          <span className="icon-[ci--hamburger] lg:hidden"></span>
+          <span className="icon-[ci--hamburger] text-3xl lg:hidden"></span>
         </div>
-        <div className="flex min-[400px]:flex-1  sm:justify-end items-center">
+        <div className="flex  min-[400px]:flex-1  sm:justify-end items-center">
           <input
             title="Rechercher"
             placeholder="Rechercher"
             type="text"
-            className="xl:max-w-[1350px] p-1 pl-3 sm:py-[6px] rounded-l-[8px] min-[400px]:flex-1 border-[2px] border-solid border-[#747373] inputShadow  outline-none focus:outline-none transition-all duration-500"
+            className="max-[398px]:max-w-[180px]  xl:max-w-[1350px] p-1 pl-3 sm:py-[6px] rounded-l-[8px] min-[400px]:flex-1 border-[2px] border-solid border-[#747373] inputShadow  outline-none focus:outline-none transition-all duration-500"
           />
           <div className="flex items-center justify-center  w-[43px] h-[40px] bg-[#fff700] rounded-sm  cursor-pointer border-[1px] border-solid border-[#00000026]">
             <span className="icon-[websymbol--search] text-1xl"></span>
@@ -164,11 +176,16 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
             </li>
           </ul>
         </div> */}
-        <AvatarComponent /* top="[{60}]" right={90} */ />
+        <AvatarComponent
+          /* top="[{60}]" right={90} */ communityId={
+            groupeValue.communityId as string
+          }
+          groupeId={groupeValue.id as string}
+        />
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-8 pl-3  ">
-        <div className=" w-full h-[350px]  relative">
+        <div className=" w-full sm:h-[350px] lg:h-[450px]  relative">
           {groupeValue.banniereUrlGroupe &&
           groupeValue.banniereUrlGroupe.includes(".mp4") ? (
             <video
@@ -198,6 +215,47 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
             <p className="text-[20px] sm:text-[26px]">
               {groupeValue.titleGroupe}
             </p>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className="flex items-center bg-[#fff700] px-2 py-3 h-[40px] rounded-md mr-4 hover:bg-[#fff700]/50 text-[#000] text-[18px] ">
+                  {" "}
+                  Partager sur les réseaux sociaux
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="max-w-80 sm:max-w-[500px] p-2">
+                <SocialMediaShare />
+                <div className="flex flex-col gap-1 mt-5">
+                  <h2>
+                    {" "}
+                    Ou copier l'url et partager vers d'autre site ou réseau
+                    sociaux
+                  </h2>
+                  <div className="flex gap-0 items-center p-0  flex-wrap">
+                    <input
+                      title="Copier l'url"
+                      className="outline-none bg-transparent rounded-l-md bg-white p-2 text-center text-[#191919]"
+                      value={"https://trucdejesus.com/rejoindre"}
+                      onClick={handleCopy2}
+                      onFocus={(e) => {
+                        e.target.select();
+                      }}
+                    />
+
+                    <ButtonForCopy
+                      setCopied={setCopied2}
+                      name="email"
+                      title={copied2 ? "Url copié" : "Copier l'url"}
+                      icon={<CopyIcon />}
+                      position="left"
+                      otherClasses="bg-transparent"
+                      handleClick={handleCopy2}
+                    />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            {/* <div className="relative">
             <button
               type="button"
               title="Quitter definitivement le groupe"
@@ -205,9 +263,11 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
             >
               <span className="icon-[mingcute--exit-line] text-black mr-2 "></span>{" "}
               <p className="text-black text-[12px] sm:text-[14px] font-[600] ">
-                Quitter definitivement le groupe
+               Partager sur les réseaux sociaux
               </p>
             </button>
+           
+            </div> */}
           </div>
         </div>
         <div className="  flex max-[980px]:flex-col max-[980px]:gap-2  w-full tex-[11px] sm:tex-[14px]">
@@ -286,7 +346,12 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
                       key={value.id}
                       className="flex flex-col gap-5 shadow-xl"
                     >
-                      <MessageCards value={value} membreOfData={membreOfData} />
+                      <MessageCards
+                        value={value}
+                        membreOfData={membreOfData}
+                        setMessagesData={setMessagesData}
+                        groupeValue={groupeValue}
+                      />
                       {/* <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
                         <div className="flex items-center gap-2">
                           <Avatar>

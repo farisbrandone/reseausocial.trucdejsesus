@@ -12,7 +12,7 @@ export function formatDate(stringDate: string) {
     const diffDay = dateNow.getDate() - dateValue.getDate();
     return `${diffDay}j`;
   } else if (d > 7 * oneDay) {
-    return format(dateValue, "'' dd/MM/yyyy");
+    return format(dateValue, "dd/MM/yyyy");
   }
 }
 
@@ -28,7 +28,7 @@ export function formatDateWithString(stringDate: string) {
     const diffDay = dateNow.getDate() - dateValue.getDate();
     return `il y a ${diffDay}j`;
   } else if (d > 7 * oneDay) {
-    return format(dateValue, "'' dd/MM/yyyy");
+    return format(dateValue, "dd/MM/yyyy");
   }
 }
 

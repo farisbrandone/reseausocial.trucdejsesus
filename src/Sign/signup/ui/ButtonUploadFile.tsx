@@ -43,7 +43,7 @@ function ButtonUploadFile({
         setStateDownloadProps(() => {
           return true;
         });
-        console.log("ntamnyam");
+
         const progression = Math.round(
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );

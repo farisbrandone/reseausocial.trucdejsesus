@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,66 +24,38 @@ import {
   GroupeDataType,
   MembreData,
   MessageData,
-  postMessageByUser,
+  updateMessageByUser,
 } from "../../../seedAndGetData/seedData";
 import { toast } from "@/hooks/use-toast";
 import { auth } from "../../../firebaseConfig";
 
-export interface MessageComponentsType {
-  groupeId: string;
-  groupeName: string;
-  messagesData: MessageData[];
+interface MessageComponentsType {
   membreOfData: MembreData[];
   setMessagesData: React.Dispatch<React.SetStateAction<MessageData[]>>;
-  appearText: boolean;
-  setAppearText: React.Dispatch<React.SetStateAction<boolean>>;
-  appearVideo: boolean;
-  setAppearVideo: React.Dispatch<React.SetStateAction<boolean>>;
-  appearImage: boolean;
-  setAppearImage: React.Dispatch<React.SetStateAction<boolean>>;
-  appearAudio: boolean;
-  setAppearAudio: React.Dispatch<React.SetStateAction<boolean>>;
-  textePartage: string;
-  setTextePartage: React.Dispatch<React.SetStateAction<string>>;
+  value: MessageData;
   groupeValue: GroupeDataType;
-  handleappearText: () => void;
-  handleappearImage: () => void;
-  handleappearVideo: () => void;
-  handleappearAudio: () => void;
 }
 
-export function MessageComponents({
-  groupeValue,
-  groupeName,
-  groupeId,
+export function UpdateMessageComponent({
   setMessagesData,
-  appearText,
-  /* setAppearText, */
-  appearVideo,
-  /* setAppearVideo, */
-  appearImage,
-  /* setAppearImage, */
-  appearAudio,
-  /*  setAppearAudio, */
-  handleappearText,
-  handleappearImage,
-  handleappearVideo,
-  handleappearAudio,
-  textePartage,
-  setTextePartage,
   membreOfData,
+  value,
+  groupeValue,
 }: MessageComponentsType) {
   const [putHidden, setPutHidden] = useState(false);
-  const [imageUrlEvent, setImageUrlEvent] = useState("");
-  const [audioUrlEvent, setAudioUrlEvent] = useState("");
+  const [imageUrlEvent, setImageUrlEvent] = useState(value.photo);
+  const [audioUrlEvent, setAudioUrlEvent] = useState(value.audio);
   const [stateDownload, setStateDownload] = useState(false);
-  const [videoUrlEvent, setVideoUrlEvent] = useState("");
-
+  const [videoUrlEvent, setVideoUrlEvent] = useState(value.video);
+  const [textePartage, setTextePartage] = useState(value.text);
   const [desableButton, setDisableButton] = useState(false);
   const [openState, setOpenState] = useState(false);
   const [userSelect, setUserSelect] = useState<MembreData[]>([]);
   const [alertOpen, setAlertOpen] = useState(false);
-
+  const [appearText, setAppearText] = useState(!!value.text);
+  const [appearVideo, setAppearVideo] = useState(!!value.video);
+  const [appearImage, setAppearImage] = useState(!!value.photo);
+  const [appearAudio, setAppearAudio] = useState(!!value.audio);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleOpenState = () => {
@@ -100,6 +71,31 @@ export function MessageComponents({
     setOpenState(true);
   };
 
+  const handleappearText = () => {
+    setAppearText(true);
+    setAppearImage(false);
+    setAppearVideo(false);
+    setAppearAudio(false);
+  };
+  const handleappearImage = () => {
+    setAppearText(false);
+    setAppearImage(true);
+    setAppearVideo(false);
+    setAppearAudio(false);
+  };
+  const handleappearVideo = () => {
+    setAppearText(false);
+    setAppearImage(false);
+    setAppearVideo(true);
+    setAppearAudio(false);
+  };
+
+  const handleappearAudio = () => {
+    setAppearText(false);
+    setAppearImage(false);
+    setAppearVideo(false);
+    setAppearAudio(true);
+  };
   const handleTextePartage = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setTextePartage(() => e.target.value);
   };
@@ -145,6 +141,7 @@ export function MessageComponents({
         });
         return;
       }
+
       const data: MessageData = {
         userId: user?.id as string,
         userName: user?.name as string,
@@ -155,24 +152,25 @@ export function MessageComponents({
         audio: audioUrlEvent,
         video: videoUrlEvent,
         userLikes: [],
-        groupeName: !!groupeName ? groupeName : "",
-        communityId: groupeValue.communityId as string,
+        groupeName: value.groupeName,
+        communityId: value.communityId,
         typeMessage: "public",
         othersFile: "",
-        userReceiverId: "",
       };
 
-      const result = await postMessageByUser(data, groupeId);
+      const result = await updateMessageByUser(
+        data,
+        value.groupeId as string,
+        value.id as string
+      );
       if (result.success) {
-        if (groupeName) {
-          const messages = await getAllMessageData(groupeName);
-          setMessagesData([...messages]);
-          setOpenState(false);
-          setTextePartage("");
-          setImageUrlEvent("");
-          setAudioUrlEvent("");
-          setVideoUrlEvent("");
-        }
+        const messages = await getAllMessageData(value.groupeName);
+        setMessagesData([...messages]);
+        setOpenState(false);
+        setTextePartage("");
+        setImageUrlEvent("");
+        setAudioUrlEvent("");
+        setVideoUrlEvent("");
       }
     } catch (error) {
       toast({
@@ -191,65 +189,14 @@ export function MessageComponents({
   return (
     <Dialog open={openState} onOpenChange={() => handleOpenState()}>
       <DialogTrigger asChild={false}>
-        <div
-          className="flex items-center gap-2 py-5 border-b border-b-[#35353583] "
-          onClick={handleappearText}
-        >
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <Button
-            className={clsx(
-              "flex justify-start flex-1 focus:outline-none focus:rounded-full ",
-              "pl-2 py-3 transition-all duration-500 bg-transparent",
-              "text-black hover:bg-transparent"
-            )}
-          >
-            {" "}
-            Message{" "}
-          </Button>
-        </div>
-        {/* part for button */}
-        <div className="flex items-center gap-1 mt-2 flex-wrap ">
-          <Button
-            className="bg-transparent  text-[#000] hover:bg-transparent/10"
-            onClick={handleappearText}
-          >
-            <span className="icon-[f7--photo] mr-[1px]"></span>
-            Texte
-          </Button>
-
-          <Button
-            className="bg-transparent  text-[#000] hover:bg-transparent/10"
-            onClick={handleappearImage}
-          >
-            <span className="icon-[f7--photo] mr-[1px]"></span>
-            Photo
-          </Button>
-
-          <Button
-            className="bg-transparent text-[#000] hover:bg-transparent/10"
-            onClick={handleappearAudio}
-          >
-            <span className="icon-[ant-design--audio-filled] mr-[1px] "></span>
-            Audio
-          </Button>
-
-          <Button
-            className="bg-transparent text-[#000] hover:bg-transparent/10"
-            onClick={handleappearVideo}
-          >
-            <span className="icon-[bxs--video] mr-[1px]"></span>
-            Video
-          </Button>
-        </div>
-        {/* part for button */}
+        <Button className="bg-white text-[#000] hover:bg-white text-start">
+          Mettre à jour
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-[80%]  sm:max-w-[525px] p-0">
         <DialogHeader className="border-b-[1px] border-b-[#0000009d] py-3 flex items-center pl-2">
           <DialogTitle className="w-full text-start text-[20px] ">
-            Crée un partage
+            Mettre à jour le partage
           </DialogTitle>
         </DialogHeader>
 
@@ -397,7 +344,7 @@ export function MessageComponents({
               alertOpen={alertOpen}
               setAlertOpen={setAlertOpen}
               membreOfData={membreOfData}
-              groupeId={groupeId}
+              groupeId={groupeValue.id as string}
             />
             {/*  <Button className="bg-transparent  text-[#000] hover:bg-transparent/10 flex items-center gap-1 h-[100%] ">
               <span className="icon-[mdi--tag] mr-1 self-start text-4xl "></span>
@@ -427,7 +374,7 @@ export function MessageComponents({
               }
             }}
           >
-            Partager{" "}
+            Mettre à jour{" "}
             {desableButton && (
               <span className="icon-[eos-icons--three-dots-loading] text-xl"></span>
             )}

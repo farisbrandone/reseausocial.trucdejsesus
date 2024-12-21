@@ -27,6 +27,7 @@ import { toast } from "@/hooks/use-toast";
 import { context } from "@/App";
 import axios from "axios";
 import { formatDateWithString } from "@/lib/formatDate";
+import { auth } from "../../../../firebaseConfig";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -258,7 +259,7 @@ export default function PrivateMessageComponent({
     }
   };
 
-  const handleText = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleText = (e: ChangeEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     setText(e.target.value);
   };
@@ -272,13 +273,25 @@ export default function PrivateMessageComponent({
           title: "Erreur",
           description: "Aucun utilisateur associé à cette section",
         });
+        setDisableButton(false);
         return;
       }
-      /*  const myUser = await axios.post<MembreData, MembreData>(
-        "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/ get_member_with_email",
-        userAmin?.email
-      ); */
-      const objectFile = await getFileUrlAndType(myFile[0].file);
+
+      if (auth.currentUser) {
+      }
+      const objectFile =
+        myFile.length > 0
+          ? await getFileUrlAndType(myFile[0].file)
+          : { url: "", typeFile: "" };
+      if (!objectFile.url) {
+        setDisableButton(false);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Une erreur est survenue, Vérifier votre connexion",
+        });
+        return;
+      }
       const data: MessageData = {
         userId: myUser.id as string,
         userName: myUser.name,
@@ -306,6 +319,11 @@ export default function PrivateMessageComponent({
         row.groupeValue.id as string
       );
       if (result.success) {
+        const senderReceiverMessage = await getAllSenderReceiverMessage(
+          myUser.id as string,
+          row.id as string
+        );
+        setSendReceiveMessage([...senderReceiverMessage]);
         setText("");
         setMyFile([]);
         setDisableButton(false);
@@ -352,7 +370,7 @@ export default function PrivateMessageComponent({
           "http://localhost:4000/api/frontoffice/getmemberwithemail",
           { email: userAmin?.email }
         );
-        console.log({ ...myUsers.data.data });
+
         /* 
         http://localhost:4000
         https://serverbackofficetrucdejesus.onrender.com
@@ -363,6 +381,7 @@ export default function PrivateMessageComponent({
           myUsers.data.data.id as string,
           row.id as string
         );
+
         setSendReceiveMessage([...senderReceiverMessage]);
         setStartLoading(false);
       } catch (error) {
@@ -451,9 +470,12 @@ export default function PrivateMessageComponent({
                 : !!val.video
                 ? val.video
                 : val.othersFile;
-              url.split("").forEach((value) => {
+              url.split("/").forEach((value) => {
                 if (value.includes("images")) {
-                  urlName = value.replace("images", "").replace("%", "");
+                  urlName = value
+                    .replace("images", "")
+                    .replace("%2F", "")
+                    .split("?")[0];
                 }
               });
               const deleteMessage = async () => {
@@ -493,41 +515,43 @@ export default function PrivateMessageComponent({
               };
 
               return (
-                <div className="flex items-center gap-1 p-2 flex-[70px] ">
+                <div className="relative parentdelete flex items-center gap-1 p-2 flex-[70px] ">
                   <div
-                    className="w-[30px] h-[30px] flex  items-center justify-center cursor-pointer overflow-hidden hover:overflow-visible "
+                    className="delete w-[30px] h-[30px] flex  items-center justify-center cursor-pointer "
                     onClick={deleteMessage}
                   >
-                    {!loadingDelete ? (
+                    {loadingDelete ? (
                       <span className="icon-[line-md--loading-twotone-loop]"></span>
                     ) : (
-                      <span className="icon-[wpf--delete] text-xl"></span>
+                      <span className="icon-[wpf--delete] text-xl deleteChild  "></span>
                     )}
                   </div>
-                  <div className="flex flex-col gap-1 w-[180px] p-2 bg-[#edf7e8] ">
+                  <div className="mt-2 flex flex-col gap-1 w-[180px] p-2 bg-[#edf7e8] ">
                     <div className="flex items-center gap-2 text-black">
                       <p> {val.text} </p>
-                      <p>
-                        {" "}
-                        {formatDateWithString(
-                          val.dateOfCreation as string
-                        )}{" "}
-                      </p>
                     </div>
                     {url && (
                       <a
+                        download
                         href={url}
-                        className="w-full p-1.5 rounded-xl text-white bg-[#edf7e8] hover:bg-[#c9f7b2] border-[1px] border-solid border-[#c1f7a5] "
+                        target="_blank"
+                        className="w-full px-1.5 py-2.5 rounded-xl text-[#000] bg-[#edf7e8] hover:bg-[#c9f7b2] border-[1px] border-solid border-[#c1f7a5] cursor-pointer text-ellipsis overflow-clip "
                       >
                         {urlName}
                       </a>
                     )}
                   </div>
-                  <img
-                    src={val.userAvatar}
-                    alt=""
-                    className="w-[32px] h-[32px] object-cover rounded-full "
-                  />
+                  <div className="absolute top-0 right-1 p-1 bg-transparent flex items-center">
+                    <p>
+                      {" "}
+                      {formatDateWithString(val.dateOfCreation as string)}{" "}
+                    </p>
+                    <img
+                      src={val.userAvatar}
+                      alt=""
+                      className="w-[32px] h-[32px] object-cover rounded-full "
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -620,8 +644,7 @@ export default function PrivateMessageComponent({
             </div>
           </div>
           <div className="flex-1">
-            <input
-              type="text"
+            <textarea
               placeholder="Saisir un message"
               className="focus:outline-none w-full p-2"
               onChange={handleText}

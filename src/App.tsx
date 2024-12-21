@@ -21,6 +21,7 @@ import Signup from "./Sign/signup/Signup";
 import { User } from "firebase/auth";
 import Login from "./Sign/login/Login";
 import NotAccessiblePage from "./mycomponents/errorPage/NotAccessiblePage";
+import Profil from "./Sign/profil/Profil";
 
 /* interface mymy {
   path: string;
@@ -122,6 +123,14 @@ function App() {
           {
             path: "/login/:communityId/:groupeId",
             element: <Login />,
+          },
+          {
+            path: "/profil/:communityId/:groupeId",
+            element: (
+              <LoginMother>
+                <Profil />
+              </LoginMother>
+            ),
           },
           {
             path: "/",

@@ -13,7 +13,7 @@ interface SidebarForMobileType {
 
 export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
   const [state, dispatch] = useContextReducer();
-  console.log(state);
+
   return (
     <div
       className={clsx(
@@ -34,7 +34,7 @@ export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
         )}
       >
         <a
-          href="/"
+          href={`/community/${val.id}`}
           className="header flex flex-col gap-3 items-center mt-4 px-2 pb-1"
         >
           <img
@@ -45,7 +45,7 @@ export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
 
           <p className=" flex overflow-clip text-nowrap w-[200px] text-ellipsis">
             <span className="icon-[lsicon--user-crowd-filled] self-center text-2xl mr-2"></span>
-            Réseau 100% JÉSUS
+            {val.title}
           </p>
         </a>
         <div className="corpsSidebar flex flex-col   border-t-2 border-t-[#242424]/30 border-solid w-full">
@@ -64,7 +64,7 @@ export function SidebarForMobile({ groupeState, val }: SidebarForMobileType) {
       </div>
       <div
         className="absolute left-[240px] top-[40px] text-red-700 w-[30px] h-[30px] rounded-full bg-white flex items-center justify-center z-50 cursor-pointer"
-        onClick={() => dispatch({ type: "close" })}
+        onClick={() => dispatch({ type: "close", payload: "" })}
       >
         <span className="icon-[fa-solid--less-than]"></span>
       </div>

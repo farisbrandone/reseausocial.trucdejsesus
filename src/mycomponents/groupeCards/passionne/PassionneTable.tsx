@@ -91,7 +91,6 @@ export function PassionneTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log({ id: header.id });
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder
