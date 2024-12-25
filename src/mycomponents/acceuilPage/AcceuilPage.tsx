@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import MessageCommunityElement from "./MessageCommunityElement";
 import clsx from "clsx";
 import { useContextReducer } from "@/hooks/useContextReducer";
+import ButtonForVerset from "./buttonForVerset/ButtonForVerset";
 
 /* const objectCards = [
   {
@@ -108,9 +109,7 @@ function AcceuilPage({
 
   return (
     <div
-      className={clsx(
-        "relative flex flex-col items-center px-1 sm:pr-2 w-full p-0 "
-      )}
+      className={clsx("flex flex-col items-center px-1 sm:pr-2 w-full p-0 ")}
     >
       <div className="h-2 sm:h-7 w-full bg-white"></div>
 
@@ -138,7 +137,7 @@ function AcceuilPage({
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
-        <div className=" w-full   relative">
+        <div className=" w-full">
           {value.banniereUrl && value.banniereUrl.includes(".mp4") ? (
             <video
               loop
@@ -163,14 +162,17 @@ function AcceuilPage({
             className="object-cover w-full h-full bg-transparent"
           /> */}
           {/*  <div className="absolute right-0 left-0 bottom-0 top-0 image"></div> */}
-          <p className="textOnImage text-[20px] font-extrabold -translate-y-[200%] md:-translate-y-[320%] lg:-translate-y-[400%] xl:-translate-y-[500%] text-white ">
-            <strong>{value.title}</strong>
-          </p>
-          <p className="text-[20px] ">{value.description}</p>
         </div>
       </div>
+      <div className="textOnImage w-full flex items-center justify-between flex-row text-[20px] font-extrabold  text-white px-2 -translate-y-[210%] ">
+        <strong className="opacity-0">{value.title}</strong>
+        <ButtonForVerset />
+      </div>
+      <p className="text-[20px] -translate-y-[40%] w-full 2xl:w-[1250px]  text-start px-2 -z-10 ">
+        {value.description}
+      </p>
 
-      <div className="flex flex-col lg:flex-row lg:gap-6 w-full 2xl:w-[1250px]  mt-4">
+      <div className="flex flex-col lg:flex-row lg:gap-6 w-full 2xl:w-[1250px]  mt-4 px-2">
         {/*  <div className="body1 flex lg:flex-1 lg:ml-2 flex-col items-start gap-4 pl-3">
           <p className="textBody1 text-[18px]">JÉSUS te passionne ?</p>
           <p className="">Faisons connaissance ! 💛</p>
