@@ -4,7 +4,7 @@ import {
   MessageData,
 } from "seedAndGetData/seedData";
 import { getAllCommunityMessageData } from "../../../seedAndGetData/seedData";
-import CardGroupAcceuil from "./CardGroupAcceuil";
+/* import CardGroupAcceuil from "./CardGroupAcceuil"; */
 import { useEffect, useState } from "react";
 import MessageCommunityElement from "./MessageCommunityElement";
 import clsx from "clsx";
@@ -77,7 +77,7 @@ import { useContextReducer } from "@/hooks/useContextReducer";
 ]; */
 
 function AcceuilPage({
-  groupeData,
+  /*  groupeData, */
   value,
 }: {
   groupeData: GroupeDataType[];
@@ -138,12 +138,13 @@ function AcceuilPage({
       </div>
 
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
-        <div className=" w-full h-[250px]  relative">
+        <div className=" w-full   relative">
           {value.banniereUrl && value.banniereUrl.includes(".mp4") ? (
             <video
+              loop
               autoPlay={true}
               muted={true}
-              className="object-cover w-full h-[250px]"
+              className="object-cover w-full"
             >
               <source src={value.banniereUrl} type="video/mp4" />
               Votre navigateur ne supporte pas la balise vidéo.
@@ -162,12 +163,11 @@ function AcceuilPage({
             className="object-cover w-full h-full bg-transparent"
           /> */}
           {/*  <div className="absolute right-0 left-0 bottom-0 top-0 image"></div> */}
-          <p className="textOnImage text-[20px] text-white absolute bottom-2 left-2 font-extrabold ">
+          <p className="textOnImage text-[20px] font-extrabold -translate-y-[200%] md:-translate-y-[320%] lg:-translate-y-[400%] xl:-translate-y-[500%] text-white ">
             <strong>{value.title}</strong>
           </p>
+          <p className="text-[20px] ">{value.description}</p>
         </div>
-
-        <p className="text-[20px] mt-4 mb-6 ">{value.description}</p>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:gap-6 w-full 2xl:w-[1250px]  mt-4">
@@ -180,15 +180,15 @@ function AcceuilPage({
           </p>
           <div></div>
         </div> */}
-        <div className="flex items-center gap-1 w-full lg:border-r-[#000] lg:border-solid lg:border-[2px] ">
+        {/*  <div className="flex items-center gap-1 w-full lg:border-r-[#000] lg:border-solid lg:border-[2px] ">
           <div className="body2 hidden  lg:flex flex-col gap-4  self-start ">
             {groupeData.map((objectCard) => (
               <CardGroupAcceuil objectCard={objectCard} />
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="flex flex-col w-full ">
-          <h1 className="font-bold text-[20px] ">Partage recents </h1>
+          <h1 className="font-bold text-[20px] ">Partages récents </h1>
           <div className="flex flex-col gap-1 mt-5 w-full ">
             {messageCoommunity?.map((message) => (
               <MessageCommunityElement message={message} />
