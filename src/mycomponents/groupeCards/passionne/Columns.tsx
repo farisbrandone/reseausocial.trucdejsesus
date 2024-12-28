@@ -21,6 +21,7 @@ import {
   MembreData,
   MessageData,
   postMessageByUser,
+  postPrivateMessageByUser,
   requestToDeleteUniversalDataWithId,
 } from "../../../../seedAndGetData/seedData";
 import { toast } from "@/hooks/use-toast";
@@ -285,7 +286,7 @@ export default function PrivateMessageComponent({
         myFile.length > 0
           ? await getFileUrlAndType(myFile[0].file)
           : { url: "", typeFile: "" };
-      if (!objectFile.url) {
+      if (!objectFile.url && myFile.length > 0) {
         setDisableButton(false);
         toast({
           variant: "destructive",
@@ -298,6 +299,7 @@ export default function PrivateMessageComponent({
         userId: myUser.id as string,
         userName: myUser.name,
         userAvatar: myUser.image,
+        userEmail: myUser.email,
         text,
         photo: objectFile.typeFile === "Image" ? objectFile.url : "",
         audio: objectFile.typeFile === "Audio" ? objectFile.url : "",
@@ -314,9 +316,12 @@ export default function PrivateMessageComponent({
             ? objectFile.url
             : "",
         userReceiverId: row.id,
+        userReceiverEmail: row.email,
       };
 
-      const result = await postMessageByUser(
+      console.log(data);
+
+      const result = await postPrivateMessageByUser(
         data,
         row.groupeValue.id as string
       );
@@ -331,6 +336,7 @@ export default function PrivateMessageComponent({
         setDisableButton(false);
       }
     } catch (error) {
+      console.log(error);
       toast({
         variant: "destructive",
         title: "Erreur",

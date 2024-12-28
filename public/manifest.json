@@ -1,0 +1,18 @@
+{
+  "gcm_sender_id": "<YOUR_SENDER_ID_HERE>",
+  "name": "Truc de JESUS !",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "https://trucdejesus.appowls.io/assets/apps/user_1837/app_3120/draft/icon/app_logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "https://trucdejesus.appowls.io/assets/apps/user_1837/app_3120/draft/icon/app_logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

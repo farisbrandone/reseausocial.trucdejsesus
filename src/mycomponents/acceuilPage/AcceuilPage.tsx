@@ -10,6 +10,8 @@ import MessageCommunityElement from "./MessageCommunityElement";
 import clsx from "clsx";
 import { useContextReducer } from "@/hooks/useContextReducer";
 import ButtonForVerset from "./buttonForVerset/ButtonForVerset";
+import { NotifComponent } from "./NotifMessage/NotifComponent";
+import { MessagePriveComponent } from "./NotifMessage/MessagePriveComponent";
 
 /* const objectCards = [
   {
@@ -128,10 +130,20 @@ function AcceuilPage({
           <span className="icon-[ci--hamburger] text-3xl lg:hidden"></span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]">
+          <NotifComponent /* message={messageCoommunity} */ />
+          <MessagePriveComponent /* message={messageCoommunity} */ />
+          <div
+            title="Notification"
+            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
+          >
             <span className="icon-[mdi--bell] text-2xl"></span>
           </div>
-
+          <div
+            title="Message privé"
+            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
+          >
+            <span className="icon-[mdi--message-text]"></span>
+          </div>
           {/*  <AvatarComponent communityId={value.id as string} /> */}
         </div>
       </div>
@@ -192,9 +204,11 @@ function AcceuilPage({
         <div className="flex flex-col w-full ">
           <h1 className="font-bold text-[20px] ">Partages récents </h1>
           <div className="flex flex-col gap-1 mt-5 w-full ">
-            {messageCoommunity?.map((message) => (
-              <MessageCommunityElement message={message} />
-            ))}
+            {messageCoommunity
+              ?.filter((value) => value.typeMessage === "public")
+              ?.map((message) => (
+                <MessageCommunityElement message={message} />
+              ))}
           </div>
         </div>
       </div>

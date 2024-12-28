@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+li {
+  list-style: none;
+}
+.footerList a {
+  list-style: none;
+  padding: 15px 20px;
+  border-radius: 50px;
+  /*display: inline-block;*/
+  width: 30%;
+  font-weight: bold;
+  text-align: center;
+  margin: auto;
+  overflow: hidden;
+  word-wrap: none;
+  word-break: keep-all;
+  font-family: Inter, sans-serif;
+}
+
+.footerList a:hover {
+  background: #00000028;
+}
+.partBackground {
+  background-image: url();
+}
+.buttonAbonnement,
+.buttonConnect {
+  transition: color 500ms ease;
+}
+
+.buttonAbonnement:hover,
+.buttonConnect:hover {
+  color: #294b5c;
+  transition: color 500ms ease;
+}
+
+.abonnement a::after {
+  content: "";
+  display: block;
+  visibility: hidden;
+  border: 2px solid #294b5c;
+  width: 0px;
+  height: 2px;
+  align-self: center;
+  transition: all 500ms ease-in;
+}
+
+@keyframes changePosition {
+  from {
+    transform: rotate(180deg) translate(0, 0);
+  }
+  to {
+    transform: rotate(180deg) translate(0, -20px);
+  }
+}
+
+@keyframes changeWidth {
+  from {
+    width: 0px;
+  }
+  to {
+    width: 300px;
+  }
+}
+.abonnement .pp:hover::after {
+  visibility: visible;
+  width: 300px;
+  transition: all 500ms ease-in-out;
+}
+
+.partQrcode {
+  max-width: 700px;
+  background-image: url("https://d3do1p4qp602pz.cloudfront.net/user_1837/image/600789b9319b_490.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  transform: translateY(-80px);
+}
+.socialIcon li {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.socialIcon li a {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+}
+/*********************************/
+
+.buttonRetourSurSitePublic {
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+}
+
+.buttonRetourSurSitePublic:before {
+  content: "";
+  background: linear-gradient(45deg, #f8e71c, #e463fd);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 12px;
+}
+
+.buttonRetourSurSitePublic:active {
+  color: #000;
+}
+
+.buttonRetourSurSitePublic:active:after {
+  background: transparent;
+}
+
+.buttonRetourSurSitePublic:hover:before {
+  opacity: 1;
+}
+
+.buttonRetourSurSitePublic:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #111;
+  left: 0;
+  top: 0;
+  border-radius: 12px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+.btn {
+  @apply rounded-[10px];
+  @apply h-[33px];
+  @apply w-[33px];
+  @apply p-0;
+}
+
+/*******************************/

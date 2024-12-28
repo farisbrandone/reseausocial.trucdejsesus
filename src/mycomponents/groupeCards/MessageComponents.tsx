@@ -29,6 +29,7 @@ import {
 } from "../../../seedAndGetData/seedData";
 import { toast } from "@/hooks/use-toast";
 import { auth } from "../../../firebaseConfig";
+import axios from "axios";
 
 export interface MessageComponentsType {
   groupeId: string;
@@ -160,9 +161,11 @@ export function MessageComponents({
         typeMessage: "public",
         othersFile: "",
         userReceiverId: "",
+        userReceiverEmail: "",
       };
 
       const result = await postMessageByUser(data, groupeId);
+
       if (result.success) {
         if (groupeName) {
           const messages = await getAllMessageData(groupeName);
@@ -173,6 +176,14 @@ export function MessageComponents({
           setAudioUrlEvent("");
           setVideoUrlEvent("");
         }
+      }
+
+      const sendNotification = await axios.post(
+        "https://serverbackofficetrucdejesus.onrender.com/api/firebase/send-message-notification",
+        { user: userSelect, message: data }
+      );
+      if (false) {
+        console.log(sendNotification);
       }
     } catch (error) {
       toast({

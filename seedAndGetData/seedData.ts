@@ -63,6 +63,7 @@ export interface MessageData {
   dateOfUpdate?: string;
   id?: string;
   userReceiverId?: string;
+  userReceiverEmail?: string;
   userId: string;
   userName: string;
   userAvatar: string;
@@ -201,6 +202,42 @@ export interface MemberWaitingDataType {
   nombreDeBadge: number;
 }
 
+export interface DeviceForReseauSocialDataType {
+  deviceNumber: string;
+  user: MembreData;
+  dateOfCreation?: string;
+  dateOfUpdate?: string;
+  id?: string;
+}
+
+export interface NotificationMessageDataType {
+  user: MembreData[];
+  message: MessageData;
+  dateOfCreation?: string;
+  id?: string;
+}
+
+export async function requestToSetUniversalData<T>(
+  databaseName: string,
+  dataToSend: T
+) {
+  try {
+    const NotifRef = collection(db, databaseName);
+    const dateOfCreation = new Date().toUTCString();
+    const dateOfUpdate = new Date().toUTCString();
+    await setDoc(doc(NotifRef), {
+      ...dataToSend,
+      dateOfCreation,
+      dateOfUpdate,
+    });
+    return { message: " success", success: true };
+  } catch (error) {
+    throw new Error(
+      "Une erreur est survenue pendant la récupération des données"
+    );
+  }
+}
+
 export async function requestTogetAllUniversalData<T>(
   databaseName: string
 ): Promise<T[]> {
@@ -251,6 +288,7 @@ export const postMessageByUser = async (
     typeMessage,
     othersFile,
     userReceiverId,
+    userReceiverEmail,
   }: MessageData,
   groupeId: string
 ) => {
@@ -279,6 +317,7 @@ export const postMessageByUser = async (
       typeMessage,
       othersFile,
       userReceiverId,
+      userReceiverEmail,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -294,6 +333,62 @@ export const postMessageByUser = async (
       promise3,
     ]);
     console.log(value1, value2, value3);
+    return { message: "Le message a été créer avec success", success: true };
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Une erreur est survenue pendant la création du message");
+  }
+};
+
+export const postPrivateMessageByUser = async (
+  {
+    userId,
+    userName,
+    userEmail,
+    text,
+    photo,
+    audio,
+    video,
+    groupeName,
+    userLikes,
+    userAvatar,
+    communityId,
+    typeMessage,
+    othersFile,
+    userReceiverId,
+    userReceiverEmail,
+  }: MessageData,
+  groupeId: string
+) => {
+  console.log(userEmail);
+  try {
+    console.log({ userId, groupeId });
+    const messageRef = collection(db, "MessageData");
+
+    const dateOfCreation = new Date().toUTCString();
+    const dateOfUpdate = new Date().toUTCString();
+    const promise1 = setDoc(doc(messageRef), {
+      userId,
+      userName,
+      userAvatar,
+      userEmail,
+      text,
+      photo,
+      audio,
+      video,
+      dateOfCreation,
+      dateOfUpdate,
+      groupeName,
+      userLikes,
+      communityId,
+      typeMessage,
+      othersFile,
+      userReceiverId,
+      userReceiverEmail,
+    });
+
+    const [value1] = await Promise.all([promise1]);
+    console.log(value1);
     return { message: "Le message a été créer avec success", success: true };
   } catch (error) {
     console.log({ error });
@@ -936,6 +1031,7 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           userId,
           userName,
           userAvatar,
+          userEmail,
           text,
           photo,
           audio,
@@ -947,6 +1043,8 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           communityId,
           typeMessage,
           othersFile,
+          userReceiverEmail,
+          userReceiverId,
         } = doc.data();
         messagesData.push({
           id,
@@ -964,6 +1062,9 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           communityId,
           typeMessage,
           othersFile,
+          userEmail,
+          userReceiverEmail,
+          userReceiverId,
         });
       });
     }
