@@ -12,7 +12,7 @@ import {
   NotificationMessageDataType,
   requestToDeleteUniversalDataWithId,
   requestTogetAllUniversalData,
-} from "seedAndGetData/seedData";
+} from "../../../../seedAndGetData/seedData";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";

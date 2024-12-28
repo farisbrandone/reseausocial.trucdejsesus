@@ -20,7 +20,6 @@ import {
   GroupeDataType,
   MembreData,
   MessageData,
-  postMessageByUser,
   postPrivateMessageByUser,
   requestToDeleteUniversalDataWithId,
 } from "../../../../seedAndGetData/seedData";

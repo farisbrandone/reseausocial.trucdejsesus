@@ -14,7 +14,7 @@ import {
   NotificationMessageDataType,
   requestToDeleteUniversalDataWithId,
   requestTogetAllUniversalData,
-} from "seedAndGetData/seedData";
+} from "../../../../seedAndGetData/seedData";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
