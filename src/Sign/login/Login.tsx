@@ -81,10 +81,7 @@ function Login() {
 
       if (data.data.status === "membre deja inscrit") {
         localStorage.setItem("user", JSON.stringify(data.data.data));
-        toast({
-          title: "Success",
-          description: "Le membre a été crée avec success",
-        });
+
         const dd = await createUser(email, motsDepasse, auth);
 
         console.log(dd);
@@ -118,6 +115,7 @@ function Login() {
         const tt = await signInWithEmailAndPassword(auth, email, motsDepasse);
         console.log(tt);
         /* ************************* */
+
         setMessageSending("Authentification reussie");
         setStartSending(false);
         console.log(auth.currentUser);

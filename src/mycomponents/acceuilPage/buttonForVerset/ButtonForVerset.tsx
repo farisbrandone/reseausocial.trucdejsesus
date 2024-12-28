@@ -36,7 +36,7 @@ const ButtonForVerset = () => {
           { hidden: !verset }
         )}
       >
-        <div className="relative p-3 bg-white text-black max-w-[350px]  sm:max-w-[550px] rounded-md z-[20000] ">
+        <div className="relative p-3 bg-white text-black max-w-[350px]  sm:max-w-[550px] rounded-md z-[20000] shadow-xl ">
           <div
             id="dailyVersesWrapper"
             className={clsx(
