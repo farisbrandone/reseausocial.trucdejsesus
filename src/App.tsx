@@ -14,14 +14,15 @@ import {
   GroupeDataType,
   requestTogetAllUniversalData,
 } from "../seedAndGetData/seedData";
-import MainPageCommunity from "./mycomponents/mainPage/MainPageCommunity";
-import AcceuilPageCommunity from "./mycomponents/acceuilPage/AcceuilPageCommunity";
+/* import MainPageCommunity from "./mycomponents/mainPage/MainPageCommunity";
+import AcceuilPageCommunity from "./mycomponents/acceuilPage/AcceuilPageCommunity"; */
 import LoginMother from "./Sign/login/LoginMother";
 import Signup from "./Sign/signup/Signup";
 import { User } from "firebase/auth";
 import Login from "./Sign/login/Login";
-import NotAccessiblePage from "./mycomponents/errorPage/NotAccessiblePage";
+/* import NotAccessiblePage from "./mycomponents/errorPage/NotAccessiblePage"; */
 import Profil from "./Sign/profil/Profil";
+import MobileFirst from "./mobilePart/forMobile/MobileFirst";
 
 /* interface mymy {
   path: string;
@@ -135,21 +136,23 @@ function App() {
           {
             path: "/",
             element: (
-              <context.Provider value={user as User}>
+              <MobileFirst />
+
+              /*  <context.Provider value={user as User}>
                 <NotAccessiblePage>
                   <LoginMother>
                     <MainPageCommunity communityData={communityData} />
                   </LoginMother>
                 </NotAccessiblePage>
-              </context.Provider>
+              </context.Provider> */
             ),
             errorElement: <ErrorPage />,
-            children: [
+            /*  children: [
               {
                 path: "/",
                 element: <AcceuilPageCommunity communityData={communityData} />,
               },
-            ],
+            ], */
           },
         ];
 
