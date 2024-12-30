@@ -75,6 +75,7 @@ export function MessageComponents({
   setTextePartage,
   membreOfData,
 }: MessageComponentsType) {
+  console.log(membreOfData);
   const [putHidden, setPutHidden] = useState(false);
   const [imageUrlEvent, setImageUrlEvent] = useState("");
   const [audioUrlEvent, setAudioUrlEvent] = useState("");
@@ -162,6 +163,7 @@ export function MessageComponents({
         othersFile: "",
         userReceiverId: "",
         userReceiverEmail: "",
+        groupeId,
       };
 
       const result = await postMessageByUser(data, groupeId);
@@ -182,6 +184,10 @@ export function MessageComponents({
         "https://serverbackofficetrucdejesus.onrender.com/api/firebase/send-message-notification",
         { user: userSelect, message: data }
       );
+      /* 
+      https://serverbackofficetrucdejesus.onrender.com
+      http://localhost:4000 */
+      console.log(sendNotification);
       if (false) {
         console.log(sendNotification);
       }

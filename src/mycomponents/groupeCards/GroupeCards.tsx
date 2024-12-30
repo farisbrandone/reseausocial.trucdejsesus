@@ -29,6 +29,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { NotifComponent } from "../acceuilPage/NotifMessage/NotifComponent";
+import { MessagePriveComponent } from "../acceuilPage/NotifMessage/MessagePriveComponent";
 
 interface Tab {
   title: string;
@@ -132,11 +134,11 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
   return (
     <div
       className={clsx(
-        " flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white"
+        " flex flex-col items-center min-[400px]:pr-2 w-full p-0 bg-white "
       )}
     >
       <div className="max-[980px]:sticky  h-6 max-[980px]:h-3 w-full bg-white  "></div>
-      <div className="headerAcceuil max-[980px]:mt-3 sticky w-full flex items-center justify-between min-[400px]:justify-end  min-[400px]:gap-4  top-0 bg-white pt-4 max-[980px]:pt-6  max-[400px]:pt-3 z-10 ">
+      <div className="headerAcceuil max-[980px]:mt-3 sticky w-full flex items-center justify-between min-[400px]:justify-end gap-[2px]  min-[400px]:gap-1  top-0 bg-white pt-4 max-[980px]:pt-6  max-[400px]:pt-3 z-10 ">
         <div
           className={clsx("flex items-center justify-center lg:hidden", {
             hidden: state?.stateSideBar,
@@ -156,9 +158,11 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
             <span className="icon-[websymbol--search] text-1xl"></span>
           </div>
         </div>
-        <div className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]">
+        <NotifComponent /* message={messageCoommunity} */ />
+        <MessagePriveComponent /* message={messageCoommunity} */ />
+        {/*  <div className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]">
           <span className="icon-[mdi--bell] text-2xl"></span>
-        </div>
+        </div> */}
         {/*  <div className="flex items-center justify-center w-[30px] h-[30px] bg-[#c7bfbf] rounded-full mr-2 cursor-pointer border-[1px] border-solid border-[#00000026] ">
           <p className="object-fill"> A</p>
           <ul className="buttonList">
@@ -212,13 +216,13 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
           /> */}
           {/* <div className="absolute right-0 left-0 bottom-0 top-0 image"></div> */}
           <div className=" textOnImage text-[20px] text-[#000] absolute bottom-6 left-4 right-4 font-bold flex  items-center justify-between flex-wrap gap-3">
-            <p className="text-[20px] sm:text-[26px]">
+            <p className="text-[16px] sm:text-[26px]">
               {groupeValue.titleGroupe}
             </p>
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button className="flex items-center bg-[#fff700] px-2 py-3 h-[40px] rounded-md mr-4 hover:bg-[#fff700]/50 text-[#000] text-[18px] ">
+                <Button className="flex items-center bg-[#fff700] px-2 py-3 h-[40px] rounded-md mr-4 hover:bg-[#fff700]/50 text-[#000] text-[14px] sm:text-[18px] ">
                   {" "}
                   Partager sur les réseaux sociaux
                 </Button>

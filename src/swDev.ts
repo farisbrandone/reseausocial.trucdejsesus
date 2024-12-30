@@ -38,8 +38,9 @@ import {
 import {
   MembreData,
   requestTogetAllUniversalData,
-} from "seedAndGetData/seedData";
+} from "../seedAndGetData/seedData";
 import { User } from "firebase/auth";
+import { isSupported as isSwSupported } from "firebase/messaging/sw";
 
 /* import { initializeApp } from "firebase/app";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
@@ -60,16 +61,17 @@ const db = getFirestore(app1);
 /* const citiesRef = collection(db, "Notifications"); */
 const currentUser = auth.currentUser as User;
 let memberData: MembreData | undefined;
-(async function swDev(window) {
+
+export async function swDev(window: Window & typeof globalThis) {
   if (!isSupported()) {
     return;
-    /*  } else if (!isSwSupported()) {
-    return; */
+  } else if (!isSwSupported()) {
+    return;
   } else if (window.Notification.permission === "denied") {
     return;
   } else {
     const messaging = getMessaging();
-
+    console.log(currentUser);
     const registerServiceWorker = async () => {
       try {
         const swOptions = {
@@ -150,7 +152,7 @@ let memberData: MembreData | undefined;
                 }
               }
             })
-            .catch((error: any) => {
+            .catch((error /* : any */) => {
               console.error("Unable to get FCM Token", error);
             });
         } else {
@@ -176,7 +178,7 @@ let memberData: MembreData | undefined;
       window.location.reload();
     }); */
   }
-})(window);
+}
 
 /*window.onload = async function () {
   await swDev(window);

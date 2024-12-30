@@ -66,7 +66,7 @@ export function NotifComponent() {
             !!value.user.find((us) => us.email === currentUser?.email) &&
             value.message.typeMessage === "public"
         );
-
+        console.log({ result });
         if (result.length > 0) {
           setMessage([...result]);
           playSound();
@@ -86,6 +86,7 @@ export function NotifComponent() {
             !!value.user.find((us) => us.email === currentUser?.email) &&
             value.message.typeMessage === "public"
         );
+
         if (result.length > 0) {
           setMessage([...result]);
           playSound();
@@ -122,9 +123,20 @@ export function NotifComponent() {
           {" "}
           <div
             title="Notification"
-            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
+            className="relative clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
           >
             <span className="icon-[mdi--bell] text-2xl"></span>
+            {message.length > 0 && (
+              <div className="absolute bg-[#BD10E0] text-white -right-1 -top-[8px] w-[20px] h-[20px] rounded-full text-[12px] ">
+                {message.length < 9 ? (
+                  message.length
+                ) : (
+                  <span>
+                    9<sup>+</sup>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </Button>
       </SheetTrigger>
@@ -133,38 +145,39 @@ export function NotifComponent() {
           <SheetTitle>Notification</SheetTitle>
         </SheetHeader>
         <div className=" w-full p-2 flex flex-col items-start gap-2">
-          {message.map((value) => (
-            <div
-              className="flex gap-2 w-full overflow-clip cursor-pointer"
-              onClick={() => deleteMessage(value)}
-            >
-              <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full ">
-                <Avatar className="w-[35px] h-[35px] ">
-                  <AvatarImage
-                    src={value?.message.userAvatar}
-                    alt={"@shadcn"}
-                  />
-                  <AvatarFallback>
-                    {value.message.userName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
+          {message.length > 0 &&
+            message.map((value) => (
+              <div
+                className="flex gap-2 w-full overflow-clip cursor-pointer"
+                onClick={() => deleteMessage(value)}
+              >
+                <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full ">
+                  <Avatar className="w-[35px] h-[35px] ">
+                    <AvatarImage
+                      src={value?.message.userAvatar}
+                      alt={"@shadcn"}
+                    />
+                    <AvatarFallback>
+                      {value?.message.userName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="flex-1 flex-col text-[12px] ">
+                  <p className="text-wrap max-h-[50px] overflow-clip ">
+                    <span>
+                      <strong>{value?.message.userName.split(" ")[0]}</strong>
+                    </span>{" "}
+                    -<span> {value?.message.text} </span>
+                  </p>
+                  <p>
+                    {format(
+                      new Date(value?.dateOfCreation as string),
+                      "dd MMM yyyy 'à' hh:mm:ss"
+                    )}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 flex-col text-[12px] ">
-                <p className="text-wrap max-h-[50px] overflow-clip ">
-                  <span>
-                    <strong>{value.message.userName.split(" ")[0]}</strong>
-                  </span>{" "}
-                  -<span> {value.message.text} </span>
-                </p>
-                <p>
-                  {format(
-                    new Date(value.message.dateOfUpdate as string),
-                    "d MMM yyyy 'à' hh:mm:ss"
-                  )}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </SheetContent>
     </Sheet>

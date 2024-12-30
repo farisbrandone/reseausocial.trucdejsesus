@@ -2,6 +2,7 @@
 import { addDynamicIconSelectors } from "@iconify/tailwind";
 import tailwindAnimate from "tailwindcss-animate";
 import tailwindRadix from "tailwindcss-radix";
+import daisyUi from "daisyui";
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
@@ -66,5 +67,10 @@ export default {
       },
     },
   },
-  plugins: [tailwindAnimate, addDynamicIconSelectors(), tailwindRadix()],
+  plugins: [
+    tailwindAnimate,
+    addDynamicIconSelectors(),
+    tailwindRadix(),
+    daisyUi,
+  ],
 };

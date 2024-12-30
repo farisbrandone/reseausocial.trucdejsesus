@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./App.css";
+import "./index.css";
 import { BodyDashbord } from "./components/BodyDashbord";
 import { FooterDashboard } from "./components/FooterDashboard";
 import { HeaderDashboard } from "./components/HeaderDashboard";

@@ -122,9 +122,20 @@ export function MessagePriveComponent() {
           {" "}
           <div
             title="Message privé"
-            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
+            className="relative clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
           >
             <span className="icon-[mdi--message-text] text-2xl"></span>
+            {message.length > 0 && (
+              <div className="absolute bg-[#BD10E0] text-white -right-1 -top-[8px] w-[20px] h-[20px] rounded-full text-[12px] ">
+                {message.length < 9 ? (
+                  message.length
+                ) : (
+                  <span>
+                    9<sup>+</sup>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </Button>
       </SheetTrigger>

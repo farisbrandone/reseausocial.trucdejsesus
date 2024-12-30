@@ -325,6 +325,14 @@ export default function PrivateMessageComponent({
         row.groupeValue.id as string
       );
       if (result.success) {
+        const sendNotification = await axios.post(
+          "http://localhost:4000/api/firebase/send-message-notification",
+          { user: myUser, message: data }
+        );
+        /* 
+        https://serverbackofficetrucdejesus.onrender.com
+        http://localhost:4000 */
+        console.log(sendNotification);
         const senderReceiverMessage = await getAllSenderReceiverMessage(
           myUser.id as string,
           row.id as string

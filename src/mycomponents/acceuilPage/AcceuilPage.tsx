@@ -5,7 +5,7 @@ import {
 } from "seedAndGetData/seedData";
 import { getAllCommunityMessageData } from "../../../seedAndGetData/seedData";
 /* import CardGroupAcceuil from "./CardGroupAcceuil"; */
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import MessageCommunityElement from "./MessageCommunityElement";
 import clsx from "clsx";
 import { useContextReducer } from "@/hooks/useContextReducer";
@@ -206,8 +206,10 @@ function AcceuilPage({
           <div className="flex flex-col gap-1 mt-5 w-full ">
             {messageCoommunity
               ?.filter((value) => value.typeMessage === "public")
-              ?.map((message) => (
-                <MessageCommunityElement message={message} />
+              ?.map((message, index) => (
+                <Fragment key={index}>
+                  <MessageCommunityElement message={message} />
+                </Fragment>
               ))}
           </div>
         </div>

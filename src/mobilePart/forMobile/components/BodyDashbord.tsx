@@ -14,7 +14,7 @@ function BodyDashbord() {
       </div>
 
       <a
-        href="https://trucdejesus.smartcommunity.biz/f/bDoqa"
+        href="https://reseausocial-trucdejesus.vercel.app/community/00wOWSI8yjxruMrzbXk3"
         className="mt-4 mx-auto px-[40px] py-[10px] rounded-[80px] bg-[#f8e71c] font-bold cursor-pointer buttonConnect flex flex-col items-center transition-colors"
       >
         <p className="text-[18px] sm:text-[20px] font-sans text-center ">

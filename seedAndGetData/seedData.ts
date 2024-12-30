@@ -318,6 +318,7 @@ export const postMessageByUser = async (
       othersFile,
       userReceiverId,
       userReceiverEmail,
+      groupeId,
     });
     const promise2 = updateDoc(membreDataRef, {
       nombrePartage: increment(1),
@@ -385,6 +386,7 @@ export const postPrivateMessageByUser = async (
       othersFile,
       userReceiverId,
       userReceiverEmail,
+      groupeId,
     });
 
     const [value1] = await Promise.all([promise1]);
@@ -438,6 +440,7 @@ export const updateMessageByUser = async (
       typeMessage,
       othersFile,
       userReceiverId,
+      groupeId,
     });
 
     const [value1] = await Promise.all([promise1]);
@@ -658,6 +661,7 @@ export const getAllMessageData = async (groupeName: string) => {
           typeMessage,
           othersFile,
           userReceiverId,
+          groupeId,
         } = doc.data();
         messagesData.push({
           id,
@@ -677,6 +681,7 @@ export const getAllMessageData = async (groupeName: string) => {
           typeMessage,
           othersFile,
           userReceiverId,
+          groupeId,
         });
       });
     }
@@ -813,6 +818,7 @@ export const getMessageWithId = async (messageId: string) => {
         communityId,
         typeMessage,
         othersFile,
+        groupeId,
       } = docSnap.data();
       return {
         id,
@@ -829,6 +835,7 @@ export const getMessageWithId = async (messageId: string) => {
         communityId,
         typeMessage,
         othersFile,
+        groupeId,
       };
     } else {
       throw new Error("Le message n'existe pas");
@@ -1045,6 +1052,7 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           othersFile,
           userReceiverEmail,
           userReceiverId,
+          groupeId,
         } = doc.data();
         messagesData.push({
           id,
@@ -1065,6 +1073,7 @@ export const getAllCommunityMessageData = async (communityId: string) => {
           userEmail,
           userReceiverEmail,
           userReceiverId,
+          groupeId,
         });
       });
     }
@@ -1139,6 +1148,7 @@ export const getAllSenderReceiverMessage = async (
           typeMessage,
           othersFile,
           userReceiverId,
+          groupeId,
         } = doc.data();
         messagesData.push({
           id,
@@ -1157,6 +1167,7 @@ export const getAllSenderReceiverMessage = async (
           typeMessage,
           othersFile,
           userReceiverId,
+          groupeId,
         });
       });
     }
