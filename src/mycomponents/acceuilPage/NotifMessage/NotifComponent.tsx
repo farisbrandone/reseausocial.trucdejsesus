@@ -66,7 +66,7 @@ export function NotifComponent() {
             !!value.user.find((us) => us.email === currentUser?.email) &&
             value.message.typeMessage === "public"
         );
-        console.log({ result });
+
         if (result.length > 0) {
           setMessage([...result]);
           playSound();
@@ -103,7 +103,6 @@ export function NotifComponent() {
     getNotificationMessage();
     return () => {
       document.removeEventListener("visibilitychange", () => {
-        console.log("gg");
         //setNotification((prev) => [...prev,e.data.notification]);
       });
       navigator.serviceWorker.removeEventListener("message", (e) => {

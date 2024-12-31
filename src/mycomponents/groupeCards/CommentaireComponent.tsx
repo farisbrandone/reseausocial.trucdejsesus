@@ -92,7 +92,6 @@ export default function CommentaireComponent({
         return;
       }
     } catch (error) {
-      console.error(error);
       setDisableButton(false);
       toast({
         variant: "destructive",

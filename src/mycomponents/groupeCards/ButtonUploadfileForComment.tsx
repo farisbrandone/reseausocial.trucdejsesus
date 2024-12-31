@@ -63,7 +63,6 @@ function ButtonUploadFileForComment({
           description:
             "une erreur est survenue pendant le chargement " + error.message,
         });
-        console.error(error);
       },
       () => {
         // Get the download URL

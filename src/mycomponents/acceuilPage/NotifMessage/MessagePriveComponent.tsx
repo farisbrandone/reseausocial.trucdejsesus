@@ -103,7 +103,6 @@ export function MessagePriveComponent() {
     getNotificationMessage();
     return () => {
       document.removeEventListener("visibilitychange", () => {
-        console.log("gg");
         //setNotification((prev) => [...prev,e.data.notification]);
       });
       navigator.serviceWorker.removeEventListener("message", (e) => {

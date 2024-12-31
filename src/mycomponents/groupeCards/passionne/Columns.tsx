@@ -318,15 +318,13 @@ export default function PrivateMessageComponent({
         userReceiverEmail: row.email,
       };
 
-      console.log(data);
-
       const result = await postPrivateMessageByUser(
         data,
         row.groupeValue.id as string
       );
       if (result.success) {
         const sendNotification = await axios.post(
-          "http://localhost:4000/api/firebase/send-message-notification",
+          "https://serverbackofficetrucdejesus.onrender.com/api/firebase/send-message-notification",
           { user: myUser, message: data }
         );
         /* 
@@ -343,7 +341,6 @@ export default function PrivateMessageComponent({
         setDisableButton(false);
       }
     } catch (error) {
-      console.log(error);
       toast({
         variant: "destructive",
         title: "Erreur",
