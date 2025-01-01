@@ -59,14 +59,14 @@ export function SelectUserToSendMessage({
   alertOpen,
   setAlertOpen,
   membreOfData,
-  groupeId,
-}: SelectUserToSendMessageProps) {
+}: /*  groupeId, */
+SelectUserToSendMessageProps) {
   /*  const [userSelect, setUserSelect] = useState<UserSelectType[]>([]); */
   const [cliquerAll, setCliquerAll] = useState(false);
 
-  const memberSelect = membreOfData.filter((value) =>
+  const memberSelect = [...membreOfData]; /* .filter((value) =>
     value.groupeId?.includes(groupeId)
-  );
+  ); */
   const selectAll = () => {
     if (cliquerAll) {
       setUserSelect([]);
