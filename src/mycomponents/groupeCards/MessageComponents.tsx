@@ -164,7 +164,7 @@ export function MessageComponents({
         userReceiverEmail: "",
         groupeId,
       };
-
+      console.log(data);
       const result = await postMessageByUser(data, groupeId);
 
       if (result.success) {

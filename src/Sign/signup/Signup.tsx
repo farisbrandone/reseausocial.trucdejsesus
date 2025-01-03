@@ -424,10 +424,10 @@ function Signup() {
           </div>
           <div className="flex flex-col gap-4  ">
             <div className=" flex flex-col gap-1">
-              <label htmlFor="fullName">Prénom</label>
+              <label htmlFor="fullName1">Prénom</label>
               <input
                 type="text"
-                id="fullName"
+                id="fullName1"
                 placeholder="Entrer..."
                 value={prenom}
                 onChange={handlePrenom}

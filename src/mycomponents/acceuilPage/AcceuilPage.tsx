@@ -109,6 +109,8 @@ function AcceuilPage({
     );
   }
 
+  console.log(value.banniereUrl);
+
   return (
     <div
       className={clsx("flex flex-col items-center px-1 sm:pr-2 w-full p-0 ")}
@@ -132,18 +134,7 @@ function AcceuilPage({
         <div className="flex items-center gap-2">
           <NotifComponent /* message={messageCoommunity} */ />
           <MessagePriveComponent /* message={messageCoommunity} */ />
-          <div
-            title="Notification"
-            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
-          >
-            <span className="icon-[mdi--bell] text-2xl"></span>
-          </div>
-          <div
-            title="Message privé"
-            className="clocheNotif flex items-center justify-center w-[30px] h-[30px] bg-[#fff700] rounded-sm p-1 cursor-pointer border-[1px] border-solid border-[#00000026]"
-          >
-            <span className="icon-[mdi--message-text]"></span>
-          </div>
+
           {/*  <AvatarComponent communityId={value.id as string} /> */}
         </div>
       </div>
@@ -151,14 +142,8 @@ function AcceuilPage({
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
         <div className=" w-full">
           {value.banniereUrl && value.banniereUrl.includes(".mp4") ? (
-            <video
-              loop
-              autoPlay={true}
-              muted={true}
-              className="object-cover w-full"
-            >
-              <source src={value.banniereUrl} type="video/mp4" />
-              Votre navigateur ne supporte pas la balise vidéo.
+            <video loop autoPlay={true} muted controls>
+              <source src={value.banniereUrl} />
             </video>
           ) : (
             <img
@@ -205,7 +190,9 @@ function AcceuilPage({
           <h1 className="font-bold text-[20px] ">Partages récents </h1>
           <div className="flex flex-col gap-1 mt-5 w-full ">
             {messageCoommunity
-              ?.filter((value) => value.typeMessage === "public")
+              ?.filter(
+                (value, index) => value.typeMessage === "public" && index <= 10
+              )
               ?.map((message, index) => (
                 <Fragment key={index}>
                   <MessageCommunityElement message={message} />

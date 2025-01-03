@@ -9,6 +9,10 @@ export function formatDate(stringDate: string) {
   if (d < oneDay) {
     return format(dateValue, " HH:mm");
   } else if (d > oneDay && d < 7 * oneDay) {
+    if (dateNow.getFullYear() > dateValue.getFullYear()) {
+      const diffDay = dateNow.getDate() + 31 - dateValue.getDate();
+      return `${diffDay}j`;
+    }
     const diffDay = dateNow.getDate() - dateValue.getDate();
     return `${diffDay}j`;
   } else if (d > 7 * oneDay) {
@@ -25,6 +29,10 @@ export function formatDateWithString(stringDate: string) {
   if (d < oneDay) {
     return format(dateValue, " H'h':mm'min'");
   } else if (d > oneDay && d < 7 * oneDay) {
+    if (dateNow.getFullYear() > dateValue.getFullYear()) {
+      const diffDay = dateNow.getDate() + 31 - dateValue.getDate();
+      return `${diffDay}j`;
+    }
     const diffDay = dateNow.getDate() - dateValue.getDate();
     return `il y a ${diffDay}j`;
   } else if (d > 7 * oneDay) {

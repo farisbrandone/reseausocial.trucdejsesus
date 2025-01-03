@@ -16,22 +16,25 @@ import {
   requestTogetAllUniversalData,
 } from "../../../../seedAndGetData/seedData";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
 export function NotifComponent() {
   const currentUser = auth.currentUser;
   const [message, setMessage] = useState<NotificationMessageDataType[]>([]);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const deleteMessage = async (value: NotificationMessageDataType) => {
+    console.log("dde");
     try {
       const result = await requestToDeleteUniversalDataWithId(
         value.id as string,
         "NotificationMessageData"
       );
       if (result.success) {
-        navigate(`/community/00wOWSI8yjxruMrzbXk3/${value.message.groupeId}`);
+        window.location.replace(
+          `/community/00wOWSI8yjxruMrzbXk3/${value.message.groupeId}`
+        );
         return;
       }
       toast({

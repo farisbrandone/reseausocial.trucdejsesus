@@ -124,7 +124,7 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
       const result = await requestTogetAllMembreData();
 
       const messages = await getAllMessageData(groupeValue.titleGroupe);
-
+      console.log(messages);
       setMessagesData([...messages]);
       setMembreOfData([...result]);
     };
@@ -345,18 +345,20 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
                   />
                 </div>
                 {messagesData &&
-                  messagesData.map((value) => (
-                    <div
-                      key={value.id}
-                      className="flex flex-col gap-5 shadow-xl"
-                    >
-                      <MessageCards
-                        value={value}
-                        membreOfData={membreOfData}
-                        setMessagesData={setMessagesData}
-                        groupeValue={groupeValue}
-                      />
-                      {/* <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
+                  messagesData
+                    .filter((val) => val.groupeId === groupeValue.id)
+                    .map((value) => (
+                      <div
+                        key={value.id}
+                        className="flex flex-col gap-5 shadow-xl"
+                      >
+                        <MessageCards
+                          value={value}
+                          membreOfData={membreOfData}
+                          setMessagesData={setMessagesData}
+                          groupeValue={groupeValue}
+                        />
+                        {/* <div className="text-sm text-gray-700 dark:text-gray-100 mt-4">
                         <div className="flex items-center gap-2">
                           <Avatar>
                             <AvatarImage src={value.userAvatar} alt="" />
@@ -419,8 +421,8 @@ function GroupeCards({ groupeValue }: { groupeValue: GroupeDataType }) {
                           )}
                         </div>
                       </div> */}
-                    </div>
-                  ))}
+                      </div>
+                    ))}
               </TabsPrimitive.Content>
               <TabsPrimitive.Content
                 key={`tab-content-tab2`}

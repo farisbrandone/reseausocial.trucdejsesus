@@ -36,7 +36,26 @@ function ButtonUploadFile2({
 
     if (!e?.target.files) return;
     const file = e.target.files[0];
+    const supportedFormats = ["image/jpg", "image/png", "image/gif"];
+    if (file && file.type) {
+      if (0 > supportedFormats.indexOf(file.type)) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "le format du fichier n'est pas supporté",
+        });
+        return;
+      }
+    }
 
+    if (file.size > 1048576 / 2) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "la taille du fichier est supérieur à 500ko",
+      });
+      return;
+    }
     const storageRef = ref(storage, `images/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
