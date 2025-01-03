@@ -12,9 +12,12 @@ function BodyDashbord() {
           Votre navigateur ne supporte pas la balise vidéo.
         </video>
       </div>
-
+      {/* https://trucdejesus.web.app
+        
+        https://reseausocial-trucdejesus.vercel.app
+        */}
       <a
-        href="https://reseausocial-trucdejesus.vercel.app/community/00wOWSI8yjxruMrzbXk3"
+        href="https://trucdejesus.web.app/community/00wOWSI8yjxruMrzbXk3"
         className="mt-4 mx-auto px-[40px] py-[10px] rounded-[80px] bg-[#f8e71c] font-bold cursor-pointer buttonConnect flex flex-col items-center transition-colors"
       >
         <p className="text-[18px] sm:text-[20px] font-sans text-center ">

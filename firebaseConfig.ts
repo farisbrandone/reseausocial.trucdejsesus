@@ -22,8 +22,8 @@ const firebaseConfig = {
 };
 const app1 = initializeApp(firebaseConfig1);
 const appForStorage = initializeApp(firebaseConfig, "secondaryApp");
-const storage = getStorage(appForStorage);
+const storage = getStorage(app1);
 const db = getFirestore(app1);
-const auth = getAuth(appForStorage);
+const auth = getAuth(app1);
 
 export { storage, db, auth, appForStorage, app1 };

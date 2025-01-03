@@ -142,7 +142,7 @@ function AcceuilPage({
       <div className="imageDePre w-full 2xl:w-[1250px]  px-2 mt-10 pl-3 -z-[10] ">
         <div className=" w-full">
           {value.banniereUrl && value.banniereUrl.includes(".mp4") ? (
-            <video loop autoPlay={true} muted controls>
+            <video autoPlay muted loop playsInline>
               <source src={value.banniereUrl} />
             </video>
           ) : (

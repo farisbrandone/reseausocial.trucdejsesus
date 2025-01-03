@@ -180,10 +180,11 @@ export function MessageComponents({
       }
 
       const sendNotification = await axios.post(
-        "https://serverbackofficetrucdejesus.onrender.com/api/firebase/send-message-notification",
+        "https://adminnode-adzkyuspnq-uc.a.run.app/api/firebase/send-message-notification",
         { user: userSelect, message: data }
       );
       /* 
+      https://adminnode-adzkyuspnq-uc.a.run.app/
       https://serverbackofficetrucdejesus.onrender.com
       http://localhost:4000 */
 

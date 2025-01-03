@@ -324,10 +324,11 @@ export default function PrivateMessageComponent({
       );
       if (result.success) {
         const sendNotification = await axios.post(
-          "https://serverbackofficetrucdejesus.onrender.com/api/firebase/send-message-notification",
+          "https://adminnode-adzkyuspnq-uc.a.run.app/api/firebase/send-message-notification",
           { user: myUser, message: data }
         );
         /* 
+        https://adminnode-adzkyuspnq-uc.a.run.app
         https://serverbackofficetrucdejesus.onrender.com
         http://localhost:4000 */
         console.log(sendNotification);
@@ -379,11 +380,12 @@ export default function PrivateMessageComponent({
       try {
         setStartLoading(true);
         const myUsers = await axios.post(
-          "https://serverbackofficetrucdejesus.onrender.com/api/frontoffice/getmemberwithemail",
+          "https://adminnode-adzkyuspnq-uc.a.run.app/api/frontoffice/getmemberwithemail",
           { email: userAmin?.email }
         );
 
         /* 
+        https://adminnode-adzkyuspnq-uc.a.run.app
         http://localhost:4000
         https://serverbackofficetrucdejesus.onrender.com
          */
